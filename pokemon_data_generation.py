@@ -114,6 +114,6 @@ async def save_data_to_json():
     with open("pokemon_data.json", "w") as pokemon_data_json:
         json.dump(pokemon_data, pokemon_data_json, indent=4)
 
-# Running this script gathers pokemon data asynchronously and stored it in json format
+# Running this script gathers pokemon data asynchronously and stores it in json format
 if __name__ == "__main__":
     asyncio.run(save_data_to_json())
