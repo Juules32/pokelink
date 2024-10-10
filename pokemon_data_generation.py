@@ -26,6 +26,19 @@ regions = [
     "hisui"
 ]
 
+region_number: dict[str, int] = {
+    "kanto": 1,
+    "johto": 2,
+    "hoenn": 3,
+    "sinnoh": 4,
+    "unova": 5,
+    "kalos": 6,
+    "alola": 7,
+    "galar": 8,
+    "paldea": 9,
+    "hisui": -1
+}
+
 generation_to_region = {
     "generation-i": "kanto",
     "generation-ii": "johto",
@@ -44,15 +57,15 @@ def find_region(name, species_generation):
     if name == "kleavor": return "hisui"
     if name == "overqwil": return "hisui"
     if name == "ursaluna": return "hisui"
-    if name == "basculegion": return "hisui"
     if name == "sneasler": return "hisui"
     if name == "enamorus": return "hisui"
-    if "-hisui" in name: return "hisui"
-    if "-paldea" in name: return "paldea"
-    if "-galar" in name: return "galar"
-    if "-alola" in name: return "alola"
     if name == "basculin-white-striped": return "hisui"
     if name == "ursaluna-bloodmoon": return "paldea"
+    if "-alola" in name: return "alola"
+    if "-galar" in name: return "galar"
+    if "-hisui" in name: return "hisui"
+    if "-paldea" in name: return "paldea"
+    if "basculegion" in name: return "hisui"
 
     # Default to generation's region
     return generation_to_region[species_generation]
