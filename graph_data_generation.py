@@ -1,9 +1,7 @@
-import os
 from typing import Mapping, Union
 import networkx as nx
 import json
 from networkx import Graph
-from db import db
 import pickle
 
 def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
@@ -16,7 +14,10 @@ def generate_graph() -> Graph:
     # Get data files
     with open("pokemon_data.json", "r") as pokemon_data_json:
         pokemon_data: dict = json.load(pokemon_data_json)
-    
+
+        # Filter out pokemon from Hisui 💀
+        pokemon_data = {k: v for k, v in pokemon_data.items() if v["region"] != 'hisui'}
+
     # Add nodes
     for k, v in pokemon_data.items():
         G.add_node(k, types=v["types"], region=v["region"])
@@ -69,7 +70,7 @@ def load_graph() -> Graph:
     with open("graph_data.pkl", "rb") as graph_file:
         return pickle.load(graph_file)
 
-def store_graph_json(G: Graph, store_to_db: bool = False, store_to_file: bool = False):
+def store_graph_json(G: Graph):
 
     # Format graph data
     graph_data = {
@@ -85,20 +86,14 @@ def store_graph_json(G: Graph, store_to_db: bool = False, store_to_file: bool = 
         } for (source, target), v in G.edges.items()]
     }
 
-    if store_to_db:
-        db.set_graph(data=graph_data)
-
-    if store_to_file:
-        with open("graph_data.json", "w") as graph_data_json:
-            json.dump(graph_data, graph_data_json, indent=4)
+    with open("graph_data.json", "w") as graph_data_json:
+        json.dump(graph_data, graph_data_json, indent=4)
 
 if __name__ == "__main__":
-    if not os.path.isfile("graph_data.pkl"):
-        # (Re)generates graph data and pickles it to a file
-        dump_graph(generate_graph())
+    dump_graph(generate_graph())
 
     # The graph data is unpickled
     G = load_graph()
 
     # The graph data is saved to the database and/or a file
-    store_graph_json(G, store_to_db=True, store_to_file=True)
+    store_graph_json(G)
