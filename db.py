@@ -100,14 +100,14 @@ class Database:
         """
         self.commit_query(query=query, message="Created puzzle table successfully")
 
-    def get_puzzle(self, date: str) -> Puzzle:
+    def get_puzzle(self, date: Union[str, None] = None) -> Puzzle:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM puzzle
             WHERE date = %s;
         """
         source, target, shortest_path, shortest_path_length = self.commit_query(
             query=query, 
-            vars=(date,),
+            vars=(date if date else get_date_str(),),
             fetch=Fetch.ONE, 
             message=f"Got puzzle data successfully"
         )

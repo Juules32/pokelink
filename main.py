@@ -2,14 +2,25 @@
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from db import Database
+from business import Business
 
 load_dotenv()
 
 app = FastAPI()
-db = Database()
+bn = Business()
 
 @app.get("/graph")
 def get_test():
-    return JSONResponse(content=db.get_graph(), status_code=200)
+    return bn.get_graph()
+
+@app.get("/puzzle")
+def get_puzzle():
+    return bn.get_puzzle()
+
+@app.get("/puzzle/{date}")
+def get_puzzle(date: str):
+    return bn.get_puzzle(date)
+
+@app.get("/adjacency_data/{guess}")
+def get_adjacency_data(guess: str):
+    return bn.get_adjacency_data(guess)
