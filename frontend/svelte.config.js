@@ -6,6 +6,9 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
+		alias: {
+			'$components': 'src/components'
+		},
 		adapter: adapter({
 			fallback: '404.html'
 		}),

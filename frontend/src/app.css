@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: "Undertale Font";
+        src:
+            url('/fonts/determinationmonoweb-webfont.woff') format('woff'),
+            url('/fonts/determinationmonoweb-webfont.woff2') format('woff2');
+    }
+
+    body {
+        font-family: "Undertale Font", sans-serif;
+    }
+}
