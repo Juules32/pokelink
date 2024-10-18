@@ -1,5 +1,4 @@
-export interface Pokemon {
-    name: string;
-    url: string;
-  }
-  
+export interface PokemonSearchResult {
+	name: string;
+	url: string;
+}
