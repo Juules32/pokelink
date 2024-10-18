@@ -8,3 +8,5 @@ TODO.*
 graph_data.json
 pokemon_data.json
 *.pkl
+.svelte-kit
+node_modules
