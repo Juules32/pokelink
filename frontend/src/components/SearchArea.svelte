@@ -16,9 +16,13 @@
     function handleClickOutside(event: MouseEvent) {
         // If the click is outside the input field, clear pokemonSearchResults
         if (searchRef && !searchRef.contains(event.target as Node)) {
-            searchQuery = "";
-            pokemonSearchResults = [];
+            resetSearch()
         }
+    }
+
+    function resetSearch() {
+        searchQuery = "";
+        pokemonSearchResults = [];
     }
 
     onMount(() => {
@@ -49,7 +53,7 @@
             class="z-10 absolute w-[500px] divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
             {#each pokemonSearchResults as pokemonSearchResult}
-                <SearchResult pokemonSearchResult={pokemonSearchResult} />
+                <SearchResult pokemonSearchResult={pokemonSearchResult} resetSearch={resetSearch} />
             {/each}
         </ul>
     {/if}
