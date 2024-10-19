@@ -8,9 +8,12 @@ from puzzle_generation import generate_puzzle, get_shortest_path_length
 
 def visualize_path_length_distribution():
     G = generate_graph()
+    pokemon_names: list[str] = list(G.nodes.keys())
 
-    # Collect shortest path lengths over 100 iterations
-    path_lengths = [get_shortest_path_length(G, generate_puzzle()) for _ in range(100)]
+    path_lengths = []
+    for _ in range(100):
+        puzzle = generate_puzzle(G, pokemon_names, strict=True)
+        path_lengths.append(get_shortest_path_length(G, puzzle.source, puzzle.target))
 
     # Count occurrences of each path length
     length_counts = Counter(path_lengths)
