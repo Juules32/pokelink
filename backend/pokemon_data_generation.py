@@ -87,10 +87,10 @@ async def fetch_pokemon_data(client, result, pokemon_data):
     print(f"Generating data for: {pokemon_name} (id {pokemon_id})")
     
     # Types
-    types = []
+    pokemon_types = []
     for type_entry in pokemon_response["types"]:
         pokemon_type = type_entry["type"]["name"]
-        types.append(pokemon_type)
+        pokemon_types.append(pokemon_type)
     
     # Pokemon-species
     species_url = pokemon_response["species"]["url"]
@@ -99,18 +99,19 @@ async def fetch_pokemon_data(client, result, pokemon_data):
 
     # Region
     species_generation = species_data["generation"]["name"]
-    region = find_region(pokemon_name, species_generation)
+    pokemon_region = find_region(pokemon_name, species_generation)
 
     # Store data
     pokemon_data[pokemon_name] = {
-        "types": types,
-        "region": region
+        "id": pokemon_id,
+        "types": pokemon_types,
+        "region": pokemon_region
     }
 
 async def save_data_to_json():
     pokemon_data = {}
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.get(f'https://pokeapi.co/api/v2/pokemon?limit={limit}&offset={offset}')
         response = response.json()["results"]
 

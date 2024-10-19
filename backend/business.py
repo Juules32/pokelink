@@ -18,6 +18,7 @@ class Business:
         guess_graph_data = self.graph.nodes[guess]
         guess_data = PokemonData(
             name=guess,
+            id=guess_graph_data["id"],
             types=guess_graph_data["types"],
             region=guess_graph_data["region"]
         )
@@ -27,6 +28,7 @@ class Business:
             neighbor_graph_data = self.graph.nodes[neighbor]
             neighbor_data.append(PokemonData(
                 name=neighbor,
+                id=neighbor_graph_data["id"],
                 types=neighbor_graph_data["types"],
                 region=neighbor_graph_data["region"]
             ))

@@ -1,20 +1,20 @@
 import { isNameLegal } from '$lib/util'
-import type { Pokemon } from '$lib/interfaces'
+import type { PokemonSearchResult } from '$lib/interfaces'
 
 // Function to fetch the list of Pokémon and filter based on search query
-export async function fetchSearchData(search: string): Promise<Pokemon[]> {
+export async function fetchSearchData(search: string): Promise<PokemonSearchResult[]> {
 	try {
 		const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
 		const data = await response.json()
 		const searchLowerCase = search.toLowerCase()
 		const filteredResponse = data.results
-			.filter((pokemon: Pokemon) => isNameLegal(pokemon.name))
-			.filter((pokemon: Pokemon) => pokemon.name.includes(searchLowerCase))
-			.sort((a: Pokemon, b: Pokemon) => customSort(a, b, searchLowerCase))
+			.filter((pokemon: PokemonSearchResult) => isNameLegal(pokemon.name))
+			.filter((pokemon: PokemonSearchResult) => pokemon.name.includes(searchLowerCase))
+			.sort((a: PokemonSearchResult, b: PokemonSearchResult) => customSort(a, b, searchLowerCase))
 			.slice(0, 10)
 
-		const spriteUrls: Pokemon[] = await Promise.all(
-			filteredResponse.map(async (pokemon: Pokemon) => {
+		const spriteUrls: PokemonSearchResult[] = await Promise.all(
+			filteredResponse.map(async (pokemon: PokemonSearchResult) => {
 				const spriteUrl = await getPokemonSprite(pokemon.url)
 				return { name: pokemon.name, url: spriteUrl }
 			})
@@ -28,7 +28,7 @@ export async function fetchSearchData(search: string): Promise<Pokemon[]> {
 }
 
 // Helper function for custom sorting
-function customSort(a: Pokemon, b: Pokemon, searchLowerCase: string): number {
+function customSort(a: PokemonSearchResult, b: PokemonSearchResult, searchLowerCase: string): number {
 	const startsWithSearchStringA = a.name.toLowerCase().startsWith(searchLowerCase)
 	const startsWithSearchStringB = b.name.toLowerCase().startsWith(searchLowerCase)
 

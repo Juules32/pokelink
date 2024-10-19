@@ -20,7 +20,7 @@ def generate_graph() -> Graph:
 
     # Add nodes
     for k, v in pokemon_data.items():
-        G.add_node(k, types=v["types"], region=v["region"])
+        G.add_node(k, id=v["id"], types=v["types"], region=v["region"])
     
     # 'Bridges' between generations
     connected_regions: set[frozenset[str]] = {
@@ -75,9 +75,10 @@ def store_graph_json(G: Graph):
     # Format graph data
     graph_data = {
         "nodes": [{
-            "name": k, 
-            "types": v.get("types"), 
-            "region": v.get("region"), 
+            "name": k,
+            "id": v.get("id"),
+            "types": v.get("types"),
+            "region": v.get("region"),
         } for k, v in G.nodes.items()],
         "edges": [{
             "source": source, 

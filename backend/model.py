@@ -10,6 +10,7 @@ class Puzzle(BaseModel):
 # A grouping of pokémon data used in AdjacencyData
 class PokemonData(BaseModel):
     name: str                               # The name of the pokémon
+    id: int                                 # The id of the pokémon
     types: list[str]                        # The types of the pokémon
     region: str                             # The region of the pokémon
 
