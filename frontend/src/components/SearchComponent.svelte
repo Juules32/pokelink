@@ -16,7 +16,7 @@
     function handleClickOutside(event: MouseEvent) {
         // If the click is outside the input field, clear searchResults
         if (searchRef && !searchRef.contains(event.target as Node)) {
-            resetSearch()
+            resetSearch();
         }
     }
 
@@ -32,7 +32,6 @@
     onDestroy(() => {
         if (browser) document.removeEventListener("click", handleClickOutside);
     });
-
 </script>
 
 <div class="w-[500px]" bind:this={searchRef}>
@@ -53,7 +52,7 @@
             class="z-10 absolute w-[500px] divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
             {#each searchResults as searchResult}
-                <SearchItemComponent searchResult={searchResult} resetSearch={resetSearch} />
+                <SearchItemComponent {searchResult} {resetSearch} />
             {/each}
         </ul>
     {/if}

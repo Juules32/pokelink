@@ -10,6 +10,11 @@ export interface Node {
 	region: string;
 }
 
+export interface AdjacencyData {
+	guess: Node;
+	adjacentPokemon: Node[];
+}
+
 export interface Puzzle {
 	source: string;
 	target: string;
