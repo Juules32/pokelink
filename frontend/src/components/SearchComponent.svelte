@@ -1,20 +1,20 @@
 <script lang="ts">
-    import type { PokemonSearchResult } from "$lib/interfaces";
+    import type { SearchResult } from "$lib/interfaces";
     import { fetchSearchData } from "$lib/pokeAPI";
-    import SearchResult from "$components/SearchResult.svelte";
+    import SearchItemComponent from "$components/SearchItemComponent.svelte";
     import { onMount, onDestroy } from "svelte";
     import { browser } from "$app/environment";
 
     let searchQuery = "";
-    let pokemonSearchResults: PokemonSearchResult[] = [];
+    let searchResults: SearchResult[] = [];
     let searchRef: HTMLElement | null = null;
 
     async function fetchSearchDataWrapper() {
-        pokemonSearchResults = await fetchSearchData(searchQuery);
+        searchResults = await fetchSearchData(searchQuery);
     }
 
     function handleClickOutside(event: MouseEvent) {
-        // If the click is outside the input field, clear pokemonSearchResults
+        // If the click is outside the input field, clear searchResults
         if (searchRef && !searchRef.contains(event.target as Node)) {
             resetSearch()
         }
@@ -22,7 +22,7 @@
 
     function resetSearch() {
         searchQuery = "";
-        pokemonSearchResults = [];
+        searchResults = [];
     }
 
     onMount(() => {
@@ -38,7 +38,7 @@
 <div class="w-[500px]" bind:this={searchRef}>
     <div
         class="bg-red-400 h-16 flex border-2 border-black justify-center items-center rounded-lg"
-        class:rounded-b-none={pokemonSearchResults.length}
+        class:rounded-b-none={searchResults.length}
     >
         <input
             class="p-2 w-72 border-2 border-black"
@@ -48,12 +48,12 @@
             placeholder="Search Pokémon..."
         />
     </div>
-    {#if pokemonSearchResults.length}
+    {#if searchResults.length}
         <ul
             class="z-10 absolute w-[500px] divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
-            {#each pokemonSearchResults as pokemonSearchResult}
-                <SearchResult pokemonSearchResult={pokemonSearchResult} resetSearch={resetSearch} />
+            {#each searchResults as searchResult}
+                <SearchItemComponent searchResult={searchResult} resetSearch={resetSearch} />
             {/each}
         </ul>
     {/if}
