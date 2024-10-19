@@ -8,6 +8,9 @@ from pokemon_data_generation import region_number
 def generate_puzzle(G: Graph, pokemon_names: list[str], strict: bool) -> Puzzle:
     source=random.choice(pokemon_names)
     target=random.choice(pokemon_names)
+
+    print(f"Generating data for puzzle between {source} and {target}...")
+
     if not nx.has_path(G, source, target):
         raise Exception(f"Found Puzzle with no connection: {source} to {target}")
     if strict and not is_valid(G, source, target):
@@ -33,16 +36,16 @@ def get_generational_difference(G: Graph, source: str, target: str) -> int:
     target_region_number = region_number[G.nodes[target]["region"]]
     return abs(source_region_number - target_region_number)
 
-MIN_GENERATIONAL_DIFFERENCE = 2
-MIN_PATH_LENGTH = 8
+MIN_SHORTEST_PATH_LENGTH = 4
+MIN_GENERATIONAL_DIFFERENCE = 1
 
 def is_valid(G: Graph, source: str, target: str) -> bool:
     generational_difference = get_generational_difference(G, source, target)
     shortest_path_length = get_shortest_path_length(G, source, target)
-    return generational_difference >= MIN_GENERATIONAL_DIFFERENCE and shortest_path_length >= MIN_PATH_LENGTH
+    return shortest_path_length >= MIN_SHORTEST_PATH_LENGTH and generational_difference >= MIN_GENERATIONAL_DIFFERENCE
 
 if __name__ == "__main__":
     G = generate_graph()
     pokemon_names = list(G.nodes.keys())
-    puzzle = generate_puzzle(G, pokemon_names, strict=False)
+    puzzle = generate_puzzle(G, pokemon_names, strict=True)
     print(puzzle)

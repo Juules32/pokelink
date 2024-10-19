@@ -46,16 +46,11 @@ def generate_graph() -> Graph:
             jtypes = set(jv["types"])
             jregion = jv["region"]
 
-            if iregion == jregion:
+            # If the two pokemon are from the same or connected regions
+            if iregion == jregion or {iregion, jregion} in connected_regions:
                 # If the two pokemon have types in common
                 if types_in_common(itypes, jtypes):
-                    G.add_edge(ik, jk, connection="Share a type")
-
-            elif {iregion, jregion} in connected_regions:
-                # If the two pokemon share exactly the same types
-                if itypes == jtypes:
-                    G.add_edge(ik, jk, connection="Same type(s) across generations")
-    
+                    G.add_edge(ik, jk)
     return G
 
 # Generate positional data for each node based on Fruchterman-Reingold force-directed algorithm
