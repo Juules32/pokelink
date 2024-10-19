@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getRandomBackgroundPath } from "$lib/util";
-    import Search from "$components/SearchArea.svelte";
-    import Graph from "$components/GraphArea.svelte";
+    import SearchComponent from "$components/SearchComponent.svelte";
+    import GraphComponent from "$components/GraphComponent.svelte";
 </script>
 
 <div
@@ -9,6 +9,6 @@
     style="background-image: url({getRandomBackgroundPath()});
 		   image-rendering: pixelated;"
 >
-    <Search />
-    <Graph />
+    <SearchComponent />
+    <GraphComponent />
 </div>

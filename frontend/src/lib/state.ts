@@ -1,11 +1,11 @@
-import type { PokemonBlob } from "$lib/interfaces";
+import type { Node } from "$lib/interfaces";
 import { fetchAdjacencyData } from "$lib/backend";
 import { writable } from 'svelte/store';
 
-export const guessedPokemonBlobs = writable<PokemonBlob[]>([]);
+export const guessedNodes = writable<Node[]>([]);
 
-export async function addGuessBlob(guess: string) {
-    const newBlob: PokemonBlob = await fetchAdjacencyData(guess)
-    guessedPokemonBlobs.update((blobs) => [...blobs, newBlob]);
-    console.log(guessedPokemonBlobs)
+export async function addGuessNode(guess: string) {
+    const newNode: Node = await fetchAdjacencyData(guess)
+    guessedNodes.update((nodes) => [...nodes, newNode]);
+    console.log(guessedNodes)
 }

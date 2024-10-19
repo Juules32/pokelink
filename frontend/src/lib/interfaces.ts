@@ -1,9 +1,9 @@
-export interface PokemonSearchResult {
+export interface SearchResult {
 	name: string;
 	url: string;
 }
 
-export interface PokemonBlob {
+export interface Node {
 	id: number;
 	name: string;
 	types: string[];
