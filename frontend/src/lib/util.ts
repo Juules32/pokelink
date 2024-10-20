@@ -21,16 +21,13 @@ export function getRandomBackgroundPath() {
 }
 
 export function isNameLegal(name: string) {
-    if (
-        name.includes("zygarde-") ||
+    return !(
         name.includes("rockruff-") ||
         name.includes("cramorant-") ||
         name.includes("greninja-") ||
         name.includes("-totem") ||
+        (name.includes("zygarde-") && name != "zygarde-50") ||
         (name.includes("pikachu-") && name != "pikachu-gmax") ||
         (name.includes("eevee-") && name != "eevee-gmax")
-    ) {
-        return false
-    }
-    return true
+    )
 }

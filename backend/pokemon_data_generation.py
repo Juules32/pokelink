@@ -4,11 +4,11 @@ import json
 
 def is_name_legal(name):
     return not (
-        "zygarde-" in name or
         "rockruff-" in name or
         "cramorant-" in name or
         "greninja-" in name or
         "-totem" in name or
+        ("zygarde-" in name and name != "zygarde-50") or
         ("pikachu-" in name and name != "pikachu-gmax") or
         ("eevee-" in name and name != "eevee-gmax")
     )
