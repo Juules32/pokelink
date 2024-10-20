@@ -3,10 +3,12 @@
     import SearchComponent from "$components/SearchComponent.svelte";
     import GraphComponent from "$components/GraphComponent.svelte";
     import { onMount } from "svelte";
+    import { prefetchSprites } from "$lib/pokeAPI";
 
     let loaded = false;
-    onMount(() => {
+    onMount(async () => {
         loaded = true;
+        prefetchSprites()
     });
 </script>
 
