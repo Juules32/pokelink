@@ -1,8 +1,7 @@
 from typing import Mapping, Union
 import networkx as nx
-import json
+import json, pickle
 from networkx import Graph
-import pickle
 
 def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
     return not itypes.isdisjoint(jtypes)
