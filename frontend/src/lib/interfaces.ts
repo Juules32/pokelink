@@ -3,7 +3,7 @@ export interface SearchResult {
 	url: string;
 }
 
-export interface Node {
+export interface PokemonNode {
 	id: number;
 	name: string;
 	types: string[];
@@ -11,13 +11,13 @@ export interface Node {
 }
 
 export interface AdjacencyData {
-	guess: Node;
-	adjacentPokemon: Node[];
+	guess: PokemonNode;
+	adjacentPokemon: PokemonNode[];
 }
 
 export interface Puzzle {
-	source: string;
-	target: string;
-	shortestPath: string[];
+	source: PokemonNode;
+	target: PokemonNode;
+	shortestPath: PokemonNode[];
 	shortestPathLength: number;
 }

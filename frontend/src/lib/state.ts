@@ -1,12 +1,12 @@
-import type { AdjacencyData, Node, Puzzle } from "$lib/interfaces";
+import type { AdjacencyData, PokemonNode, Puzzle } from "$lib/interfaces";
 import { fetchAdjacencyData } from "$lib/backend";
 import { get, writable } from 'svelte/store';
 
 export const puzzle = writable<Puzzle>();
 
-export const guessedNodes = writable<Node[]>([]);
+export const guessedNodes = writable<PokemonNode[]>([]);
 
-export const validGuesses = writable<Node[]>([]);
+export const validGuesses = writable<PokemonNode[]>([]);
 
 // Adding local node data means the frontend can render before requesting
 // new adjacency data from the backend, resulting in snappy updates.
@@ -33,7 +33,7 @@ export async function updateState(guess: string) {
     }
     validGuesses.set(adjacencyData.adjacentPokemon);
 
-    if (get(puzzle).target == guess) {
+    if (get(puzzle).target.name == guess) {
         console.log("You win!")
     }
 }

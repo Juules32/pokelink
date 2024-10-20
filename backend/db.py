@@ -1,4 +1,3 @@
-from multiprocessing import connection
 import pickle
 from networkx import Graph
 import psycopg2, os
@@ -9,7 +8,6 @@ from enum import Enum
 from date import get_date_str
 from graph_data_generation import generate_graph
 from model import Puzzle
-from puzzle_generation import generate_10_puzzles, generate_puzzle
 
 class Fetch(Enum):
     ONE = 0
@@ -92,53 +90,38 @@ class Database:
         query = """
             CREATE TABLE puzzle (
                 date DATE PRIMARY KEY,
-                source TEXT NOT NULL,
-                target TEXT NOT NULL,
-                shortest_path TEXT[] NOT NULL,
-                shortest_path_length INT NOT NULL
+                data BYTEA NOT NULL
             );
         """
         self.commit_query(query=query, message="Created puzzle table successfully")
 
     def get_puzzle(self, date: Union[str, None] = None) -> Puzzle:
         query = """
-            SELECT source, target, shortest_path, shortest_path_length FROM puzzle
+            SELECT data FROM puzzle
             WHERE date = %s;
         """
-        source, target, shortest_path, shortest_path_length = self.commit_query(
+        binary_data = self.commit_query(
             query=query, 
             vars=(date if date else get_date_str(),),
             fetch=Fetch.ONE, 
             message=f"Got puzzle data successfully"
-        )
-        return Puzzle(
-            source=source, 
-            target=target, 
-            shortest_path=shortest_path, 
-            shortest_path_length=shortest_path_length
-        )
+        )[0]
+        return pickle.loads(binary_data)
     
     def set_puzzle(self, date: str, puzzle: Puzzle):
-        query2 = """
-            INSERT INTO puzzle (date, source, target, shortest_path, shortest_path_length)
-            VALUES (%s, %s, %s, %s, %s)
+        binary_data: bytes = pickle.dumps(puzzle)
+        query = """
+            INSERT INTO puzzle (date, data)
+            VALUES (%s, %s)
         """
         self.commit_query(
-            query=query2, 
-            vars=(date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
+            query=query, 
+            vars=(date, binary_data)
         )
 
 # Running this script sets up the database tables with new values
 if __name__ == "__main__":
     db = Database()
-
     db.create_graph_table()
     db.set_graph(generate_graph())
-    G = db.get_graph()
-    pokemon_names: list[str] = list(G.nodes.keys())
-
     db.create_puzzle_table()
-    ten_puzzles = generate_10_puzzles(G, pokemon_names)
-    for i, puzzle in enumerate(ten_puzzles):
-        db.set_puzzle(get_date_str(i), puzzle)
-    print(db.get_puzzle(get_date_str()))
