@@ -14,7 +14,7 @@ class AdjacencyData(BaseModel):
 
 # Stored in the database as daily puzzles
 class Puzzle(BaseModel):
-    source: PokemonNode                             # The name of the starting pokémon
-    target: PokemonNode                             # The name of the finishing pokémon
-    shortest_path: list[PokemonNode]                # The names of the pokémon of the shortest path
+    source: PokemonNode                     # The name of the starting pokémon
+    target: PokemonNode                     # The name of the finishing pokémon
+    shortest_path: list[PokemonNode]        # The names of the pokémon of the shortest path
     shortest_path_length: int               # The length of the shortest path

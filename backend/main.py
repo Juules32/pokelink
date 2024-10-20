@@ -1,5 +1,3 @@
-# main.py
-
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from model import AdjacencyData, PokemonNode, Puzzle

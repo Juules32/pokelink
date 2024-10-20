@@ -1,6 +1,6 @@
 from typing import Union
 from networkx import Graph
-from db import Database
+from database import Database
 from model import AdjacencyData, PokemonNode, Puzzle
 import random
 import networkx as nx
