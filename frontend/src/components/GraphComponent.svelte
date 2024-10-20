@@ -2,8 +2,9 @@
     import NodeComponent from "./NodeComponent.svelte";
     import { puzzle, updateState } from "$lib/state";
     import { guessedNodes } from "$lib/state";
-    import { fetchPuzzle } from "$lib/backend";
+    import { fetchHint, fetchPuzzle } from "$lib/backend";
     import { onMount } from "svelte";
+    import type { PokemonNode } from "$lib/interfaces";
 
     // Constants
     const gapSize = 10;
@@ -18,7 +19,15 @@
 
     async function setupPuzzle() {
         $puzzle = await fetchPuzzle();
-        updateState($puzzle.source);
+        updateState($puzzle.source.name);
+    }
+
+    let hint: PokemonNode;
+    async function getHint() {
+        const latestGuessNode = $guessedNodes.at(-1)
+        const targetNode = $puzzle.target
+        if (latestGuessNode)
+            hint = await fetchHint(latestGuessNode.name, targetNode.name)
     }
 
     onMount(() => {
@@ -45,3 +54,9 @@
 
 <!-- Debugging Button -->
 <button on:click={() => updateState("butterfree")}>Add Butterfree</button>
+
+<button on:click={getHint}>Get Hint</button>
+
+{#if hint}
+    <NodeComponent pokemonNode={hint} {circleDiameter} />
+{/if}

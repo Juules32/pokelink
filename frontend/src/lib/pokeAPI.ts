@@ -1,13 +1,15 @@
 import { isNameLegal } from '$lib/util'
 import type { SearchResult } from '$lib/interfaces'
 
-// Function to fetch the list of Pokémon and filter based on search query
+const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
+const data = await response.json()
+const searchResults: SearchResult[] = data.results
+
+// Filter and return search results based on search query
 export async function fetchSearchData(search: string): Promise<SearchResult[]> {
 	try {
-		const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
-		const data = await response.json()
 		const searchLowerCase = search.toLowerCase()
-		const filteredResponse = data.results
+		const filteredResponse = searchResults
 			.filter((pokemon: SearchResult) => isNameLegal(pokemon.name))
 			.filter((pokemon: SearchResult) => pokemon.name.includes(searchLowerCase))
 			.sort((a: SearchResult, b: SearchResult) => customSort(a, b, searchLowerCase))
@@ -19,7 +21,6 @@ export async function fetchSearchData(search: string): Promise<SearchResult[]> {
 				return { name: pokemon.name, url: spriteUrl }
 			})
 		)
-
 		return spriteUrls
 	} catch (error) {
 		console.error(error)

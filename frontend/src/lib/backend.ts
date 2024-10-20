@@ -1,4 +1,4 @@
-import type { AdjacencyData, Puzzle } from "$lib/interfaces";
+import type { AdjacencyData, PokemonNode, Puzzle } from "$lib/interfaces";
 
 // Function to fetch the list of Pokémon and filter based on search query
 export async function fetchAdjacencyData(guess: string): Promise<AdjacencyData> {
@@ -21,4 +21,10 @@ export async function fetchPuzzle(): Promise<Puzzle> {
         shortestPathLength: data.shortest_path_length
     }
     return result
+}
+
+export async function fetchHint(source: string, target: string): Promise<PokemonNode> {
+    const response = await fetch(`http://localhost/hint?source=${source}&target=${target}`)
+    const data = await response.json()
+    return data
 }
