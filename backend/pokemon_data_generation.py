@@ -36,7 +36,7 @@ region_number: dict[str, int] = {
     "alola": 7,
     "galar": 8,
     "paldea": 9,
-    "hisui": -1
+    "hisui": -1     # Hisui is excluded (for now)
 }
 
 generation_to_region = {
@@ -69,9 +69,6 @@ def find_region(name, species_generation):
 
     # Default to generation's region
     return generation_to_region[species_generation]
-
-limit = 10000000
-offset = 0
 
 async def fetch_pokemon_data(client, result, pokemon_data):
     # Ignores specific pokemon
@@ -112,7 +109,7 @@ async def save_data_to_json():
     pokemon_data = {}
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(f'https://pokeapi.co/api/v2/pokemon?limit={limit}&offset={offset}')
+        response = await client.get("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
         response = response.json()["results"]
 
         # Create a list of tasks to fetch all pokemon data concurrently

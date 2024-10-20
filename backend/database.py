@@ -71,13 +71,13 @@ class Database:
         )[0] # ⬅ Importantly, only the first cell is returned
         return pickle.loads(binary_data)
 
-    def set_graph(self, G: Graph):
+    def set_graph(self, graph: Graph):
         query1 = """
             DELETE FROM graph;
         """
         self.commit_query(query=query1)
         
-        binary_data: bytes = pickle.dumps(G)
+        binary_data: bytes = pickle.dumps(graph)
 
         query2 = """
             INSERT INTO graph (data)

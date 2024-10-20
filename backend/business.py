@@ -42,8 +42,6 @@ class Business:
         )
 
     def generate_puzzle(self, strict: bool) -> Puzzle:
-        bn = Business()
-
         sourceName=random.choice(self.pokemon_names)
         targetName=random.choice(self.pokemon_names)
 
