@@ -8,7 +8,7 @@ def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
 
 def generate_graph() -> Graph:
     # Init an empty graph
-    G = nx.Graph()
+    graph = nx.Graph()
 
     # Get data files
     with open("pokemon_data.json", "r") as pokemon_data_json:
@@ -19,7 +19,7 @@ def generate_graph() -> Graph:
 
     # Add nodes
     for k, v in pokemon_data.items():
-        G.add_node(k, id=v["id"], types=v["types"], region=v["region"])
+        graph.add_node(k, id=v["id"], types=v["types"], region=v["region"])
     
     # 'Bridges' between generations
     connected_regions: set[frozenset[str]] = {
@@ -49,23 +49,22 @@ def generate_graph() -> Graph:
             if iregion == jregion or {iregion, jregion} in connected_regions:
                 # If the two pokemon have types in common
                 if types_in_common(itypes, jtypes):
-                    G.add_edge(ik, jk)
-    return G
+                    graph.add_edge(ik, jk)
+    return graph
 
 # Generate positional data for each node based on Fruchterman-Reingold force-directed algorithm
-def generate_pos(G: Graph, iterations: int = 50, k: Union[int, None] = None) -> Mapping:
-    return nx.spring_layout(G, iterations=iterations, k=k)
+def generate_pos(graph: Graph, iterations: int = 50, k: Union[int, None] = None) -> Mapping:
+    return nx.spring_layout(graph, iterations=iterations, k=k)
 
-def dump_graph(G: Graph):
+def dump_graph(graph: Graph):
     with open("graph_data.pkl", "wb") as graph_file:
-        pickle.dump(G, graph_file)
+        pickle.dump(graph, graph_file)
 
 def load_graph() -> Graph:
     with open("graph_data.pkl", "rb") as graph_file:
         return pickle.load(graph_file)
 
-def store_graph_json(G: Graph):
-
+def store_graph_json(graph: Graph):
     # Format graph data
     graph_data = {
         "nodes": [{
@@ -73,22 +72,23 @@ def store_graph_json(G: Graph):
             "id": v.get("id"),
             "types": v.get("types"),
             "region": v.get("region"),
-        } for k, v in G.nodes.items()],
+        } for k, v in graph.nodes.items()],
         "edges": [{
             "source": source, 
             "target": target,
             "connection": v.get("connection")
-        } for (source, target), v in G.edges.items()]
+        } for (source, target), v in graph.edges.items()]
     }
 
     with open("graph_data.json", "w") as graph_data_json:
         json.dump(graph_data, graph_data_json, indent=4)
 
 if __name__ == "__main__":
+    # Generate and pickle the graph to a file
     dump_graph(generate_graph())
 
     # The graph data is unpickled
-    G = load_graph()
+    graph = load_graph()
 
     # The graph data is saved to the database and/or a file
-    store_graph_json(G)
+    store_graph_json(graph)
