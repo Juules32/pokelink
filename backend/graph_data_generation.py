@@ -2,6 +2,8 @@ from typing import Mapping, Union
 import networkx as nx
 import json, pickle
 from networkx import Graph
+from model import GraphData, PokemonNode
+from fastapi.encoders import jsonable_encoder
 
 def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
     return not itypes.isdisjoint(jtypes)
@@ -64,31 +66,37 @@ def load_graph() -> Graph:
     with open("graph_data.pkl", "rb") as graph_file:
         return pickle.load(graph_file)
 
-def store_graph_json(graph: Graph):
-    # Format graph data
-    graph_data = {
-        "nodes": [{
-            "name": k,
-            "id": v.get("id"),
-            "types": v.get("types"),
-            "region": v.get("region"),
-        } for k, v in graph.nodes.items()],
-        "edges": [{
-            "source": source, 
-            "target": target,
-            "connection": v.get("connection")
-        } for (source, target), v in graph.edges.items()]
-    }
+def get_graph_data(graph: Graph):
+    nodes: dict[str, PokemonNode] = {}
+    edges: dict[str, list[str]] = {}
+    for name, values in graph.nodes.items():
+        nodes[name] = PokemonNode(
+            name=name,
+            id=values.get("id"),
+            types=values.get("types"),
+            region=values.get("region")
+        )
+        edges[name] = list(graph.neighbors(name))
 
+    return GraphData(
+        nodes=nodes,
+        edges=edges
+    )
+
+def store_graph_data(graph_data: GraphData):
     with open("graph_data.json", "w") as graph_data_json:
-        json.dump(graph_data, graph_data_json, indent=4)
+        json.dump(jsonable_encoder(graph_data), graph_data_json, indent=4)
+
 
 if __name__ == "__main__":
     # Generate and pickle the graph to a file
     dump_graph(generate_graph())
 
-    # The graph data is unpickled
+    # The graph is unpickled
     graph = load_graph()
 
-    # The graph data is saved to the database and/or a file
-    store_graph_json(graph)
+    # The graph data is formatted from the graph
+    graph_data = get_graph_data(graph)
+
+    # The graph data is saved to a json file
+    store_graph_data(graph_data)

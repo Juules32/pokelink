@@ -18,3 +18,7 @@ class Puzzle(BaseModel):
     target: PokemonNode                     # The name of the finishing pokémon
     shortest_path: list[PokemonNode]        # The names of the pokémon of the shortest path
     shortest_path_length: int               # The length of the shortest path
+
+class GraphData(BaseModel):
+    nodes: dict[str, PokemonNode]
+    edges: dict[str, list[str]]

@@ -7,12 +7,14 @@ import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
 from date import get_date_str
+from graph_data_generation import get_graph_data
 
 class Business:
     def __init__(self):
         self.db = Database()
         self.graph = self.db.get_graph()
         self.pokemon_names: list[str] = list(self.graph.nodes.keys())
+        self.graph_data = get_graph_data(self.graph)
     
     def get_graph(self) -> Graph:
         return self.graph
