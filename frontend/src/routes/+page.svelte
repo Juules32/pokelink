@@ -3,20 +3,20 @@
     import SearchComponent from "$components/SearchComponent.svelte";
     import GraphComponent from "$components/GraphComponent.svelte";
     import { onMount } from "svelte";
+    import PuzzleComponent from "$components/PuzzleComponent.svelte";
 
     let loaded = false;
-    onMount(async () => {
+    onMount(() => {
         loaded = true;
     });
 </script>
 
 {#if loaded}
     <div
-        class="fixed inset-0 flex flex-col space-y-10 justify-center items-center bg-center bg-cover"
+        class="fixed inset-0 bg-center bg-cover"
         style="background-image: url({getRandomBackgroundPath()});
 		   image-rendering: pixelated;"
     >
-        <SearchComponent />
-        <GraphComponent />
+        <PuzzleComponent />
     </div>
 {/if}

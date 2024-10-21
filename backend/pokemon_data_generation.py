@@ -8,6 +8,10 @@ def is_name_legal(name):
         "cramorant-" in name or
         "greninja-" in name or
         "-totem" in name or
+        "zarude-dada" in name or                            # No sprite
+        "morpeko-hangry" in name or                         # No sprite
+        ("miraidon-" in name and name != "miraidon") or     # No sprite
+        ("koraidon-" in name and name != "koraidon") or     # No sprite
         ("zygarde-" in name and name != "zygarde-50") or
         ("pikachu-" in name and name != "pikachu-gmax") or
         ("eevee-" in name and name != "eevee-gmax")
