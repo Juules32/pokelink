@@ -1,46 +1,25 @@
 <script lang="ts">
-    import type { SearchResult } from "$lib/interfaces";
     import SearchItemComponent from "$components/SearchItemComponent.svelte";
     import { onMount, onDestroy } from "svelte";
     import { browser } from "$app/environment";
-    import { getPokemonSprite, localUrls, validResults } from "$lib/pokeAPI";
+    import type { PokemonNode } from "$lib/interfaces";
+    import { pokemonNodes } from "$lib/state";
 
     let searchQuery = "";
-    let searchResults: SearchResult[] = [];
+    let filteredPokemonNodes: PokemonNode[] = [];
     let searchRef: HTMLElement | null = null;
     
     // Filter and return search results based on search query
-    async function fetchSearchData(search: string): Promise<SearchResult[]> {
-        try {
-            const searchLowerCase = search.toLowerCase()
-            const filteredResponse = validResults
-                .filter((pokemon: SearchResult) => pokemon.name.includes(searchLowerCase))
-                .sort((a: SearchResult, b: SearchResult) => customSort(a, b, searchLowerCase))
-                .slice(0, 10)
-                
-            const spriteUrls: SearchResult[] = await Promise.all(
-                filteredResponse.map(async (pokemon: SearchResult) => {
-                    const preFetchedUrl = $localUrls[pokemon.name]
-                    let spriteUrl: string
-                    if (preFetchedUrl) {
-                        spriteUrl = $localUrls[pokemon.name]
-                    }
-                    else {
-                        console.log(`Sprite url for ${pokemon.name} wasn't present locally, fetching from pokeAPI...`)
-                        spriteUrl = await getPokemonSprite(pokemon.url)
-                    }
-                    return { name: pokemon.name, url: spriteUrl }
-                })
-            )
-            return spriteUrls
-        } catch (error) {
-            console.error(error)
-            return []
-        }
+    function getSearchData(search: string): PokemonNode[] {
+        const searchLowerCase = search.toLowerCase()
+        return pokemonNodes
+            .filter((node: PokemonNode) => node.name.includes(searchLowerCase))
+            .sort((a: PokemonNode, b: PokemonNode) => customSort(a, b, searchLowerCase))
+            .slice(0, 10)
     }
 
     // Helper function for custom sorting
-    function customSort(a: SearchResult, b: SearchResult, searchLowerCase: string): number {
+    function customSort(a: PokemonNode, b: PokemonNode, searchLowerCase: string): number {
         const startsWithSearchStringA = a.name.toLowerCase().startsWith(searchLowerCase)
         const startsWithSearchStringB = b.name.toLowerCase().startsWith(searchLowerCase)
 
@@ -57,7 +36,7 @@
     }
 
     function handleClickOutside(event: MouseEvent) {
-        // If the click is outside the input field, clear searchResults
+        // If the click is outside the input field, clear pokemonNodes
         if (searchRef && !searchRef.contains(event.target as Node)) {
             resetSearch();
         }
@@ -85,7 +64,7 @@
             class="p-2 border-2 w-3/4 border-black"
             type="text"
             bind:value={searchQuery}
-            on:input={async () => {searchResults = await fetchSearchData(searchQuery)}}
+            on:input={async () => {filteredPokemonNodes = getSearchData(searchQuery)}}
             placeholder="Search Pokémon..."
         />
     </div>
@@ -93,8 +72,8 @@
         <ul
             class="z-10 absolute w-3/4 divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
-            {#each searchResults as searchResult}
-                <SearchItemComponent {searchResult} {resetSearch} />
+            {#each filteredPokemonNodes as pokemonNode}
+                <SearchItemComponent {pokemonNode} {resetSearch} />
             {/each}
         </ul>
     {/if}

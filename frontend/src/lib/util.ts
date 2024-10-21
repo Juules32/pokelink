@@ -20,14 +20,6 @@ export function getRandomBackgroundPath() {
     return `backgrounds/${backgroundNames[Math.floor(Math.random() * backgroundNames.length)]}.png`;
 }
 
-export function isNameLegal(name: string) {
-    return !(
-        name.includes("rockruff-") ||
-        name.includes("cramorant-") ||
-        name.includes("greninja-") ||
-        name.includes("-totem") ||
-        (name.includes("zygarde-") && name != "zygarde-50") ||
-        (name.includes("pikachu-") && name != "pikachu-gmax") ||
-        (name.includes("eevee-") && name != "eevee-gmax")
-    )
+export function getSpriteUrl(id: number): string {
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
 }

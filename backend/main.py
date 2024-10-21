@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from model import AdjacencyData, PokemonNode, Puzzle
+from model import PokemonNode, Puzzle
 from business import Business
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -30,9 +30,6 @@ def get_puzzle() -> Puzzle:
 def get_puzzle(date: str) -> Puzzle:
     return bn.get_puzzle(date)
 
-@app.get("/adjacency_data/{guess}")
-def get_adjacency_data(guess: str) -> AdjacencyData:
-    return bn.get_adjacency_data(guess)
 
 @app.get("/hint")
 def get_hint(source: str, target: str) -> PokemonNode:

@@ -1,6 +1,7 @@
-import type { AdjacencyData, PokemonNode, Puzzle } from "$lib/interfaces";
-import { fetchAdjacencyData } from "$lib/backend";
+import type { PokemonNode, Puzzle, GraphData } from "$lib/interfaces";
 import { get, writable } from 'svelte/store';
+import { fetchGraphData } from "./backend";
+import { browser } from '$app/environment'
 
 export const puzzle = writable<Puzzle>();
 
@@ -8,32 +9,39 @@ export const guessedNodes = writable<PokemonNode[]>([]);
 
 export const validGuesses = writable<PokemonNode[]>([]);
 
-// Adding local node data means the frontend can render before requesting
-// new adjacency data from the backend, resulting in snappy updates.
-function addLocalNode(guess: string) : boolean {
-    const newNode = get(validGuesses).find((node) => node.name == guess)
-    if (newNode) {
-        guessedNodes.update((nodes) => [...nodes, newNode]);
-        console.log("Loaded node data locally")
-        return false
+async function getGraphData(): Promise<GraphData> {
+    if (browser) {
+        const localGraphDataJson = localStorage.getItem("graphData")
+        if (localGraphDataJson) {
+            console.log("Loaded graph data from local storage")
+            const localGraphData: GraphData = JSON.parse(localGraphDataJson)
+            return localGraphData
+        }
+        else {
+            console.log("Loaded graph data from backend")
+            const generatedGraphData = await fetchGraphData()
+            localStorage.setItem("graphData", JSON.stringify(generatedGraphData))
+            return generatedGraphData
+        }
     }
     else {
-        console.log("Failed to load data locally")
-        return true
+        // Should never happen 🤡
+        return await fetchGraphData()
     }
 }
 
-export async function updateState(guess: string) {
-    console.log(`Updating state for guess: ${guess}`)
-    const failedLocal = addLocalNode(guess)
-    const adjacencyData: AdjacencyData = await fetchAdjacencyData(guess)
-    if (failedLocal) {
-        guessedNodes.update((nodes) => [...nodes, adjacencyData.guess]);
-        console.log("Loaded node data from backend instead")
-    }
-    validGuesses.set(adjacencyData.adjacentPokemon);
+export const graphData: GraphData = await getGraphData()
+export const pokemonNodes: PokemonNode[] = Object.values(graphData.nodes)
+export const edges = graphData.edges
 
-    if (get(puzzle).target.name == guess) {
+export function getPokemonNode(name: string): PokemonNode {
+    return graphData.nodes[name]
+}
+
+export function addNode(guess: string) {
+    const newNode = getPokemonNode(guess)
+    guessedNodes.update((nodes) => [...nodes, newNode]);
+    if (get(puzzle).target == guess) {
         console.log("You win!")
     }
 }

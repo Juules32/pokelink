@@ -1,23 +1,18 @@
-export interface SearchResult {
-	name: string;
-	url: string;
-}
-
 export interface PokemonNode {
-	id: number;
 	name: string;
+	id: number;
 	types: string[];
 	region: string;
 }
 
-export interface AdjacencyData {
-	guess: PokemonNode;
-	adjacentPokemon: PokemonNode[];
+export interface Puzzle {
+	source: string;
+	target: string;
+	shortestPath: string[];
+	shortestPathLength: number;
 }
 
-export interface Puzzle {
-	source: PokemonNode;
-	target: PokemonNode;
-	shortestPath: PokemonNode[];
-	shortestPathLength: number;
+export interface GraphData {
+	nodes: { [key: string]: PokemonNode };
+	edges: { [key: string]: string[] }
 }

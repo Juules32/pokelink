@@ -113,6 +113,7 @@ class Database:
         query = """
             INSERT INTO puzzle (date, data)
             VALUES (%s, %s)
+            ON CONFLICT (date) DO UPDATE SET data = EXCLUDED.data;
         """
         self.commit_query(
             query=query, 
