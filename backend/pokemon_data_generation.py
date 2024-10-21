@@ -74,6 +74,40 @@ def find_region(name, species_generation):
     # Default to generation's region
     return generation_to_region[species_generation]
 
+def get_real_pokemon_name(pokemon_name: str) -> str:
+    # Pokemon that either have '-' in their name
+    # Or that have different names than what pokeAPI says
+    exceptions: dict = {
+        "porygon-z": "porygon-z",
+        "wo-chien": "wo-chien",
+        "chi-yu": "chi-yu",
+        "chien-pao": "chien-pao",
+        "ting-lu": "ting-lu",
+        "ho-oh": "ho-oh",
+        "jangmo-o": "jangmo-o",
+        "hakamo-o": "hakamo-o",
+        "kommo-o": "kommo-o",
+        "nidoran-m": "nidoran♂",
+        "nidoran-f": "nidoran♀",
+        "basculin-blue-striped": "basculin blue-striped",
+        "basculin-red-striped": "basculin red-striped",
+        "basculin-white-striped": "basculin white-striped",
+        "dudunsparce-two-segment": "dudunsparce two-segment",
+        "dudunsparce-three-segment": "dudunsparce three-segment",
+        "mr-mime": "mr. mime",
+        "mr-mime-galar": "mr. mime galar",
+        "mr-rime": "mr. rime",
+        "mime-jr": "mime jr.",
+        "type-null": "type: null",
+        "farfetchd": "farfetch'd"
+    }
+    
+    exception_name = exceptions.get(pokemon_name)
+    if exception_name:
+        return exception_name
+    else:
+        return pokemon_name.replace("-", " ")
+
 async def fetch_pokemon_data(client, result, pokemon_data):
     # Ignores specific pokemon
     if not is_name_legal(result["name"]):
@@ -82,8 +116,8 @@ async def fetch_pokemon_data(client, result, pokemon_data):
     # Fetch pokemon details asynchronously
     pokemon_response = await client.get(result["url"])
     pokemon_response = pokemon_response.json()
-    pokemon_id = pokemon_response["id"]
-    pokemon_name = pokemon_response["name"]
+    pokemon_id: int = pokemon_response["id"]
+    pokemon_name: str = pokemon_response["name"]
 
     print(f"Generating data for: {pokemon_name} (id {pokemon_id})")
     
@@ -102,8 +136,10 @@ async def fetch_pokemon_data(client, result, pokemon_data):
     species_generation = species_data["generation"]["name"]
     pokemon_region = find_region(pokemon_name, species_generation)
 
+    real_pokemon_name = get_real_pokemon_name(pokemon_name)
+
     # Store data
-    pokemon_data[pokemon_name] = {
+    pokemon_data[real_pokemon_name] = {
         "id": pokemon_id,
         "types": pokemon_types,
         "region": pokemon_region
