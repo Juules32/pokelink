@@ -7,8 +7,6 @@ export const puzzle = writable<Puzzle>();
 
 export const guessedNodes = writable<PokemonNode[]>([]);
 
-export const validGuesses = writable<PokemonNode[]>([]);
-
 async function getGraphData(): Promise<GraphData> {
     if (browser) {
         const localGraphDataJson = localStorage.getItem("graphData")
