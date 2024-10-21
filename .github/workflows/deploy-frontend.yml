@@ -1,7 +1,4 @@
-name: Deploy Frontend
-
-permissions:
-  contents: write
+name: Deploy Frontend to Github Pages
 
 on:
   push:
@@ -10,29 +7,48 @@ on:
   workflow_dispatch:
 
 env:
-  PUBLIC_BACKEND_HOST: http://localhost
+  # Change this if the backend host ever changes
+  PUBLIC_BACKEND_HOST: https://pokelink-backend.vercel.app
+
+  # Used in svelte.config.js
+  BASE_PATH: '/${{ github.event.repository.name }}'
 
 jobs:
-  build-and-deploy:
+  Build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '21'
+          node-version: 21
 
-      - name: Install & Build
-        run: |
+      - name: Install dependencies and build
+        run: | 
           cd frontend
           npm install
           npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
         with:
-          branch: gh-pages
-          folder: frontend/build
+          path: frontend/build
+
+  Deploy:
+    needs: build_site
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
