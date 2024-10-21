@@ -5,26 +5,26 @@
     export let pokemonNode: PokemonNode;
     export let circleDiameter: number;
 
-    // Dictionary with soft colors for each Pokémon type
+    // Dictionary with soft colors for each Pokémon type in RGB format
     const typeColors: { [key: string]: string } = {
-        bug: "#A6B91A",
-        dark: "#705746",
-        dragon: "#6F35FC",
-        electric: "#F7D02C",
-        fairy: "#D685AD",
-        fighting: "#C22E28",
-        fire: "#EE8130",
-        flying: "#A98FF3",
-        ghost: "#735797",
-        grass: "#7AC74C",
-        ground: "#E2BF65",
-        ice: "#96D9D6",
-        normal: "#A8A77A",
-        poison: "#A33EA1",
-        psychic: "#F95587",
-        rock: "#B6A136",
-        steel: "#B7B7CE",
-        water: "#6390F0"
+        bug: "rgb(166, 185, 26)",
+        dark: "rgb(112, 87, 70)",
+        dragon: "rgb(111, 53, 252)",
+        electric: "rgb(247, 208, 44)",
+        fairy: "rgb(214, 133, 173)",
+        fighting: "rgb(194, 46, 40)",
+        fire: "rgb(238, 129, 48)",
+        flying: "rgb(169, 143, 243)",
+        ghost: "rgb(115, 87, 151)",
+        grass: "rgb(122, 199, 76)",
+        ground: "rgb(226, 191, 101)",
+        ice: "rgb(150, 217, 214)",
+        normal: "rgb(168, 167, 122)",
+        poison: "rgb(163, 62, 161)",
+        psychic: "rgb(249, 85, 135)",
+        rock: "rgb(182, 161, 54)",
+        steel: "rgb(183, 183, 206)",
+        water: "rgb(99, 144, 240)"
     };
 
     // Function to create the gradient based on Pokémon types
@@ -39,7 +39,7 @@
         }
 
         // Default gradient if no types found
-        return `linear-gradient(45deg, #A8A77A, #A8A77A)`;
+        return `linear-gradient(45deg, rgb(168, 167, 122), rgb(168, 167, 122))`;
     }
 </script>
 

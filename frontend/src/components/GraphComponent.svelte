@@ -5,6 +5,7 @@
     import { fetchHint, fetchPuzzle } from "$lib/backend";
     import { onMount } from "svelte";
     import type { PokemonNode } from "$lib/interfaces";
+    import { pokemonNodes } from "$lib/state";
 
     // Constants
     const gapSize = 10;
@@ -52,7 +53,7 @@
 </div>
 
 <!-- Debugging Button -->
-<button on:click={() => addNode("butterfree")}>Add Butterfree</button>
+<button on:click={() => addNode(pokemonNodes[Math.floor(Math.random() * pokemonNodes.length)].name)}>Add Random Pokemon</button>
 
 <button on:click={getHint}>Get Hint</button>
 
