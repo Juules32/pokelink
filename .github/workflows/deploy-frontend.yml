@@ -1,0 +1,38 @@
+name: Deploy Frontend
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+env:
+  PUBLIC_BACKEND_HOST: http://localhost
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+
+      - name: Install & Build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: frontend/dist
