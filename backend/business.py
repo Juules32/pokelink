@@ -1,7 +1,7 @@
 from typing import Union
 from networkx import Graph
 from database import Database
-from model import AdjacencyData, PokemonNode, Puzzle
+from model import PokemonNode, Puzzle
 import random
 import networkx as nx
 from networkx import Graph
@@ -31,34 +31,22 @@ class Business:
             region=node_data["region"]
         )
 
-    def get_adjacency_data(self, guess: str) -> AdjacencyData:
-        guess_data = self.get_node_data(guess)
-
-        neighbor_data: list[PokemonNode] = []
-        for neighbor in self.graph.neighbors(guess):
-            neighbor_data.append(self.get_node_data(neighbor))
-
-        return AdjacencyData(
-            guess=guess_data,
-            adjacent_pokemon=neighbor_data
-        )
-
     def generate_puzzle(self, strict: bool) -> Puzzle:
-        sourceName=random.choice(self.pokemon_names)
-        targetName=random.choice(self.pokemon_names)
+        source=random.choice(self.pokemon_names)
+        target=random.choice(self.pokemon_names)
 
-        print(f"Generating data for puzzle between {sourceName} and {targetName}...")
+        print(f"Generating data for puzzle between {source} and {target}...")
 
-        if not nx.has_path(self.graph, sourceName, targetName):
-            raise Exception(f"Found Puzzle with no connection: {sourceName} to {targetName}")
-        if strict and not self.is_valid(sourceName, targetName):
+        if not nx.has_path(self.graph, source, target):
+            raise Exception(f"Found Puzzle with no connection: {source} to {target}")
+        if strict and not self.is_valid(source, target):
             return self.generate_puzzle(strict=True)
         
         return Puzzle(
-            source=self.get_node_data(sourceName),
-            target=self.get_node_data(targetName),
-            shortest_path=[self.get_node_data(name) for name in self.get_shortest_path(sourceName, targetName)],
-            shortest_path_length=self.get_shortest_path_length(sourceName, targetName)
+            source=source,
+            target=target,
+            shortest_path=self.get_shortest_path(source, target),
+            shortest_path_length=self.get_shortest_path_length(source, target)
         )
 
     def generate_10_puzzles(self) -> list[Puzzle]:

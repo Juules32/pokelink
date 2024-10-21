@@ -1,6 +1,6 @@
 <script lang="ts">
     import NodeComponent from "./NodeComponent.svelte";
-    import { puzzle, updateState } from "$lib/state";
+    import { puzzle, addNode } from "$lib/state";
     import { guessedNodes } from "$lib/state";
     import { fetchHint, fetchPuzzle } from "$lib/backend";
     import { onMount } from "svelte";
@@ -19,15 +19,14 @@
 
     async function setupPuzzle() {
         $puzzle = await fetchPuzzle();
-        updateState($puzzle.source.name);
+        addNode($puzzle.source);
     }
 
     let hint: PokemonNode;
     async function getHint() {
         const latestGuessNode = $guessedNodes.at(-1)
-        const targetNode = $puzzle.target
         if (latestGuessNode)
-            hint = await fetchHint(latestGuessNode.name, targetNode.name)
+            hint = await fetchHint(latestGuessNode.name, $puzzle.target)
     }
 
     onMount(() => {
@@ -53,7 +52,7 @@
 </div>
 
 <!-- Debugging Button -->
-<button on:click={() => updateState("butterfree")}>Add Butterfree</button>
+<button on:click={() => addNode("butterfree")}>Add Butterfree</button>
 
 <button on:click={getHint}>Get Hint</button>
 
