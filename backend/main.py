@@ -18,9 +18,9 @@ app.add_middleware(
 
 bn = Business()
 
-@app.get("/graph")
+@app.get("/graph_data")
 def get_test():
-    return bn.get_graph()
+    return bn.graph_data
 
 @app.get("/puzzle")
 def get_puzzle() -> Puzzle:
