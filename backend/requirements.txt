@@ -4,5 +4,5 @@ httpx
 python-dotenv
 networkx
 psycopg2-binary
-matplotlib
-scipy
+# matplotlib        # For local development
+# scipy             # For local development
