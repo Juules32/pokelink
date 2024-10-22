@@ -54,6 +54,7 @@ class Business:
         if not nx.has_path(graph, source, target):
             raise Exception(f"Found Puzzle with no connection: {source} to {target}")
         if strict and not self.is_valid(graph, source, target):
+            print("Puzzle wan't valid! Retrying...")
             return self.generate_puzzle(graph, strict=True)
         
         return Puzzle(
@@ -82,11 +83,3 @@ class Business:
     def get_hint(self, graph: Graph, source: str, target: str) -> str:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
-
-if __name__ == "__main__":
-    db = Database()
-    bn = Business()
-    ten_puzzles = bn.generate_10_puzzles(bn.get_graph())
-    for i, puzzle in enumerate(ten_puzzles):
-        db.set_puzzle(get_date_str(i), puzzle)
-    print(db.get_puzzle(get_date_str()))
