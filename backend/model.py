@@ -14,6 +14,14 @@ class Puzzle(BaseModel):
     shortest_path: list[str]        # The names of the pokémon of the shortest path
     shortest_path_length: int               # The length of the shortest path
 
+    def __str__(self):
+        return f"""
+Source = {self.source}
+Target = {self.target}
+Shortest Path = {self.shortest_path}
+Shortest Path Length = {self.shortest_path_length}
+        """
+
 class GraphData(BaseModel):
     nodes: dict[str, PokemonNode]
     edges: dict[str, list[str]]

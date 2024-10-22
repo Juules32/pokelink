@@ -84,8 +84,3 @@ class Database:
             query=query, 
             vars=(date, binary_data)
         )
-
-# Running this script sets up the database tables with new values
-if __name__ == "__main__":
-    db = Database()
-    db.create_puzzle_table()
