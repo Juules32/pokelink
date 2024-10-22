@@ -2,14 +2,15 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 from typing import Counter
+from networkx import Graph
 from business import Business
 from graph_data_generation import generate_pos
 
-def visualize_path_length_distribution(bn: Business):
+def visualize_path_length_distribution(graph: Graph, bn: Business):
     path_lengths = []
     for _ in range(100):
-        puzzle = bn.generate_puzzle(strict=True)
-        path_lengths.append(bn.get_shortest_path_length(puzzle.source, puzzle.target))
+        puzzle = bn.generate_puzzle(graph, strict=True)
+        path_lengths.append(nx.shortest_path_length(graph, puzzle.source, puzzle.target))
 
     # Count occurrences of each path length
     length_counts = Counter(path_lengths)
@@ -26,13 +27,14 @@ def visualize_path_length_distribution(bn: Business):
     plt.grid(True)
     plt.show()
 
-def visualize_graph(bn: Business):
-    pos = generate_pos(bn.graph)
-    nx.draw(bn.graph, with_labels=True, pos=pos)
+def visualize_graph(graph: Graph):
+    pos = generate_pos(graph)
+    nx.draw(graph, with_labels=True, pos=pos)
     plt.show()
 
 # Running this script generates and visualizes the graph
 if __name__ == "__main__":
     bn = Business()
-    visualize_path_length_distribution(bn)
-    visualize_graph(bn)
+    graph = bn.get_graph()
+    visualize_path_length_distribution(graph, bn)
+    visualize_graph(graph)

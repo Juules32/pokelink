@@ -1,26 +1,42 @@
+import pickle
 from typing import Union
 from networkx import Graph
 from database import Database
-from model import GraphData, PokemonNode, Puzzle
+from model import GraphData, Puzzle
 import random
 import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
 from date import get_date_str
-from graph_data_generation import generate_graph, get_graph_data
+from graph_data_generation import get_graph_data, load_graph
 from dotenv import load_dotenv
 import os
+import httpx
 
 class Business:
-    # def __init__(self):
-        # self.db = Database()
-        #self.graph = self.db.get_graph()
-        #self.pokemon_names: list[str] = list(self.graph.nodes.keys())
-        #self.graph_data = get_graph_data(self.graph)
-    
-    def get_graph(self) -> Graph:
+    def __init__(self):
         load_dotenv()
-        return generate_graph()
+        self.environment: Union[str, None] = os.getenv("ENVIRONMENT")
+        if self.environment == "DEVELOPMENT":
+            self.graph = load_graph()
+            print("Loaded graph from local file")
+    
+    def download_graph(self) -> Graph:
+        response = httpx.get(f"{os.getenv('BLOB_HOST')}/graph_data.pkl")
+        if response.status_code == 200:
+            print("Downloading pickled file")
+            return pickle.loads(response.content)
+        else:
+            print("Failed to download pickled file")
+            raise None
+    
+    # Returns loaded file for local development
+    # In production (vercel), instead download the graph from the blob storage
+    def get_graph(self) -> Graph:
+        if self.environment == "DEVELOPMENT":
+            return self.graph
+        else:
+            return self.download_graph()
     
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
