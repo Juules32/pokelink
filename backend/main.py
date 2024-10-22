@@ -20,7 +20,8 @@ bn = Business()
 
 @app.get("/graph_data")
 def get_test():
-    return bn.graph_data
+    graph = bn.get_graph()
+    return bn.get_graph_data(graph)
 
 @app.get("/puzzle")
 def get_puzzle() -> Puzzle:
@@ -32,5 +33,6 @@ def get_puzzle(date: str) -> Puzzle:
 
 
 @app.get("/hint")
-def get_hint(source: str, target: str) -> PokemonNode:
-    return bn.get_hint(source, target)
+def get_hint(source: str, target: str) -> str:
+    graph = bn.get_graph()
+    return bn.get_hint(graph, source, target)

@@ -15,7 +15,7 @@ export async function fetchPuzzle(): Promise<Puzzle> {
     return result
 }
 
-export async function fetchHint(source: string, target: string): Promise<PokemonNode> {
+export async function fetchHint(source: string, target: string): Promise<string> {
     const response = await fetch(`${PUBLIC_BACKEND_HOST}/hint?source=${source}&target=${target}`)
     const data = await response.json()
     return data

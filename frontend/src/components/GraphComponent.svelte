@@ -4,8 +4,8 @@
     import { guessedNodes } from "$lib/state";
     import { fetchHint, fetchPuzzle } from "$lib/backend";
     import { onMount } from "svelte";
-    import type { PokemonNode } from "$lib/interfaces";
     import { pokemonNodes } from "$lib/state";
+    import { graphData } from "$lib/state";
 
     // Constants
     const gapSize = 10;
@@ -23,7 +23,7 @@
         addNode($puzzle.source);
     }
 
-    let hint: PokemonNode;
+    let hint: string;
     async function getHint() {
         const latestGuessNode = $guessedNodes.at(-1)
         if (latestGuessNode)
@@ -58,5 +58,5 @@
 <button on:click={getHint}>Get Hint</button>
 
 {#if hint}
-    <NodeComponent pokemonNode={hint} {circleDiameter} />
+    <NodeComponent pokemonNode={graphData.nodes[hint]} {circleDiameter} />
 {/if}
