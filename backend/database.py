@@ -50,41 +50,6 @@ class Database:
             message=f"Dropped {table_name} table successfully (if it existed)"
         )
 
-    def create_graph_table(self):
-        self.drop_table(table_name="graph")
-
-        query = """
-            CREATE TABLE graph (
-                data BYTEA NOT NULL
-            );
-        """
-        self.commit_query(query=query, message="Created graph table successfully")
-
-    def get_graph(self) -> Graph:
-        query = """
-            SELECT data FROM graph;
-        """
-        binary_data = self.commit_query(
-            query=query, 
-            fetch=Fetch.ONE, 
-            message=f"Got graph data successfully"
-        )[0] # ⬅ Importantly, only the first cell is returned
-        return pickle.loads(binary_data)
-
-    def set_graph(self, graph: Graph):
-        query1 = """
-            DELETE FROM graph;
-        """
-        self.commit_query(query=query1)
-        
-        binary_data: bytes = pickle.dumps(graph)
-
-        query2 = """
-            INSERT INTO graph (data)
-            VALUES (%s)
-        """
-        self.commit_query(query=query2, vars=(binary_data,))
-    
     def create_puzzle_table(self):
         self.drop_table(table_name="puzzle")
         query = """
@@ -123,6 +88,4 @@ class Database:
 # Running this script sets up the database tables with new values
 if __name__ == "__main__":
     db = Database()
-    db.create_graph_table()
-    db.set_graph(generate_graph())
     db.create_puzzle_table()
