@@ -2,11 +2,12 @@ import type { GraphData, Puzzle } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 import { error } from "@sveltejs/kit";
 
-export async function fetchPuzzle(date: string | null = null): Promise<Puzzle> {
+export async function fetchPuzzle(fetch: any, params: any): Promise<Puzzle> {
     try {
+        let date = params.slug ?? "";
         const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzle/${date ? date : ""}`)
         if (!response.ok) {
-            error(response.status, "Puzzle not found!");  // Throw error based on response
+            throw new Error()
         }
         const data = await response.json()
         const result: Puzzle = {
@@ -18,7 +19,7 @@ export async function fetchPuzzle(date: string | null = null): Promise<Puzzle> {
         return result
     }
     catch {
-        error(404, "no puzzle :(")
+        error(404, "No puzzle could be found")
     }
 }
 

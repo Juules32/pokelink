@@ -4,14 +4,12 @@
     import GraphComponent from "./GraphComponent.svelte";
     import NodeComponent from "./NodeComponent.svelte";
     import SearchComponent from "./SearchComponent.svelte";
-    import { page } from "$app/stores";
     import type { PokemonNode, Puzzle } from "$lib/interfaces";
 
-    let date: string | null = $page.params.slug ? $page.params.slug : null;
     let guessedNodes: PokemonNode[] = []
     let hint: string;
 
-    let puzzle: Puzzle;
+    export let puzzle: Puzzle
 
     async function getHint() {
         const latestGuessNode = guessedNodes.at(-1)
@@ -27,16 +25,9 @@
             console.log("You win!")
         }
     }
-
-    async function setupPuzzle() {
-        const fetchedPuzzle = await fetchPuzzle(date);
-        console.log("pee")
-        puzzle = fetchedPuzzle
-        if (!guessedNodes.length)
-        addNode(puzzle.source);
-    }
+    if (!guessedNodes.length)
+        addNode(puzzle.source)
     
-    setupPuzzle();
 </script>
     
 <div class="h-fit flex flex-col pt-32 space-y-10 items-center">

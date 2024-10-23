@@ -1,5 +1,7 @@
-<script lang="ts">
+<script>
     import PuzzleComponent from "$components/PuzzleComponent.svelte";
+
+    export let data;
 </script>
 
-<PuzzleComponent />
+<PuzzleComponent puzzle={data.puzzle}/>
