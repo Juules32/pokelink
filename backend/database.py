@@ -55,32 +55,43 @@ class Database:
         query = """
             CREATE TABLE puzzle (
                 date DATE PRIMARY KEY,
-                data BYTEA NOT NULL
+                source TEXT NOT NULL,
+                target TEXT NOT NULL,
+                shortest_path TEXT[] NOT NULL,
+                shortest_path_length INT NOT NULL
             );
         """
         self.commit_query(query=query, message="Created puzzle table successfully")
 
-    def get_puzzle(self, date: Union[str, None] = None) -> Puzzle:
+    def get_puzzle(self, date: Union[str, None] = None) -> Union[Puzzle, None]:
         query = """
-            SELECT data FROM puzzle
+            SELECT source, target, shortest_path, shortest_path_length FROM puzzle
             WHERE date = %s;
         """
-        binary_data = self.commit_query(
+        fetched_row = self.commit_query(
             query=query, 
             vars=(date if date else get_date_str(),),
             fetch=Fetch.ONE, 
             message=f"Got puzzle data successfully"
-        )[0]
-        return pickle.loads(binary_data)
+        )
+
+        if not fetched_row:
+            return None
+        
+        source, target, shortest_path, shortest_path_length = fetched_row
+        return Puzzle(
+            source=source, 
+            target=target, 
+            shortest_path=shortest_path, 
+            shortest_path_length=shortest_path_length
+        )
     
     def set_puzzle(self, date: str, puzzle: Puzzle):
-        binary_data: bytes = pickle.dumps(puzzle)
-        query = """
-            INSERT INTO puzzle (date, data)
-            VALUES (%s, %s)
-            ON CONFLICT (date) DO UPDATE SET data = EXCLUDED.data;
+        query2 = """
+            INSERT INTO puzzle (date, source, target, shortest_path, shortest_path_length)
+            VALUES (%s, %s, %s, %s, %s)
         """
         self.commit_query(
-            query=query, 
-            vars=(date, binary_data)
+            query=query2, 
+            vars=(date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
         )

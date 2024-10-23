@@ -17,7 +17,7 @@ export function getRandomBackgroundPath() {
         "victory-road",
         "warehouse",
     ];
-    return `backgrounds/${backgroundNames[Math.floor(Math.random() * backgroundNames.length)]}.png`;
+    return `/backgrounds/${backgroundNames[Math.floor(Math.random() * backgroundNames.length)]}.png`;
 }
 
 export function getSpriteUrl(id: number): string {

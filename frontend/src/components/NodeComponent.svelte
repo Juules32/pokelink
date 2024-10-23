@@ -57,7 +57,7 @@
         class="flex justify-center pixel gap-1 bg-white rounded-md border-black border-2 p-[2px]"
     >
         {#each pokemonNode.types as type}
-            <img src="types/{type}.png" alt={type} />
+            <img src="/types/{type}.png" alt={type} />
         {/each}
     </div>
 </div>
