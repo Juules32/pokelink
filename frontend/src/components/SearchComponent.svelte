@@ -55,13 +55,13 @@
     });
 </script>
 
-<div class="w-3/4 sm:w-[500px]" bind:this={searchRef}>
+<div class="w-3/4 max-w-[500px]" bind:this={searchRef}>
     <div
         class="bg-red-400 h-16 flex border-2 border-black justify-center items-center rounded-lg"
         class:rounded-b-none={searchQuery}
     >
         <input
-            class="p-2 border-2 w-3/4 sm:w-[292px] border-black"
+            class="p-2 border-2 w-3/4 max-w-[292px] border-black"
             type="text"
             bind:value={searchQuery}
             on:input={async () => {filteredPokemonNodes = getSearchData(searchQuery)}}
