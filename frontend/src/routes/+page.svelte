@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { getRandomBackgroundPath } from "$lib/util";
-    import SearchComponent from "$components/SearchComponent.svelte";
-    import GraphComponent from "$components/GraphComponent.svelte";
     import { onMount } from "svelte";
     import PuzzleComponent from "$components/PuzzleComponent.svelte";
+    import BackgroundComponent from "$components/BackgroundComponent.svelte";
+    import HeaderComponent from "$components/HeaderComponent.svelte";
 
     let loaded = false;
     onMount(() => {
@@ -12,11 +11,7 @@
 </script>
 
 {#if loaded}
-    <div
-        class="fixed inset-0 bg-center bg-cover"
-        style="background-image: url({getRandomBackgroundPath()});
-		   image-rendering: pixelated;"
-    >
-        <PuzzleComponent />
-    </div>
+    <BackgroundComponent />
+    <HeaderComponent />
+    <PuzzleComponent />
 {/if}

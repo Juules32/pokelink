@@ -3,7 +3,7 @@
 
     // Props
     export let pokemonNode: PokemonNode;
-    export let circleDiameter: number;
+    export let circleDiameter = 128;
 
     // Dictionary with soft colors for each Pokémon type in RGB format
     const typeColors: { [key: string]: string } = {

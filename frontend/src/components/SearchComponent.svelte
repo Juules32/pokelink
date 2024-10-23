@@ -78,23 +78,3 @@
         </ul>
     {/if}
 </div>
-
-<style scoped>
-    ::-webkit-scrollbar {
-        width: 12px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background-color: #f1f1f1;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background-color: #888;
-        border-radius: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #555;
-    }
-</style>
