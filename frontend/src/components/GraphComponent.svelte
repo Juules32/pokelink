@@ -6,18 +6,20 @@
     import { onMount } from "svelte";
     import { pokemonNodes } from "$lib/state";
     import { graphData } from "$lib/state";
+    import { regionNumber } from "$lib/util";
 
     // Constants
-    const gapSize = 10;
+    const gapSize = 20;
     const circleDiameter = 128;
 
     // The graph width changes dynamically
     let graphWidth: number;
 
-    // The total offset changes dynamically
-    let totalOffset = 0;
-    $: totalOffset = $guessedNodes.length * (circleDiameter + gapSize);
-
+    // The offset changes dynamically
+    let offsetX = 0;
+    $: {
+        offsetX = $guessedNodes.length * (circleDiameter + gapSize);
+    }
     async function setupPuzzle() {
         $puzzle = await fetchPuzzle();
         addNode($puzzle.source);
@@ -28,6 +30,7 @@
         const latestGuessNode = $guessedNodes.at(-1)
         if (latestGuessNode)
             hint = await fetchHint(latestGuessNode.name, $puzzle.target)
+        console.log(graphData.nodes[hint])
     }
 
     onMount(() => {
@@ -36,17 +39,19 @@
 </script>
 
 <div
-    class="bg-red-400 w-3/4 py-4 h-[160px] rounded-lg border-black border-2 overflow-hidden"
+    class="bg-red-400 w-3/4 py-4 min-h-[150px] h-[150px] rounded-lg border-black border-2 overflow-hidden"
     bind:clientWidth={graphWidth}
 >
     <div
-        class="flex transition-transform duration-500"
-        style:gap="{gapSize}px"
-        style="transform: translateX({Math.abs(totalOffset) > graphWidth
-            ? graphWidth - totalOffset
+        class="h-full flex items-center transition-transform duration-500"
+        style="transform: translateX({Math.abs(offsetX) > graphWidth
+            ? graphWidth - offsetX
             : gapSize}px);"
     >
-        {#each $guessedNodes as guessedNode}
+        {#each $guessedNodes as guessedNode, i}
+            {#if i}
+                <p style="min-width: {gapSize}px;" class="text-lg text-center relative">→</p>
+            {/if}
             <NodeComponent pokemonNode={guessedNode} {circleDiameter} />
         {/each}
     </div>
