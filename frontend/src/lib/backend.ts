@@ -1,16 +1,25 @@
-import type { GraphData, PokemonNode, Puzzle } from "$lib/interfaces";
+import type { GraphData, Puzzle } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
+import { error } from "@sveltejs/kit";
 
-export async function fetchPuzzle(): Promise<Puzzle> {
-    const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzle`)
-    const data = await response.json()
-    const result: Puzzle = {
-        source: data.source,
-        target: data.target,
-        shortestPath: data.shortest_path,
-        shortestPathLength: data.shortest_path_length
+export async function fetchPuzzle(date: string | null = null): Promise<Puzzle> {
+    try {
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzle/${date ? date : ""}`)
+        if (!response.ok) {
+            error(response.status, "Puzzle not found!");  // Throw error based on response
+        }
+        const data = await response.json()
+        const result: Puzzle = {
+            source: data.source,
+            target: data.target,
+            shortestPath: data.shortest_path,
+            shortestPathLength: data.shortest_path_length
+        }
+        return result
     }
-    return result
+    catch {
+        error(404, "no puzzle :(")
+    }
 }
 
 export async function fetchHint(source: string, target: string): Promise<string> {

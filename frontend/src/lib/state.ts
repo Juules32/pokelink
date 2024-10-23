@@ -1,11 +1,6 @@
-import type { PokemonNode, Puzzle, GraphData } from "$lib/interfaces";
-import { get, writable } from 'svelte/store';
+import type { PokemonNode, GraphData } from "$lib/interfaces";
 import { fetchGraphData } from "./backend";
 import { browser } from '$app/environment'
-
-export const puzzle = writable<Puzzle>();
-
-export const guessedNodes = writable<PokemonNode[]>([]);
 
 async function getGraphData(): Promise<GraphData> {
     if (browser) {
@@ -34,12 +29,4 @@ export const edges = graphData.edges
 
 export function getPokemonNode(name: string): PokemonNode {
     return graphData.nodes[name]
-}
-
-export function addNode(guess: string) {
-    const newNode = getPokemonNode(guess)
-    guessedNodes.update((nodes) => [...nodes, newNode]);
-    if (get(puzzle).target == guess) {
-        console.log("You win!")
-    }
 }

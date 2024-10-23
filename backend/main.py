@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from model import PokemonNode, Puzzle
 from business import Business
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,9 +29,11 @@ def get_puzzle() -> Puzzle:
     return bn.get_puzzle()
 
 @app.get("/puzzle/{date}")
-def get_puzzle(date: str) -> Puzzle:
-    return bn.get_puzzle(date)
-
+def get_puzzle(date: str) -> JSONResponse:
+    puzzle = bn.get_puzzle(date)
+    if not puzzle:
+        return JSONResponse(content={"error": "Puzzle not found"},status_code=404)
+    return JSONResponse(content=puzzle.model_dump(), status_code=200)
 
 @app.get("/hint")
 def get_hint(source: str, target: str) -> str:
