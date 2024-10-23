@@ -1,8 +1,6 @@
 import type { GraphData, PokemonNode, Puzzle } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 
-console.log(PUBLIC_BACKEND_HOST)
-
 export async function fetchPuzzle(): Promise<Puzzle> {
     const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzle`)
     const data = await response.json()

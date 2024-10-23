@@ -1,66 +1,36 @@
 <script lang="ts">
     import NodeComponent from "./NodeComponent.svelte";
-    import { puzzle, addNode } from "$lib/state";
-    import { guessedNodes } from "$lib/state";
-    import { fetchHint, fetchPuzzle } from "$lib/backend";
-    import { onMount } from "svelte";
-    import { pokemonNodes } from "$lib/state";
-    import { graphData } from "$lib/state";
+    import { afterUpdate } from "svelte";
+    import type { PokemonNode } from "$lib/interfaces";
 
     // Constants
     const gapSize = 20;
-    const circleDiameter = 128;
 
-    // The graph width changes dynamically
-    let graphWidth: number;
+    export let graphNodes: PokemonNode[];
 
-    // The offset changes dynamically
-    let offsetX = 0;
-    $: {
-        offsetX = $guessedNodes.length * (circleDiameter + gapSize);
-    }
-    async function setupPuzzle() {
-        $puzzle = await fetchPuzzle();
-        addNode($puzzle.source);
-    }
-
-    let hint: string;
-    async function getHint() {
-        const latestGuessNode = $guessedNodes.at(-1)
-        if (latestGuessNode)
-            hint = await fetchHint(latestGuessNode.name, $puzzle.target)
-        console.log(graphData.nodes[hint])
-    }
-
-    onMount(() => {
-        setupPuzzle();
+    let scrollContainer: HTMLDivElement;
+    afterUpdate(() => {
+        if (scrollContainer) {
+            scrollContainer.scrollTo({
+                left: scrollContainer.scrollWidth,
+                behavior: 'smooth'
+            });
+        }
     });
 </script>
 
 <div
-    class="bg-red-400 w-3/4 py-4 min-h-[150px] h-[150px] rounded-lg border-black border-2 overflow-hidden"
-    bind:clientWidth={graphWidth}
+    class="bg-red-400 w-3/4 min-h-[180px] h-[180px] rounded-lg border-black border-2"
 >
     <div
-        class="h-full flex items-center transition-transform duration-500"
-        style="transform: translateX({Math.abs(offsetX) > graphWidth
-            ? graphWidth - offsetX
-            : gapSize}px);"
+        bind:this={scrollContainer}
+        class="h-full flex items-center px-4 overflow-x-auto overflow-y-hidden whitespace-nowrap "
     >
-        {#each $guessedNodes as guessedNode, i}
+        {#each graphNodes as guessedNode, i}
             {#if i}
                 <p style="min-width: {gapSize}px;" class="text-lg text-center relative">→</p>
             {/if}
-            <NodeComponent pokemonNode={guessedNode} {circleDiameter} />
+            <NodeComponent pokemonNode={guessedNode} />
         {/each}
     </div>
 </div>
-
-<!-- Debugging Button -->
-<button on:click={() => addNode(pokemonNodes[Math.floor(Math.random() * pokemonNodes.length)].name)}>Add Random Pokemon</button>
-
-<button on:click={getHint}>Get Hint</button>
-
-{#if hint}
-    <NodeComponent pokemonNode={graphData.nodes[hint]} {circleDiameter} />
-{/if}
