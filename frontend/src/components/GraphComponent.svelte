@@ -6,7 +6,6 @@
     import { onMount } from "svelte";
     import { pokemonNodes } from "$lib/state";
     import { graphData } from "$lib/state";
-    import { regionNumber } from "$lib/util";
 
     // Constants
     const gapSize = 20;
