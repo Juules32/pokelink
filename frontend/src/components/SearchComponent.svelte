@@ -12,27 +12,30 @@
 
     // Filter and return search results based on search query
     function getSearchData(search: string): PokemonNode[] {
-        const searchLowerCase = search.toLowerCase()
+        const searchLowerCase = search.toLowerCase();
         return pokemonNodes
             .filter((node: PokemonNode) => node.name.includes(searchLowerCase))
-            .sort((a: PokemonNode, b: PokemonNode) => customSort(a, b, searchLowerCase))
-            .slice(0, 10)
+            .sort((a: PokemonNode, b: PokemonNode) =>
+                customSort(a, b, searchLowerCase)
+            )
+            .slice(0, 10);
     }
 
     // Helper function for custom sorting
     function customSort(a: PokemonNode, b: PokemonNode, searchLowerCase: string): number {
-        const startsWithSearchStringA = a.name.toLowerCase().startsWith(searchLowerCase)
-        const startsWithSearchStringB = b.name.toLowerCase().startsWith(searchLowerCase)
+        const startsWithSearchStringA = a.name.toLowerCase().startsWith(searchLowerCase);
+        const startsWithSearchStringB = b.name.toLowerCase().startsWith(searchLowerCase);
 
         // Prioritizes names that start with the search string
         if (startsWithSearchStringA && !startsWithSearchStringB) {
-            return -1
-        } else if (!startsWithSearchStringA && startsWithSearchStringB) {
-            return 1
-
+            return -1;
+        } 
+        else if (!startsWithSearchStringA && startsWithSearchStringB) {
+            return 1;
+        } 
         // Otherwise, items are sorted alphabetically
-        } else {
-            return a.name.localeCompare(b.name)
+        else {
+            return a.name.localeCompare(b.name);
         }
     }
 
@@ -65,7 +68,9 @@
             class="p-2 border-2 w-3/4 max-w-[292px] border-black"
             type="text"
             bind:value={searchQuery}
-            on:input={async () => {filteredPokemonNodes = getSearchData(searchQuery)}}
+            on:input={async () => {
+                filteredPokemonNodes = getSearchData(searchQuery);
+            }}
             placeholder="Search Pokémon..."
         />
     </div>
