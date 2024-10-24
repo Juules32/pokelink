@@ -1,3 +1,5 @@
+import { base } from "$app/paths";
+
 export function getRandomBackgroundPath() {
     const backgroundNames: string[] = [
         "forest",
@@ -17,7 +19,7 @@ export function getRandomBackgroundPath() {
         "victory-road",
         "warehouse",
     ];
-    return `/backgrounds/${backgroundNames[Math.floor(Math.random() * backgroundNames.length)]}.png`;
+    return `${base}/backgrounds/${backgroundNames[Math.floor(Math.random() * backgroundNames.length)]}.png`;
 }
 
 export function getSpriteUrl(id: number): string {
