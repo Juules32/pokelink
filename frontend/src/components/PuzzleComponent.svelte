@@ -43,15 +43,17 @@
     }
 </script>
 
-
-
-<button
-    class="w-[128px] absolute left-0 text-center"
-    on:click={() =>
+<!-- 
+    <button
+        class="w-[128px] absolute left-0 text-center"
+        on:click={() =>
         addNode(
             pokemonNodes[Math.floor(Math.random() * pokemonNodes.length)].name
-        )}>Add Random Pokemon</button
->
+        )}
+    >
+        Add Random Pokemon
+    </button>
+-->
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">
     <h1 class="text-5xl">{date ? "Puzzle: " + date : "Today's Puzzle"}</h1>
@@ -64,7 +66,10 @@
     <div class="flex w-full justify-center space-x-2">
         <div class="w-[80px]"></div>
         <SearchComponent {tryGuess} />
-        <button on:click={addHint} class="bg-red-400 w-[80px] rounded-lg border-black border-2">
+        <button
+            on:click={addHint}
+            class="bg-red-400 w-[80px] rounded-lg border-black border-2"
+        >
             Hint?
         </button>
     </div>

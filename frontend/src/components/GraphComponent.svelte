@@ -16,7 +16,7 @@
         if (scrollContainer) {
             scrollContainer.scrollTo({
                 left: scrollContainer.scrollWidth,
-                behavior: 'smooth'
+                behavior: "smooth"
             });
         }
     });
@@ -27,17 +27,20 @@
 >
     <div
         bind:this={scrollContainer}
-        class="h-full flex items-center px-4 overflow-x-auto overflow-y-hidden whitespace-nowrap "
+        class="h-full flex items-center px-4 overflow-x-auto overflow-y-hidden whitespace-nowrap"
     >
         {#each graphNodes as guessedNode, i}
             {#if i}
                 <ArrowComponent />
             {/if}
-                <NodeComponent pokemonNode={guessedNode} />
+            <NodeComponent pokemonNode={guessedNode} />
         {/each}
         {#if hint}
             <ArrowComponent />
-            <NodeComponent pokemonNode={graphData.nodes[hint]} isSecret={true} />
+            <NodeComponent
+                pokemonNode={graphData.nodes[hint]}
+                isSecret={true}
+            />
         {/if}
     </div>
 </div>
