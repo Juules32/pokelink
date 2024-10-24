@@ -60,7 +60,7 @@
         {/if}
     </p>
     <div style="transform: translateY(-{96/2}px);" class="sticky overflow-visible h-0 top-0">
-        <img style="{isSecret ? 'filter: brightness(0%);' : ''}" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemonNode.id}.png" alt="sprite">
+        <img class="drop-shadow-xl" style="{isSecret ? 'filter: brightness(0%);' : ''}" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemonNode.id}.png" alt="sprite">
     </div>
     <div
         class="z-10 flex justify-center pixel gap-1 bg-white rounded-md border-black border-2 p-[2px]"

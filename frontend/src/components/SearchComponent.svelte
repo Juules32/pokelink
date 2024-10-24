@@ -3,23 +3,12 @@
     import { onMount, onDestroy } from "svelte";
     import { browser } from "$app/environment";
     import type { PokemonNode } from "$lib/interfaces";
-    import { edges, pokemonNodes } from "$lib/state";
+    import { pokemonNodes } from "$lib/state";
 
-    export let addNode: Function;
     let searchQuery = "";
     let filteredPokemonNodes: PokemonNode[] = [];
     let searchRef: HTMLElement | null = null;
-    export let guessedNodes: PokemonNode[]
-
-    function tryGuess(name: string) {
-        const latestGuess = guessedNodes.at(-1)?.name;
-        if (latestGuess) {
-            if(edges[latestGuess].includes(name)) {
-                addNode(name)
-            }
-        }
-        resetSearch()
-    }
+    export let tryGuess: Function;
 
     // Filter and return search results based on search query
     function getSearchData(search: string): PokemonNode[] {
@@ -85,7 +74,7 @@
             class="z-10 absolute w-3/4 sm:w-[500px] divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
             {#each filteredPokemonNodes as pokemonNode}
-                <SearchItemComponent {pokemonNode} {tryGuess} />
+                <SearchItemComponent {resetSearch} {pokemonNode} {tryGuess} />
             {/each}
         </ul>
     {/if}

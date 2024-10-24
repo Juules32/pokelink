@@ -2,10 +2,13 @@
     import NodeComponent from "./NodeComponent.svelte";
     import { afterUpdate } from "svelte";
     import type { PokemonNode } from "$lib/interfaces";
+    import { graphData } from "$lib/state";
+    import ArrowComponent from "./ArrowComponent.svelte";
 
     // Constants
     const gapSize = 20;
 
+    export let hint: string | undefined;
     export let graphNodes: PokemonNode[];
 
     let scrollContainer: HTMLDivElement;
@@ -28,9 +31,13 @@
     >
         {#each graphNodes as guessedNode, i}
             {#if i}
-                <p style="min-width: {gapSize}px;" class="text-lg text-center relative">→</p>
+                <ArrowComponent />
             {/if}
-            <NodeComponent pokemonNode={guessedNode} />
+                <NodeComponent pokemonNode={guessedNode} />
         {/each}
+        {#if hint}
+            <ArrowComponent />
+            <NodeComponent pokemonNode={graphData.nodes[hint]} isSecret={true} />
+        {/if}
     </div>
 </div>
