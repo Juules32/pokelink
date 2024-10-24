@@ -5,6 +5,7 @@
     // Props
     export let pokemonNode: PokemonNode;
     export let circleDiameter = 128;
+    export let isSecret = false;
 
     // Dictionary with soft colors for each Pokémon type in RGB format
     const typeColors: { [key: string]: string } = {
@@ -45,20 +46,27 @@
 </script>
 
 <div
-    style="min-height: {circleDiameter}px; min-width: {circleDiameter}px; width: {circleDiameter}px; height: {circleDiameter}px; background-image: url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemonNode.id}.png), {getGradientFromTypes(pokemonNode.types)};"
-    class="border-black bg-white rounded-full bg-center bg-no-repeat guessed-pokemon-node text-wrap leading-3 capitalize flex flex-col justify-between items-center"
+    style="min-height: {circleDiameter}px; min-width: {circleDiameter}px; width: {circleDiameter}px; height: {circleDiameter}px; background-image: {getGradientFromTypes(pokemonNode.types)};"
+    class="z-10 border-black bg-white rounded-full bg-center bg-no-repeat guessed-pokemon-node text-wrap leading-3 capitalize flex flex-col justify-between items-center"
 >
     <p
         style="max-width: {circleDiameter}px;"
         class="bg-white text-black rounded-md border-black border-2 p-1 truncate"
     >
-        {pokemonNode.name}
+        {#if isSecret}
+            ???            
+        {:else}
+            {pokemonNode.name}
+        {/if}
     </p>
+    <div style="transform: translateY(-{96/2}px);" class="sticky overflow-visible h-0 top-0">
+        <img style="{isSecret ? 'filter: brightness(0%);' : ''}" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemonNode.id}.png" alt="sprite">
+    </div>
     <div
-        class="flex justify-center pixel gap-1 bg-white rounded-md border-black border-2 p-[2px]"
+        class="z-10 flex justify-center pixel gap-1 bg-white rounded-md border-black border-2 p-[2px]"
     >
         {#each pokemonNode.types as type}
-            <img src="{base}/types/{type}.png" alt={type} />
+            <img src="{base}/types/{isSecret ? 'unknown' : type}.png" alt={type} />
         {/each}
     </div>
 </div>

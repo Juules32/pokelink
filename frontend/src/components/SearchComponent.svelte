@@ -67,7 +67,7 @@
     });
 </script>
 
-<div class="w-3/4 max-w-[500px]" bind:this={searchRef}>
+<div class="z-20 w-3/4 max-w-[500px]" bind:this={searchRef}>
     <div
         class="bg-red-400 h-16 flex border-2 border-black justify-center items-center rounded-lg"
         class:rounded-b-none={searchQuery}
