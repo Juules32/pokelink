@@ -15,7 +15,6 @@
         const latestGuessNode = guessedNodes.at(-1)
         if (latestGuessNode)
             hint = await fetchHint(latestGuessNode.name, puzzle.target)
-        console.log(graphData.nodes[hint])
     }
 
     export function addNode(guess: string) {
