@@ -43,24 +43,21 @@
     addNode(puzzle.source);
 </script>
 
-<!-- 
     <button
         class="w-[128px] absolute left-0 text-center"
-        on:click={() =>
-        addNode(
+        onclick={() => addNode(
             pokemonNodes[Math.floor(Math.random() * pokemonNodes.length)].name
         )}
     >
         Add Random Pokemon
     </button>
--->
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">
     <h1 class="text-5xl">{date ? "Puzzle: " + date : "Today's Puzzle"}</h1>
     <div class="flex items-center">
-        <NodeComponent pokemonNode={getPokemonNode(puzzle.source)} />
+        <NodeComponent pokemonName={puzzle.source} />
         <ArrowComponent />
-        <NodeComponent pokemonNode={getPokemonNode(puzzle.target)} />
+        <NodeComponent pokemonName={puzzle.target} />
     </div>
 
     <div class="flex w-full justify-center space-x-2">

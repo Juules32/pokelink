@@ -1,13 +1,15 @@
 <script lang="ts">
     import { base } from "$app/paths";
-    import type { PokemonNode } from "$lib/interfaces";
+    import { graphData } from "$lib/state";
 
     interface Props {
-        pokemonNode: PokemonNode;
-        circleDiameter?: number;
+        pokemonName: string;
         isSecret?: boolean;
     }
-    let { pokemonNode, circleDiameter = 128, isSecret = false }: Props = $props();
+    let { pokemonName, isSecret = false }: Props = $props();
+    const pokemonNode = graphData.nodes[pokemonName]
+
+    const circleDiameter = "128px"
 
     // Dictionary with soft colors for each Pokémon type in RGB format
     const typeColors: { [key: string]: string } = {
@@ -47,39 +49,49 @@
     }
 </script>
 
-<div
-    style="min-height: {circleDiameter}px; min-width: {circleDiameter}px; width: {circleDiameter}px; height: {circleDiameter}px; background-image: {getGradientFromTypes(pokemonNode.types)};"
-    class="z-10 border-black bg-white rounded-full bg-center bg-no-repeat guessed-pokemon-node text-wrap leading-3 capitalize flex flex-col justify-between items-center"
->
-    <p
-        style="max-width: {circleDiameter}px;"
-        class="bg-white text-black rounded-md border-black border-2 p-1 truncate"
-    >
-        {#if isSecret}
-            ???
-        {:else}
-            {pokemonNode.name}
-        {/if}
-    </p>
-    <div
-        style="transform: translateY(-{96 / 2}px);"
-        class="sticky overflow-visible h-0 top-0"
-    >
-        <img
-            class="drop-shadow-xl"
-            style={isSecret ? "filter: brightness(0%);" : ""}
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemonNode.id}.png"
-            alt="sprite"
-        />
+<div style="max-width: {circleDiameter};" class="pokemon-node items-center leading-3">
+    <div class="tooltip transition-opacity duration-300 z-20 opacity-0 relative left-[50%] bottom-0 h-0 -translate-x-[50%] text-center overflow-visible pointer-events-none">
+        <p class="rounded-lg text-white h-fit py-[3px] border-2 border-black bg-black text-wrap capitalize">
+            Region: {pokemonNode.region}
+        </p>
     </div>
     <div
-        class="z-10 flex justify-center pixel gap-1 bg-white rounded-md border-black border-2 p-[2px]"
+        style="min-height: {circleDiameter}; min-width: {circleDiameter}; width: {circleDiameter}; height: {circleDiameter}; background-image: {getGradientFromTypes(pokemonNode.types)};"
+        class="z-10 border-black bg-white rounded-full bg-center bg-no-repeat guessed-pokemon-node text-wrap capitalize flex flex-col items-center"
     >
-        {#each pokemonNode.types as type}
+        <p
+            style="max-width: {circleDiameter};"
+            class="bg-white text-black rounded-md border-black border-2 px-1 py-[3px] truncate"
+        >
+            {#if isSecret}???{:else}{pokemonNode.name}{/if}
+        </p>
+        <div
+            style="transform: translateY(calc(44px - {96 / 2}px));"
+            class="h-0"
+        >
             <img
-                src="{base}/types/{isSecret ? 'unknown' : type}.png"
-                alt={type}
+                class="drop-shadow-xl"
+                style={isSecret ? "filter: brightness(0%);" : ""}
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemonNode.id}.png"
+                alt="sprite"
             />
-        {/each}
+        </div>
+        <div
+            class="mt-auto z-10 flex justify-center pixel gap-1 bg-white rounded-md border-black border-2 p-0.5"
+        >
+            {#each pokemonNode.types as type}
+                <img
+                    src="{base}/types/{isSecret ? 'unknown' : type}.png"
+                    alt={type}
+                />
+            {/each}
+        </div>
     </div>
 </div>
+
+<style scoped>
+    .pokemon-node:hover .tooltip {
+        transition-delay: 0.5s;
+        opacity: 1;
+    }
+</style>
