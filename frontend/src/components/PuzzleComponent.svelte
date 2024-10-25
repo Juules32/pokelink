@@ -6,6 +6,7 @@
     import type { PokemonNode, Puzzle } from "$lib/interfaces";
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
+    import { dev } from "$app/environment";
 
     interface Props {
         date: string | undefined;
@@ -43,6 +44,7 @@
     addNode(puzzle.source);
 </script>
 
+{#if dev}
     <button
         class="w-[128px] absolute left-0 text-center"
         onclick={() => addNode(
@@ -51,6 +53,7 @@
     >
         Add Random Pokemon
     </button>
+{/if}
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">
     <h1 class="text-5xl">{date ? "Puzzle: " + date : "Today's Puzzle"}</h1>
