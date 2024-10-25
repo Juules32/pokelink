@@ -2,9 +2,13 @@
     import type { PokemonNode } from "$lib/interfaces";
     import { getSpriteUrl } from "$lib/util";
 
-    export let pokemonNode: PokemonNode;
-    export let tryGuess: Function;
-    export let resetSearch: Function;
+    interface Props {
+        pokemonNode: PokemonNode;
+        tryGuess: Function;
+        resetSearch: Function;
+    }
+
+    let { pokemonNode, tryGuess, resetSearch }: Props = $props();
 </script>
 
 <li class="hover:bg-gray-200 flex items-center align-middle p-2">
@@ -15,7 +19,7 @@
     />
     <p class="grow text-left pl-2 capitalize truncate">{pokemonNode.name}</p>
     <button
-        on:click={() => {
+        onclick={() => {
             tryGuess(pokemonNode.name);
             resetSearch();
         }}

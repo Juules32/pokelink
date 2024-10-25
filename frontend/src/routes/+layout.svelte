@@ -4,7 +4,13 @@
     import { onMount } from "svelte";
     import "../app.css";
     
-    let loaded = false;
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
+    
+    let loaded = $state(false);
     onMount(() => {
         loaded = true;
     });
@@ -13,5 +19,5 @@
 {#if loaded}
     <BackgroundComponent />
     <HeaderComponent />
-    <slot />
+    {@render children?.()}
 {/if}
