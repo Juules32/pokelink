@@ -20,7 +20,7 @@ import ModalComponent from "./ModalComponent.svelte";
     <div class="leading-5 py-2 space-y-4">
         <p>
             The goal of this daily puzzle game is to go from one pokémon to another
-            in the shortest possible distance.
+            in the shortest amount of steps.
         </p>
         <p>The rules for going from one pokémon to another are as follows:</p>
         <ol class="list-decimal list-inside space-y-4">
@@ -57,9 +57,9 @@ import ModalComponent from "./ModalComponent.svelte";
         </div>
         <p>
             Dewgong to Spheal is <span class="text-red-600">not allowed</span> 
-            because although they share a type, they're from neither the same or adjacent regions.
+            because although they share a type, they're from neither the same nor adjacent regions.
         </p>
-        <p>Tip: Hovering over a pokemon shows its region</p>
+        <p>Tip: Hovering over a pokemon shows its region.</p>
         <p>Good luck!</p>
     </div>
 </ModalComponent>
