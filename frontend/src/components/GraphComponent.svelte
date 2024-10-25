@@ -2,7 +2,6 @@
     import NodeComponent from "./NodeComponent.svelte";
     import { afterUpdate } from "svelte";
     import type { PokemonNode } from "$lib/interfaces";
-    import { graphData } from "$lib/state";
     import ArrowComponent from "./ArrowComponent.svelte";
 
     export let hint: string | undefined;
@@ -24,18 +23,18 @@
 >
     <div
         bind:this={scrollContainer}
-        class="h-full flex items-center px-4 overflow-x-auto overflow-y-hidden whitespace-nowrap"
+        class="h-full flex items-center px-4 overflow-x-auto whitespace-nowrap"
     >
         {#each graphNodes as guessedNode, i}
             {#if i}
                 <ArrowComponent />
             {/if}
-            <NodeComponent pokemonNode={guessedNode} />
+            <NodeComponent pokemonName={guessedNode.name} />
         {/each}
         {#if hint}
             <ArrowComponent />
             <NodeComponent
-                pokemonNode={graphData.nodes[hint]}
+                pokemonName={hint}
                 isSecret={true}
             />
         {/if}

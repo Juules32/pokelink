@@ -9,59 +9,48 @@
 	let dialog: HTMLDialogElement | undefined = $state();
 
 	$effect(() => {if (showModal) dialog?.showModal()});
+
+    $effect(() => {
+        if (dialog && showModal) {
+            dialog.scrollTop = 0;
+        }
+    });
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 <dialog
+    class="border-2 border-black rounded-lg w-[500px] max-h-[80%] overflow-y-scroll overflow-x-hidden"
 	bind:this={dialog}
 	onclose={() => (showModal = false)}
 	onclick={(e) => { if (e.target == dialog) dialog.close(); }}
 >
-	<div>
-		{@render header?.()}
+	<div class="p-4">
+        <div class="text-3xl text-center">
+            {@render header?.()}
+        </div>
 		<hr />
 		{@render children?.()}
 		<hr />
-		<button onclick={() => dialog?.close()}>Close</button>
+		<button class="bg-red-400 mt-2 border-2 border-black px-2 py-1 rounded-lg" onclick={() => dialog?.close()}>Close</button>
 	</div>
 </dialog>
 
 <style>
-	dialog {
-		max-width: 32em;
-		border-radius: 0.2em;
-		border: none;
-		padding: 0;
-	}
 	dialog::backdrop {
 		background: rgba(0, 0, 0, 0.3);
-	}
-	dialog > div {
-		padding: 1em;
 	}
 	dialog[open] {
 		animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 	@keyframes zoom {
-		from {
-			transform: scale(0.95);
-		}
-		to {
-			transform: scale(1);
-		}
+		from {transform: scale(0.95)}
+		to {transform: scale(1)}
 	}
 	dialog[open]::backdrop {
 		animation: fade 0.2s ease-out;
 	}
 	@keyframes fade {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-	button {
-		display: block;
+		from {opacity: 0}
+		to {opacity: 1}
 	}
 </style>
