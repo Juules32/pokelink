@@ -5,9 +5,6 @@
     import { graphData } from "$lib/state";
     import ArrowComponent from "./ArrowComponent.svelte";
 
-    // Constants
-    const gapSize = 20;
-
     export let hint: string | undefined;
     export let graphNodes: PokemonNode[];
 

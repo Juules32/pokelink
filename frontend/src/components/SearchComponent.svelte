@@ -5,14 +5,14 @@
     import type { PokemonNode } from "$lib/interfaces";
     import { pokemonNodes } from "$lib/state";
 
-    let searchQuery = $state("");
-    let filteredPokemonNodes: PokemonNode[] = $state([]);
-    let searchRef: HTMLElement | null = $state(null);
     interface Props {
         tryGuess: Function;
     }
-
     let { tryGuess }: Props = $props();
+
+    let searchQuery = $state("");
+    let filteredPokemonNodes: PokemonNode[] = $state([]);
+    let searchRef: HTMLElement | null = $state(null);
 
     // Filter and return search results based on search query
     function getSearchData(search: string): PokemonNode[] {

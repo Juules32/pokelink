@@ -7,16 +7,15 @@
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
 
-    let guessedNodes: PokemonNode[] = $state([]);
-    let hint: string | undefined = $state();
-    const latestGuessNode = $derived(guessedNodes.at(-1));
-
     interface Props {
         date: string | undefined;
         puzzle: Puzzle;
     }
-
     let { date, puzzle }: Props = $props();
+
+    let guessedNodes: PokemonNode[] = $state([]);
+    let hint: string | undefined = $state();
+    const latestGuessNode = $derived(guessedNodes.at(-1));
 
     async function addHint() {
         if (latestGuessNode) {
