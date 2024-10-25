@@ -7,12 +7,16 @@
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
 
-    let guessedNodes: PokemonNode[] = [];
-    let hint: string | undefined;
-    let latestGuessNode: PokemonNode | undefined;
+    let guessedNodes: PokemonNode[] = $state([]);
+    let hint: string | undefined = $state();
+    const latestGuessNode = $derived(guessedNodes.at(-1));
 
-    export let date: string | undefined;
-    export let puzzle: Puzzle;
+    interface Props {
+        date: string | undefined;
+        puzzle: Puzzle;
+    }
+
+    let { date, puzzle }: Props = $props();
 
     async function addHint() {
         if (latestGuessNode) {
@@ -36,11 +40,8 @@
             console.log("You win!");
         }
     }
-    if (!guessedNodes.length) addNode(puzzle.source);
 
-    $: {
-        latestGuessNode = guessedNodes.at(-1);
-    }
+    addNode(puzzle.source);
 </script>
 
 <!-- 
@@ -67,7 +68,7 @@
         <div class="w-[80px]"></div>
         <SearchComponent {tryGuess} />
         <button
-            on:click={addHint}
+            onclick={addHint}
             class="bg-red-400 w-[80px] rounded-lg border-black border-2"
         >
             Hint?

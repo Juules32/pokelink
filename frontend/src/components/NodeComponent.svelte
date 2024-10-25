@@ -3,9 +3,13 @@
     import type { PokemonNode } from "$lib/interfaces";
 
     // Props
-    export let pokemonNode: PokemonNode;
-    export let circleDiameter = 128;
-    export let isSecret = false;
+    interface Props {
+        pokemonNode: PokemonNode;
+        circleDiameter?: number;
+        isSecret?: boolean;
+    }
+
+    let { pokemonNode, circleDiameter = 128, isSecret = false }: Props = $props();
 
     // Dictionary with soft colors for each Pokémon type in RGB format
     const typeColors: { [key: string]: string } = {
