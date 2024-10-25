@@ -2,13 +2,11 @@
     import { base } from "$app/paths";
     import type { PokemonNode } from "$lib/interfaces";
 
-    // Props
     interface Props {
         pokemonNode: PokemonNode;
         circleDiameter?: number;
         isSecret?: boolean;
     }
-
     let { pokemonNode, circleDiameter = 128, isSecret = false }: Props = $props();
 
     // Dictionary with soft colors for each Pokémon type in RGB format

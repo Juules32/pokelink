@@ -7,7 +7,6 @@
         tryGuess: Function;
         resetSearch: Function;
     }
-
     let { pokemonNode, tryGuess, resetSearch }: Props = $props();
 </script>
 
