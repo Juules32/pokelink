@@ -10,5 +10,11 @@
       "src": "/(.*)",
       "dest": "main.py"
     }
+  ],
+  "crons": [
+    {
+      "path": "/cron/generate/puzzle",
+      "schedule": "0 22 * * *"
+    }
   ]
 }
