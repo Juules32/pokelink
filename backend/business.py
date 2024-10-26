@@ -1,28 +1,25 @@
 import pickle
 from typing import Union
 from networkx import Graph
+from env import BLOB_HOST, ENVIRONMENT
 from database import Database
 from model import GraphData, Puzzle
 import random
 import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
-from date import get_date_str
 from graph_data_generation import get_graph_data, load_graph
-from dotenv import load_dotenv
-import os
 import httpx
 
 class Business:
     def __init__(self):
-        load_dotenv()
-        self.environment: Union[str, None] = os.getenv("ENVIRONMENT")
+        self.environment: Union[str, None] = ENVIRONMENT
         if self.environment == "DEVELOPMENT":
             self.graph = load_graph()
             print("Loaded graph from local file")
     
     def download_graph(self) -> Graph:
-        response = httpx.get(f"{os.getenv('BLOB_HOST')}/graph_data.pkl")
+        response = httpx.get(f"{BLOB_HOST}/graph_data.pkl")
         if response.status_code == 200:
             print("Downloading pickled file")
             return pickle.loads(response.content)

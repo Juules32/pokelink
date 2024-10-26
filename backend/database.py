@@ -1,12 +1,9 @@
-import pickle
-from networkx import Graph
-import psycopg2, os
+import psycopg2
 from typing import Any, Union
-from dotenv import load_dotenv
 from enum import Enum
 
+from env import CONNECTION_STRING
 from date import get_date_str
-from graph_data_generation import generate_graph
 from model import Puzzle
 
 class Fetch(Enum):
@@ -15,8 +12,7 @@ class Fetch(Enum):
 
 class Database:
     def __init__(self):
-        load_dotenv()
-        self.connection_string = os.getenv("CONNECTION_STRING")
+        self.connection_string = CONNECTION_STRING
         self.connection = None
 
     def commit_query(self, query: str, vars: Any = None, fetch: Union[Fetch, None] = None, message: Union[str, None] = None) -> Any:
@@ -90,6 +86,11 @@ class Database:
         query2 = """
             INSERT INTO puzzle (date, source, target, shortest_path, shortest_path_length)
             VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (date) DO UPDATE SET 
+                source = EXCLUDED.source,
+                target = EXCLUDED.target,
+                shortest_path = EXCLUDED.shortest_path,
+                shortest_path_length = EXCLUDED.shortest_path_length
         """
         self.commit_query(
             query=query2, 
