@@ -26,7 +26,3 @@ async function getGraphData(): Promise<GraphData> {
 export const graphData: GraphData = await getGraphData()
 export const pokemonNodes: PokemonNode[] = Object.values(graphData.nodes)
 export const edges = graphData.edges
-
-export function getPokemonNode(name: string): PokemonNode {
-    return graphData.nodes[name]
-}

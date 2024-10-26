@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fetchHint } from "$lib/backend";
-    import { edges, getPokemonNode, graphData, pokemonNodes } from "$lib/state";
+    import { edges, graphData, pokemonNodes } from "$lib/state";
     import GraphComponent from "./GraphComponent.svelte";
     import SearchComponent from "./SearchComponent.svelte";
     import type { PokemonNode, Puzzle } from "$lib/interfaces";
@@ -34,7 +34,7 @@
     }
 
     export function addNode(guess: string) {
-        const newNode = getPokemonNode(guess);
+        const newNode = graphData.nodes[guess];
         guessedNodes = [...guessedNodes, newNode];
         if (puzzle.target == guess) {
             console.log("You win!");
