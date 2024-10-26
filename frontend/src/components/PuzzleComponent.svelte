@@ -33,7 +33,7 @@
         }
     }
 
-    export function addNode(guess: string) {
+    function addNode(guess: string) {
         const newNode = graphData.nodes[guess];
         guessedNodes = [...guessedNodes, newNode];
         if (puzzle.target == guess) {
