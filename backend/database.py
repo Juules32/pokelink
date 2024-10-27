@@ -47,9 +47,9 @@ class Database:
         )
 
     def create_puzzle_table(self):
-        self.drop_table(table_name="puzzle")
+        self.drop_table(table_name="pokelink_puzzle")
         query = """
-            CREATE TABLE puzzle (
+            CREATE TABLE pokelink_puzzle (
                 date DATE PRIMARY KEY,
                 source TEXT NOT NULL,
                 target TEXT NOT NULL,
@@ -57,11 +57,11 @@ class Database:
                 shortest_path_length INT NOT NULL
             );
         """
-        self.commit_query(query=query, message="Created puzzle table successfully")
+        self.commit_query(query=query, message="Created pokelink_puzzle table successfully")
 
     def get_puzzle(self, date: Union[str, None] = None) -> Union[Puzzle, None]:
         query = """
-            SELECT source, target, shortest_path, shortest_path_length FROM puzzle
+            SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;
         """
         fetched_row = self.commit_query(
@@ -84,7 +84,7 @@ class Database:
     
     def set_puzzle(self, date: str, puzzle: Puzzle):
         query2 = """
-            INSERT INTO puzzle (date, source, target, shortest_path, shortest_path_length)
+            INSERT INTO pokelink_puzzle (date, source, target, shortest_path, shortest_path_length)
             VALUES (%s, %s, %s, %s, %s)
             ON CONFLICT (date) DO UPDATE SET 
                 source = EXCLUDED.source,
