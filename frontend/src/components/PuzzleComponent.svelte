@@ -81,7 +81,6 @@
             graphNodes={puzzle.shortestPath.map(
                 (name) => graphData.nodes[name]
             )}
-            hint={undefined}
         />
     {/if}
 </div>

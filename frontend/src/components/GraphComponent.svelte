@@ -4,7 +4,7 @@
     import type { PokemonNode } from "$lib/interfaces";
     import ArrowComponent from "./ArrowComponent.svelte";
 
-    export let hint: string | undefined;
+    export let hint: string | undefined = undefined;
     export let graphNodes: PokemonNode[];
 
     let scrollContainer: HTMLDivElement;

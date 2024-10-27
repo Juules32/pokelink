@@ -12,7 +12,7 @@
 
     let searchQuery = $state("");
     let filteredPokemonNodes: PokemonNode[] = $state([]);
-    let searchRef: HTMLElement | null = $state(null);
+    let searchRef: HTMLElement | undefined = $state();
 
     // Filter and return search results based on search query
     function getSearchData(search: string): PokemonNode[] {
