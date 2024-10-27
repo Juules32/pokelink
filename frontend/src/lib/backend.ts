@@ -4,7 +4,7 @@ import { error } from "@sveltejs/kit";
 
 export async function fetchPuzzle(fetch: any, params: any): Promise<Puzzle> {
     try {
-        let endpoint = params.slug ? "puzzle/" + params.slug : "puzzle";
+        let endpoint = params.date ? "puzzle/" + params.date : "puzzle";
         const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}`)
         if (!response.ok) {
             throw new Error()
