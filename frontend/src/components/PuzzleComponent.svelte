@@ -7,7 +7,7 @@
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
     import { dev } from "$app/environment";
-	import { confetti } from '@neoconfetti/svelte';
+    import { confetti } from "@neoconfetti/svelte";
 
     interface Props {
         date: string | undefined;
@@ -44,7 +44,7 @@
 
     addNode(puzzle.source);
 
-    let won = $derived(latestGuessNode?.name == puzzle.target)
+    let won = $derived(latestGuessNode?.name == puzzle.target);
 </script>
 
 {#if dev}
@@ -59,15 +59,15 @@
 {/if}
 
 {#if won}
-<div
-    style="position: absolute; left: 50%; top: 0%"
-    use:confetti={{
-        force: 0.7,
-        stageWidth: window.innerWidth - 40,             // 40 prevents overflow
-        stageHeight: window.innerHeight - 16,           // 16 prevents overflow
-        colors: ['#ff3e00', '#40b3ff', '#676778']
-    }}
-></div>
+    <div
+        style="position: absolute; left: 50%; top: 0%"
+        use:confetti={{
+            force: 0.7,
+            stageWidth: window.innerWidth - 40, // 40 prevents overflow
+            stageHeight: window.innerHeight - 16, // 16 prevents overflow
+            colors: ["#ff3e00", "#40b3ff", "#676778"]
+        }}
+    ></div>
 {/if}
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">

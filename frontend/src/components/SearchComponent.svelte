@@ -11,10 +11,10 @@
     let { tryGuess }: Props = $props();
 
     const searchGuess = (name: string) => {
-        tryGuess(name)
-        resetSearch()
-        searchInput?.focus()
-    }
+        tryGuess(name);
+        resetSearch();
+        searchInput?.focus();
+    };
 
     let searchQuery = $state("");
     let filteredPokemonNodes: PokemonNode[] = $state([]);
@@ -44,10 +44,10 @@
         // Prioritizes names that start with the search string
         if (startsWithSearchStringA && !startsWithSearchStringB) {
             return -1;
-        } 
+        }
         else if (!startsWithSearchStringA && startsWithSearchStringB) {
             return 1;
-        } 
+        }
         // Otherwise, items are sorted alphabetically
         else {
             return a.name.localeCompare(b.name);
@@ -75,9 +75,9 @@
 
     function handleSubmit(event: Event) {
         event.preventDefault();
-        const firstItem = filteredPokemonNodes[0]?.name
+        const firstItem = filteredPokemonNodes[0]?.name;
         if (firstItem) {
-            searchGuess(firstItem)
+            searchGuess(firstItem);
         }
     }
 </script>
