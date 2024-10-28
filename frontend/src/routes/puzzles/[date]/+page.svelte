@@ -1,8 +1,9 @@
 <script lang="ts">
     import PuzzleComponent from "$components/PuzzleComponent.svelte";
+    import type { PageData } from "./$types";
 
     interface Props {
-        data: any;
+        data: PageData;
     }
 
     let { data }: Props = $props();

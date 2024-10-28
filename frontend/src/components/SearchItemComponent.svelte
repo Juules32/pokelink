@@ -4,10 +4,9 @@
 
     interface Props {
         pokemonNode: PokemonNode;
-        tryGuess: Function;
-        resetSearch: Function;
+        searchGuess: (name: string) => void;
     }
-    let { pokemonNode, tryGuess, resetSearch }: Props = $props();
+    let { pokemonNode, searchGuess }: Props = $props();
 </script>
 
 <li class="hover:bg-gray-200 flex items-center align-middle p-2">
@@ -19,8 +18,7 @@
     <p class="grow text-left pl-2 capitalize truncate">{pokemonNode.name}</p>
     <button
         onclick={() => {
-            tryGuess(pokemonNode.name);
-            resetSearch();
+            searchGuess(pokemonNode.name);
         }}
         class="rounded-md px-4 py-2 bg-red-400">Guess</button
     >

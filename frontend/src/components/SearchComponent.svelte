@@ -6,13 +6,24 @@
     import { pokemonNodes } from "$lib/state";
 
     interface Props {
-        tryGuess: Function;
+        tryGuess: (name: string) => void;
     }
     let { tryGuess }: Props = $props();
 
+    const searchGuess = (name: string) => {
+        tryGuess(name)
+        resetSearch()
+        searchInput?.focus()
+    }
+
     let searchQuery = $state("");
     let filteredPokemonNodes: PokemonNode[] = $state([]);
+
+    // The outermost div of the search component
     let searchRef: HTMLElement | undefined = $state();
+
+    // The input element of the search component
+    let searchInput: HTMLInputElement | undefined = $state();
 
     // Filter and return search results based on search query
     function getSearchData(search: string): PokemonNode[] {
@@ -61,6 +72,14 @@
     onDestroy(() => {
         if (browser) document.removeEventListener("click", handleClickOutside);
     });
+
+    function handleSubmit(event: Event) {
+        event.preventDefault();
+        const firstItem = filteredPokemonNodes[0]?.name
+        if (firstItem) {
+            searchGuess(firstItem)
+        }
+    }
 </script>
 
 <div class="z-20 w-3/4 max-w-[500px]" bind:this={searchRef}>
@@ -68,22 +87,25 @@
         class="bg-red-400 h-16 flex border-2 border-black justify-center items-center rounded-lg"
         class:rounded-b-none={searchQuery}
     >
-        <input
-            class="p-2 border-2 w-3/4 max-w-[292px] border-black"
-            type="text"
-            bind:value={searchQuery}
-            oninput={async () => {
-                filteredPokemonNodes = getSearchData(searchQuery);
-            }}
-            placeholder="Search Pokémon..."
-        />
+        <form class="w-3/4 max-w-[292px]" onsubmit={handleSubmit}>
+            <input
+                class="p-2 border-2 w-full border-black"
+                type="text"
+                bind:value={searchQuery}
+                bind:this={searchInput}
+                oninput={async () => {
+                    filteredPokemonNodes = getSearchData(searchQuery);
+                }}
+                placeholder="Search Pokémon..."
+            />
+        </form>
     </div>
     {#if searchQuery}
         <ul
             class="z-10 absolute w-3/4 sm:w-[500px] divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
             {#each filteredPokemonNodes as pokemonNode}
-                <SearchItemComponent {resetSearch} {pokemonNode} {tryGuess} />
+                <SearchItemComponent {searchGuess} {pokemonNode} />
             {/each}
         </ul>
     {/if}

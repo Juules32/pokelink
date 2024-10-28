@@ -17,7 +17,9 @@
     });
 </script>
 
+<!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -->
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+<!-- eslint-disable-next-line svelte/valid-compile -->
 <dialog
     class="border-2 border-black rounded-lg w-[500px] max-h-[80%] overflow-y-scroll overflow-x-hidden"
 	bind:this={dialog}
@@ -35,7 +37,7 @@
 	</div>
 </dialog>
 
-<style>
+<style scoped>
 	dialog::backdrop {
 		background: rgba(0, 0, 0, 0.3);
 	}
