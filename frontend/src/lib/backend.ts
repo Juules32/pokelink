@@ -2,9 +2,12 @@ import type { GraphData, Puzzle } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 import { error } from "@sveltejs/kit";
 
-export async function fetchPuzzle(fetch: any, params: any): Promise<Puzzle> {
+export async function fetchPuzzle(
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>, 
+    params: Record<string, string>
+): Promise<Puzzle> {
     try {
-        let endpoint = params.date ? "puzzle/" + params.date : "puzzle";
+        const endpoint = params.date ? "puzzle/" + params.date : "puzzle";
         const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}`)
         if (!response.ok) {
             throw new Error()
@@ -24,7 +27,9 @@ export async function fetchPuzzle(fetch: any, params: any): Promise<Puzzle> {
 }
 
 export async function fetchHint(source: string, target: string): Promise<string> {
-    const response = await fetch(`${PUBLIC_BACKEND_HOST}/hint?source=${source}&target=${target}`)
+    const response = await fetch(
+        `${PUBLIC_BACKEND_HOST}/hint?source=${source}&target=${target}`
+    )
     const data = await response.json()
     return data
 }

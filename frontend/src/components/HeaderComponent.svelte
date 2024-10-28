@@ -12,8 +12,7 @@
         <p class="text-3xl">PokéLink</p>
     </a>
     <div class="w-full flex justify-end gap-x-10 px-8">
-
-        <p class="text-2xl">Previous Puzzles</p>
+        <p class="text-2xl">Puzzles</p>
         <button class="text-2xl" onclick={() => showTutorial = true}>Rules</button>
     </div>
 </div>
