@@ -71,15 +71,14 @@
 {/if}
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">
-    <h1 class="text-5xl">{date ? "Puzzle: " + date : "Today's Puzzle"}</h1>
+    <h1 class="sm:text-5xl text-3xl">{date ? "Puzzle: " + date : "Today's Puzzle"}</h1>
     <div class="flex items-center">
         <NodeComponent pokemonName={puzzle.source} />
         <ArrowComponent />
         <NodeComponent pokemonName={puzzle.target} />
     </div>
 
-    <div class="flex w-full justify-center space-x-2">
-        <div class="w-[80px]"></div>
+    <div class="flex w-3/4 max-w-[500px] justify-center space-x-2">
         <SearchComponent {tryGuess} />
         <button
             onclick={addHint}
