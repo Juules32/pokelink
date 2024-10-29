@@ -86,7 +86,6 @@ class Business:
 
     def get_puzzles(self, userid: str) -> PuzzlesItem:
         puzzle_dates = self.db.get_puzzle_dates()
-        print(puzzle_dates)
         return [
             PuzzlesItem(date=date, source=source, target=target, completed=False)
             for date, source, target in puzzle_dates

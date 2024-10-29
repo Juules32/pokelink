@@ -104,7 +104,6 @@ class Database:
             query=query,
             fetch=Fetch.ALL
         )
-        print(fetched_data)
         return [
             (str(date), source, target)
             for date, source, target in fetched_data
