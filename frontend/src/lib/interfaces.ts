@@ -15,5 +15,12 @@ export interface Puzzle {
 
 export interface GraphData {
 	nodes: { [key: string]: PokemonNode };
-	edges: { [key: string]: string[] }
+	edges: { [key: string]: string[] };
+}
+
+export interface PuzzlesItem {
+	date: string;
+	source: string;
+	target: string;
+	completed: boolean;
 }

@@ -80,9 +80,11 @@
             searchGuess(firstItem);
         }
     }
+
+    let width = $state()
 </script>
 
-<div class="z-20 w-full" bind:this={searchRef}>
+<div class="z-30 w-full" bind:this={searchRef} bind:clientWidth={width}>
     <div
         class="bg-red-400 h-16 flex border-2 border-black justify-center items-center rounded-lg"
         class:rounded-b-none={searchQuery}
@@ -102,7 +104,8 @@
     </div>
     {#if searchQuery}
         <ul
-            class="z-10 absolute w-3/4 sm:w-[500px] divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
+            style="width: {width}px;"
+            class="z-10 absolute divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
             {#each filteredPokemonNodes as pokemonNode}
                 <SearchItemComponent {searchGuess} {pokemonNode} />

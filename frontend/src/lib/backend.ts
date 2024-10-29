@@ -1,9 +1,9 @@
-import type { GraphData, Puzzle } from "$lib/interfaces";
+import type { GraphData, Puzzle, PuzzlesItem } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 import { error } from "@sveltejs/kit";
 
 export async function fetchPuzzle(
-    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>, 
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
     params: Record<string, string>
 ): Promise<Puzzle> {
     try {
@@ -39,4 +39,20 @@ export async function fetchGraphData(): Promise<GraphData> {
     const response = await fetch(`${PUBLIC_BACKEND_HOST}/graph_data`)
     const data = await response.json()
     return data
+}
+
+export async function fetchPuzzles(
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+): Promise<PuzzlesItem[]> {
+    try {
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=2`)
+        if (!response.ok) {
+            throw new Error()
+        }
+        const data = await response.json()
+        return data
+    }
+    catch {
+        error(500, "Something went wrong!")
+    }
 }
