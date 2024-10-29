@@ -26,3 +26,9 @@ Shortest Path Length = {self.shortest_path_length}
 class GraphData(BaseModel):
     nodes: dict[str, PokemonNode]
     edges: dict[str, list[str]]
+
+class PuzzlesItem(BaseModel):
+    date: str
+    source: str
+    target: str
+    completed: bool
