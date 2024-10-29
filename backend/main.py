@@ -54,7 +54,7 @@ def generate_daily_data(request: Request) -> JSONResponse:
         return JSONResponse({"error": "Invalid authorization header"}, status_code=403)
 
     new_puzzle = bn.generate_puzzle(bn.get_graph(), get_date_str(), strict=True)
-    bn.db.set_puzzle(get_date_str(1), new_puzzle)
+    bn.db.set_puzzle(new_puzzle)
     print("Set tomorrow's puzzle successfully!")
 
     return JSONResponse({"result": "success"}, status_code=200)
