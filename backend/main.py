@@ -53,7 +53,7 @@ def generate_daily_data(request: Request) -> JSONResponse:
     if authorization_header != f"Bearer {CRON_SECRET}":
         return JSONResponse({"error": "Invalid authorization header"}, status_code=403)
 
-    new_puzzle = bn.generate_puzzle(bn.get_graph(), get_date_str(), strict=True)
+    new_puzzle = bn.generate_puzzle(bn.get_graph(), get_date_str(1), strict=True)
     bn.db.set_puzzle(new_puzzle)
     print("Set tomorrow's puzzle successfully!")
 
