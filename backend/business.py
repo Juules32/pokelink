@@ -41,7 +41,7 @@ class Business:
     def get_puzzle(self, date: Union[str, None] = None) -> Puzzle:
         return Database().get_puzzle(date)
     
-    def generate_puzzle(self, graph: Graph, strict: bool) -> Puzzle:
+    def generate_puzzle(self, graph: Graph, date: str, strict: bool) -> Puzzle:
         pokemon_names = list(graph.nodes.keys())
         source=random.choice(pokemon_names)
         target=random.choice(pokemon_names)
@@ -52,17 +52,18 @@ class Business:
             raise Exception(f"Found Puzzle with no connection: {source} to {target}")
         if strict and not self.is_valid(graph, source, target):
             print("Puzzle wan't valid! Retrying...")
-            return self.generate_puzzle(graph, strict=True)
+            return self.generate_puzzle(graph, date, strict=True)
         
         return Puzzle(
+            date=date,
             source=source,
             target=target,
             shortest_path=nx.shortest_path(graph, source, target),
             shortest_path_length=nx.shortest_path_length(graph, source, target)
         )
 
-    def generate_10_puzzles(self, graph: Graph) -> list[Puzzle]:
-        return [self.generate_puzzle(graph, strict=True) for _ in range(10)]
+    def generate_10_puzzles(self, graph: Graph, date: str) -> list[Puzzle]:
+        return [self.generate_puzzle(graph, date, strict=True) for _ in range(10)]
 
     def get_generational_difference(self, graph: Graph, source: str, target: str) -> int:
         source_region_number = region_number[graph.nodes[source]["region"]]

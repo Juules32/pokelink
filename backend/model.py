@@ -9,6 +9,7 @@ class PokemonNode(BaseModel):
 
 # Stored in the database as daily puzzles
 class Puzzle(BaseModel):
+    date: str
     source: str                             # The name of the starting pokémon
     target: str                             # The name of the finishing pokémon
     shortest_path: list[str]                # The names of the pokémon of the shortest path

@@ -65,9 +65,9 @@ class Database:
             WHERE date = %s;
         """
         fetched_row = self.commit_query(
-            query=query, 
+            query=query,
             vars=(date if date else get_date_str(),),
-            fetch=Fetch.ONE, 
+            fetch=Fetch.ONE,
             message=f"Got puzzle data successfully"
         )
 
@@ -76,13 +76,14 @@ class Database:
         
         source, target, shortest_path, shortest_path_length = fetched_row
         return Puzzle(
+            date=date if date else get_date_str(),
             source=source, 
             target=target, 
             shortest_path=shortest_path, 
             shortest_path_length=shortest_path_length
         )
     
-    def set_puzzle(self, date: str, puzzle: Puzzle):
+    def set_puzzle(self, puzzle: Puzzle):
         query2 = """
             INSERT INTO pokelink_puzzle (date, source, target, shortest_path, shortest_path_length)
             VALUES (%s, %s, %s, %s, %s)
@@ -94,5 +95,5 @@ class Database:
         """
         self.commit_query(
             query=query2, 
-            vars=(date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
+            vars=(puzzle.date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
         )

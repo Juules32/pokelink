@@ -6,6 +6,7 @@ export interface PokemonNode {
 }
 
 export interface Puzzle {
+	date: string;
 	source: string;
 	target: string;
 	shortestPath: string[];

@@ -8,7 +8,7 @@ if __name__ == "__main__":
     db = Database()
     db.create_puzzle_table()
     bn = Business()
-    ten_puzzles = bn.generate_10_puzzles(bn.get_graph())
-    for i, puzzle in enumerate(ten_puzzles):
-        db.set_puzzle(get_date_str(i), puzzle)
+    ten_puzzles = bn.generate_10_puzzles(bn.get_graph(), get_date_str())
+    for puzzle in ten_puzzles:
+        db.set_puzzle(puzzle)
     print(db.get_puzzle(get_date_str()))

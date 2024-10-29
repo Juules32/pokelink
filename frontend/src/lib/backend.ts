@@ -14,6 +14,7 @@ export async function fetchPuzzle(
         }
         const data = await response.json()
         const result: Puzzle = {
+            date: data.date,
             source: data.source,
             target: data.target,
             shortestPath: data.shortest_path,
