@@ -14,7 +14,6 @@
         puzzle: Puzzle;
     }
     let { date, puzzle }: Props = $props();
-
     let guessedNodes: PokemonNode[] = $state([]);
     let hint: string | undefined = $state();
     const latestGuessNode = $derived(guessedNodes.at(-1));
