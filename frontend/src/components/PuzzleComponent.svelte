@@ -27,7 +27,7 @@
 
     function tryGuess(name: string) {
         if (latestGuessNode) {
-            if (edges[latestGuessNode.name].includes(name)) {
+            if ($edges[latestGuessNode.name].includes(name)) {
                 hint = undefined;
                 addNode(name);
             }
@@ -35,7 +35,7 @@
     }
 
     function addNode(guess: string) {
-        const newNode = graphData.nodes[guess];
+        const newNode = $graphData.nodes[guess];
         guessedNodes = [...guessedNodes, newNode];
         if (puzzle.target == guess) {
             console.log("You win!");
@@ -51,7 +51,7 @@
     <button
         class="w-[128px] absolute left-0 text-center"
         onclick={() => addNode(
-            pokemonNodes[Math.floor(Math.random() * pokemonNodes.length)].name
+            $pokemonNodes[Math.floor(Math.random() * $pokemonNodes.length)].name
         )}
     >
         Add Random Pokemon
@@ -94,7 +94,7 @@
         <h2 class="text-3xl">Shortest path</h2>
         <GraphComponent
             graphNodes={puzzle.shortestPath.map(
-                (name) => graphData.nodes[name]
+                (name) => $graphData.nodes[name]
             )}
         />
     {/if}
