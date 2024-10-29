@@ -8,7 +8,6 @@
     interface Props {
         children?: import('svelte').Snippet;
     }
-
     let { children }: Props = $props();
     
     let loaded = $state(false);
