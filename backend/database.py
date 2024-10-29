@@ -97,3 +97,15 @@ class Database:
             query=query2, 
             vars=(puzzle.date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
         )
+
+    def get_puzzle_dates(self) -> list[tuple[str, str, str]]:
+        query = "SELECT date, source, target FROM pokelink_puzzle ORDER BY date DESC"
+        fetched_data = self.commit_query(
+            query=query,
+            fetch=Fetch.ALL
+        )
+        print(fetched_data)
+        return [
+            (str(date), source, target)
+            for date, source, target in fetched_data
+        ]

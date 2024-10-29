@@ -2,7 +2,6 @@ from typing import Union
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from env import CRON_SECRET
-from database import Database
 from date import get_date_str
 from business import Business
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,6 +34,10 @@ def get_puzzle(date: Union[str, None]) -> JSONResponse:
         return JSONResponse(content={"error": "Puzzle not found"},status_code=404)
     return JSONResponse(content=puzzle.model_dump(), status_code=200)
 
+@app.get("/puzzles")
+def get_puzzles(userid: str) -> JSONResponse:
+    return bn.get_puzzles(userid)
+
 @app.get("/hint")
 def get_hint(source: str, target: str) -> JSONResponse:
     graph = bn.get_graph()
@@ -51,7 +54,7 @@ def generate_daily_data(request: Request) -> JSONResponse:
         return JSONResponse({"error": "Invalid authorization header"}, status_code=403)
 
     new_puzzle = bn.generate_puzzle(bn.get_graph(), strict=True)
-    Database().set_puzzle(get_date_str(1), new_puzzle)
+    bn.db.set_puzzle(get_date_str(1), new_puzzle)
     print("Set tomorrow's puzzle successfully!")
 
     return JSONResponse({"result": "success"}, status_code=200)
