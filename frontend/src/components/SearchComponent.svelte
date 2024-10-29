@@ -28,7 +28,7 @@
     // Filter and return search results based on search query
     function getSearchData(search: string): PokemonNode[] {
         const searchLowerCase = search.toLowerCase();
-        return pokemonNodes
+        return $pokemonNodes
             .filter((node: PokemonNode) => node.name.includes(searchLowerCase))
             .sort((a: PokemonNode, b: PokemonNode) =>
                 customSort(a, b, searchLowerCase)

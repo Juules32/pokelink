@@ -7,7 +7,7 @@
         isSecret?: boolean;
     }
     let { pokemonName, isSecret = false }: Props = $props();
-    const pokemonNode = graphData.nodes[pokemonName]
+    const pokemonNode = $graphData.nodes[pokemonName]
 
     const circleDiameter = "128px"
 
