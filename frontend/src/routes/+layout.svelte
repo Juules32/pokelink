@@ -17,7 +17,6 @@
         $edges = $graphData.edges
 
         loaded = true;
-        console.log("Loaded graph data")
     });
 </script>
 
