@@ -1,11 +1,10 @@
 <script lang="ts">
     import NodeComponent from "./NodeComponent.svelte";
     import { afterUpdate } from "svelte";
-    import type { PokemonNode } from "$lib/interfaces";
     import ArrowComponent from "./ArrowComponent.svelte";
 
     export let hint: string | undefined = undefined;
-    export let graphNodes: PokemonNode[];
+    export let graphNames: string[];
 
     let scrollContainer: HTMLDivElement;
     afterUpdate(() => {
@@ -25,11 +24,11 @@
         bind:this={scrollContainer}
         class="h-full flex items-center px-4 overflow-x-auto whitespace-nowrap"
     >
-        {#each graphNodes as guessedNode, i}
+        {#each graphNames as name, i}
             {#if i}
                 <ArrowComponent />
             {/if}
-            <NodeComponent pokemonName={guessedNode.name} />
+            <NodeComponent pokemonName={name} />
         {/each}
         {#if hint}
             <ArrowComponent />

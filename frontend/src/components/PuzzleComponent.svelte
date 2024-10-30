@@ -1,9 +1,9 @@
 <script lang="ts">
     import { fetchHint } from "$lib/backend";
-    import { edges, graphData, pokemonNodes } from "$lib/state";
+    import { edges, pokemonNodes } from "$lib/state";
     import GraphComponent from "./GraphComponent.svelte";
     import SearchComponent from "./SearchComponent.svelte";
-    import type { PokemonNode, Puzzle } from "$lib/interfaces";
+    import type { Puzzle } from "$lib/interfaces";
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
     import { dev } from "$app/environment";
@@ -14,19 +14,19 @@
         puzzle: Puzzle;
     }
     let { date, puzzle }: Props = $props();
-    let guessedNodes: PokemonNode[] = $state([]);
+    let guessedNames: string[] = $state([]);
     let hint: string | undefined = $state();
-    const latestGuessNode = $derived(guessedNodes.at(-1));
+    const latestGuessName = $derived(guessedNames.at(-1));
 
     async function addHint() {
-        if (latestGuessNode) {
-            hint = await fetchHint(latestGuessNode.name, puzzle.target);
+        if (latestGuessName) {
+            hint = await fetchHint(latestGuessName, puzzle.target);
         }
     }
 
     function tryGuess(name: string) {
-        if (latestGuessNode) {
-            if ($edges[latestGuessNode.name].includes(name)) {
+        if (latestGuessName) {
+            if ($edges[latestGuessName].includes(name)) {
                 addNode(name);
             }
         }
@@ -34,8 +34,7 @@
 
     function addNode(guess: string) {
         hint = undefined;
-        const newNode = $graphData.nodes[guess];
-        guessedNodes = [...guessedNodes, newNode];
+        guessedNames = [...guessedNames, guess];
         if (puzzle.target == guess) {
             console.log("You win!");
         }
@@ -43,8 +42,8 @@
 
     addNode(puzzle.source);
 
-    let won = $derived(latestGuessNode?.name == puzzle.target);
-    let numGuesses = $derived(guessedNodes.length - 1)
+    let won = $derived(latestGuessName == puzzle.target);
+    let numGuesses = $derived(guessedNames.length - 1)
 </script>
 
 {#if dev}
@@ -98,14 +97,15 @@
         </div>
     {/if}
 
-    <GraphComponent graphNodes={guessedNodes} {hint} />
+    <GraphComponent 
+        graphNames={guessedNames}
+        {hint}
+    />
 
     {#if won}
         <h2 class="sm:text-3xl text-xl">Shortest path: {puzzle.shortestPathLength} {puzzle.shortestPathLength > 1 ? "Guesses" : "Guess"}</h2>
         <GraphComponent
-            graphNodes={puzzle.shortestPath.map(
-                (name) => $graphData.nodes[name]
-            )}
+            graphNames={puzzle.shortestPath}
         />
     {/if}
 </div>
