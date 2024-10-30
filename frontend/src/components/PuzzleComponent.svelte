@@ -27,13 +27,13 @@
     function tryGuess(name: string) {
         if (latestGuessNode) {
             if ($edges[latestGuessNode.name].includes(name)) {
-                hint = undefined;
                 addNode(name);
             }
         }
     }
 
     function addNode(guess: string) {
+        hint = undefined;
         const newNode = $graphData.nodes[guess];
         guessedNodes = [...guessedNodes, newNode];
         if (puzzle.target == guess) {
@@ -44,6 +44,7 @@
     addNode(puzzle.source);
 
     let won = $derived(latestGuessNode?.name == puzzle.target);
+    let numGuesses = $derived(guessedNodes.length - 1)
 </script>
 
 {#if dev}
@@ -54,6 +55,12 @@
         )}
     >
         Add Random Pokemon
+    </button>
+    <button
+        class="w-[128px] absolute left-32 text-center"
+        onclick={() => addNode(puzzle.target)}
+    >
+        Complete Puzzle
     </button>
 {/if}
 
@@ -77,19 +84,24 @@
         <NodeComponent pokemonName={puzzle.target} />
     </div>
 
-    <div class="flex w-3/4 max-w-[500px] justify-center space-x-2">
-        <SearchComponent {tryGuess} />
-        <button
-            onclick={addHint}
-            class="bg-red-400 w-[80px] rounded-lg border-black border-2"
-        >
-            Hint?
-        </button>
-    </div>
+    {#if won}
+        <h2 class="sm:text-3xl text-xl">Your Solution: {numGuesses} {numGuesses > 1 ? "Guesses" : "Guess"}</h2>
+    {:else}
+        <div class="flex w-3/4 max-w-[500px] justify-center space-x-2">
+            <SearchComponent {tryGuess} />
+            <button
+                onclick={addHint}
+                class="bg-red-400 w-[80px] rounded-lg border-black border-2"
+            >
+                Hint?
+            </button>
+        </div>
+    {/if}
+
     <GraphComponent graphNodes={guessedNodes} {hint} />
 
     {#if won}
-        <h2 class="text-3xl">Shortest path</h2>
+        <h2 class="sm:text-3xl text-xl">Shortest path: {puzzle.shortestPathLength} {puzzle.shortestPathLength > 1 ? "Guesses" : "Guess"}</h2>
         <GraphComponent
             graphNodes={puzzle.shortestPath.map(
                 (name) => $graphData.nodes[name]
