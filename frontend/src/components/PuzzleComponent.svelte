@@ -8,13 +8,15 @@
     import ArrowComponent from "./ArrowComponent.svelte";
     import { dev } from "$app/environment";
     import { confetti } from "@neoconfetti/svelte";
+    import { onMount } from "svelte";
 
     interface Props {
         date: string | undefined;
         puzzle: Puzzle;
     }
     let { date, puzzle }: Props = $props();
-    let guessedNames: string[] = $state([]);
+
+    let guessedNames: string[] = $state(getLocalGuesses());
     let hint: string | undefined = $state();
     const latestGuessName = $derived(guessedNames.at(-1));
 
@@ -24,11 +26,24 @@
         }
     }
 
+    function getLocalGuesses(): string[] {
+        const localGuessesJson = localStorage.getItem(`puzzle-${puzzle.date}`)
+        if (localGuessesJson) {
+            console.log("Loaded guesses from local storage")
+            return JSON.parse(localGuessesJson)
+        }
+        else {
+            return []
+        }
+    }
+
+    function setLocalGuesses() {
+        localStorage.setItem(`puzzle-${puzzle.date}`, JSON.stringify(guessedNames))
+    }
+
     function tryGuess(name: string) {
-        if (latestGuessName) {
-            if ($edges[latestGuessName].includes(name)) {
-                addNode(name);
-            }
+        if (latestGuessName && $edges[latestGuessName].includes(name)) {
+            addNode(name);
         }
     }
 
@@ -38,9 +53,15 @@
         if (puzzle.target == guess) {
             console.log("You win!");
         }
+        setLocalGuesses()
     }
 
-    addNode(puzzle.source);
+    onMount(() => {
+        if (!guessedNames.length) {
+            console.log("Adding puzzle source to guesses")
+            addNode(puzzle.source);
+        }
+    })
 
     let won = $derived(latestGuessName == puzzle.target);
     let numGuesses = $derived(guessedNames.length - 1)
