@@ -31,7 +31,7 @@ def get_puzzle() -> JSONResponse:
 def get_puzzle(date: Union[str, None]) -> JSONResponse:
     puzzle = bn.get_puzzle(date)
     if not puzzle:
-        return JSONResponse(content={"error": "Puzzle not found"},status_code=404)
+        return JSONResponse(content="Puzzle not found", status_code=404)
     return JSONResponse(content=puzzle.model_dump(), status_code=200)
 
 @app.get("/puzzles")
@@ -48,13 +48,13 @@ def generate_daily_data(request: Request) -> JSONResponse:
     authorization_header = request.headers.get("authorization")
 
     if not authorization_header:
-        return JSONResponse({"error": "Missing authorization header"}, status_code=401)
+        return JSONResponse(content="Missing authorization header", status_code=401)
 
     if authorization_header != f"Bearer {CRON_SECRET}":
-        return JSONResponse({"error": "Invalid authorization header"}, status_code=403)
+        return JSONResponse(content="Invalid authorization header", status_code=403)
 
     new_puzzle = bn.generate_puzzle(bn.get_graph(), get_date_str(1), strict=True)
     bn.db.set_puzzle(new_puzzle)
     print("Set tomorrow's puzzle successfully!")
 
-    return JSONResponse({"result": "success"}, status_code=200)
+    return JSONResponse(content="Success", status_code=200)
