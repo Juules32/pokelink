@@ -9,4 +9,4 @@
     let { data }: Props = $props();
 </script>
 
-<PuzzleComponent puzzle={data.puzzle} date={data.date}/>
+<PuzzleComponent puzzleResponse={data.puzzleResponse} />

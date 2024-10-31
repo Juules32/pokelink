@@ -1,3 +1,4 @@
+from typing import Union
 from pydantic import BaseModel
 
 # A grouping of pokémon data used in AdjacencyData
@@ -32,3 +33,11 @@ class PuzzlesItem(BaseModel):
     source: str
     target: str
     completed: bool
+
+class SolutionRequest(BaseModel):
+    userid: str
+    solution: list[str]
+
+class PuzzleResponse(BaseModel):
+    puzzle: Puzzle
+    solution: Union[list[str], None]

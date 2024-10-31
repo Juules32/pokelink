@@ -1,8 +1,9 @@
+export const ssr = false
+
 import { fetchPuzzle } from '$lib/backend';
 
 export async function load({ fetch, params }) {
     return {
-        puzzle: await fetchPuzzle(fetch, params),
-        date: undefined
+        puzzleResponse: await fetchPuzzle(fetch, params)
     }
 };

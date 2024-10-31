@@ -108,3 +108,42 @@ class Database:
             (str(date), source, target)
             for date, source, target in fetched_data
         ]
+
+    def create_user_solution_table(self):
+        self.drop_table(table_name="pokelink_user_solution")
+        query = """
+            CREATE TABLE pokelink_user_solution (
+                userid UUID NOT NULL,
+                date DATE NOT NULL,
+                solution TEXT[] NOT NULL,
+                PRIMARY KEY (userid, date)
+            );
+        """
+        self.commit_query(query=query, message="Created pokelink_user_solution table successfully")
+
+    def set_user_solution(self, userid: str, date: str, solution: list[str]):
+        query = """
+            INSERT INTO pokelink_user_solution (userid, date, solution)
+            VALUES (%s, %s, %s)
+        """
+        self.commit_query(
+            query=query,
+            vars=(userid, date, solution),
+            message="Set user solution successfully")
+    
+    def get_user_solution(self, userid: str, date: str) -> Union[list[str], None]:
+        query = """
+            SELECT solution from pokelink_user_solution
+            WHERE userid = %s
+            AND date = %s
+        """
+        
+        solution = self.commit_query(
+            query=query,
+            vars=(userid, date),
+            fetch=Fetch.ONE,
+            message="Got user solution successfully"
+        )
+
+        # Returns the solution if it exists, otherwise None
+        return solution[0] if solution else None

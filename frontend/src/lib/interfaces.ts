@@ -24,3 +24,8 @@ export interface PuzzlesItem {
 	target: string;
 	completed: boolean;
 }
+
+export interface PuzzleResponse {
+	puzzle: Puzzle;
+	solution: string[] | null;
+}
