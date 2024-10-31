@@ -78,8 +78,11 @@ class Business:
 
         generational_difference = self.get_generational_difference(graph, source, target)
         shortest_path_length = nx.shortest_path_length(graph, source, target)
-        return shortest_path_length >= MIN_SHORTEST_PATH_LENGTH and generational_difference >= MIN_GENERATIONAL_DIFFERENCE
-
+        return (
+            shortest_path_length >= MIN_SHORTEST_PATH_LENGTH and 
+            generational_difference >= MIN_GENERATIONAL_DIFFERENCE and
+            set(graph.nodes[source]["types"]).isdisjoint(set(graph.nodes[target]["types"]))
+        )
     def get_hint(self, graph: Graph, source: str, target: str) -> str:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
