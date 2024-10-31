@@ -1,22 +1,24 @@
 <script lang="ts">
-    import { fetchHint } from "$lib/backend";
+    import { fetchHint, postSolution } from "$lib/backend";
     import { edges, pokemonNodes } from "$lib/state";
     import GraphComponent from "./GraphComponent.svelte";
     import SearchComponent from "./SearchComponent.svelte";
-    import type { Puzzle } from "$lib/interfaces";
+    import type { PuzzleResponse } from "$lib/interfaces";
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
     import { dev } from "$app/environment";
     import { confetti } from "@neoconfetti/svelte";
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
 
     interface Props {
-        date: string | undefined;
-        puzzle: Puzzle;
+        puzzleResponse: PuzzleResponse;
     }
-    let { date, puzzle }: Props = $props();
+    let { puzzleResponse }: Props = $props();
 
-    let guessedNames: string[] = $state(getLocalGuesses());
+    const puzzle = puzzleResponse.puzzle
+
+    let guessedNames: string[] = $state(puzzleResponse.solution || getLocalGuesses());
     let hint: string | undefined = $state();
     const latestGuessName = $derived(guessedNames.at(-1));
 
@@ -48,10 +50,16 @@
     }
 
     function addNode(guess: string) {
+        if (won) {
+            console.log("Can't guess when you have already completed this puzzle")
+            return
+        }
+
         hint = undefined;
         guessedNames = [...guessedNames, guess];
         if (puzzle.target == guess) {
             console.log("You win!");
+            postSolution(puzzle.date, guessedNames)
         }
         setLocalGuesses()
     }
@@ -63,7 +71,7 @@
         }
     })
 
-    let won = $derived(latestGuessName == puzzle.target);
+    let won = $derived(puzzleResponse.solution || latestGuessName == puzzle.target);
     let numGuesses = $derived(guessedNames.length - 1)
 </script>
 
@@ -84,7 +92,7 @@
     </button>
 {/if}
 
-{#if won}
+{#if won && !puzzleResponse.solution}
     <div
         style="position: absolute; left: 50%; top: 0%"
         use:confetti={{
@@ -97,7 +105,7 @@
 {/if}
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">
-    <h1 class="sm:text-5xl text-3xl">{date ? "Puzzle: " + date : "Today's Puzzle"}</h1>
+    <h1 class="sm:text-5xl text-3xl">{$page.params.date ? "Puzzle: " + $page.params.date : "Today's Puzzle"}</h1>
     <div class="flex items-center">
         <NodeComponent pokemonName={puzzle.source} />
         <ArrowComponent />

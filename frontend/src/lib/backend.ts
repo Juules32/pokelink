@@ -1,6 +1,7 @@
-import type { GraphData, Puzzle, PuzzlesItem } from "$lib/interfaces";
+import type { GraphData, PuzzleResponse, PuzzlesItem } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 import { error } from "@sveltejs/kit";
+import { userid } from "./userid";
 
 class HttpError extends Error {
     status: number;
@@ -13,24 +14,27 @@ class HttpError extends Error {
 export async function fetchPuzzle(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
     params: Record<string, string>
-): Promise<Puzzle> {
+): Promise<PuzzleResponse> {
     try {
         const endpoint = params.date ? "puzzle/" + params.date : "puzzle";
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}?userid=${userid}`)
         const data = await response.json()
 
         if (!response.ok) {
             const error = new HttpError(response.status, data);
-            error.status = response.status;  // Attach the status to the error object
-            throw error;  // This will be caught in the .catch() block
+            error.status = response.status;
+            throw error;
         }
 
-        const result: Puzzle = {
-            date: data.date,
-            source: data.source,
-            target: data.target,
-            shortestPath: data.shortest_path,
-            shortestPathLength: data.shortest_path_length
+        const result: PuzzleResponse = {
+            puzzle: {
+                date: data.puzzle.date,
+                source: data.puzzle.source,
+                target: data.puzzle.target,
+                shortestPath: data.puzzle.shortest_path,
+                shortestPathLength: data.puzzle.shortest_path_length
+            },
+            solution: data.solution
         }
         return result
     }
@@ -70,7 +74,7 @@ export async function fetchPuzzles(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 ): Promise<PuzzlesItem[]> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=2`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=${userid}`)
         if (!response.ok) {
             throw new Error()
         }
@@ -80,4 +84,12 @@ export async function fetchPuzzles(
     catch {
         error(500, "Could not fetch puzzles")
     }
+}
+
+export function postSolution(date: string, guessedNames: string[]) {
+    fetch(`${PUBLIC_BACKEND_HOST}/solution/${date}`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ userid: userid, solution: guessedNames })
+    })
 }
