@@ -147,3 +147,18 @@ class Database:
 
         # Returns the solution if it exists, otherwise None
         return solution[0] if solution else None
+
+    def get_completed_puzzles(self, userid: str) -> list[str]:
+        query = """
+            SELECT date from pokelink_user_solution
+            WHERE userid = %s
+        """
+
+        dates = self.commit_query(
+            query=query,
+            vars=(userid,),
+            fetch=Fetch.ALL,
+            message="Got completed puzzles successfully"
+        )
+
+        return [str(row[0]) for row in dates] if dates else []
