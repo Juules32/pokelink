@@ -32,7 +32,14 @@
         const localGuessesJson = localStorage.getItem(`puzzle-${puzzle.date}`)
         if (localGuessesJson) {
             console.log("Loaded guesses from local storage")
-            return JSON.parse(localGuessesJson)
+            const parsedLocalGuesses = JSON.parse(localGuessesJson)
+            if (!parsedLocalGuesses.length || parsedLocalGuesses[0] != puzzle.source) {
+                localStorage.removeItem(`puzzle-${puzzle.date}`)
+                console.log("Invalid local guessed found, deleted local guesses")
+                return []
+            }
+            
+            return parsedLocalGuesses
         }
         else {
             return []

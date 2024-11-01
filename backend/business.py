@@ -90,8 +90,10 @@ class Business:
 
     def get_puzzles(self, userid: str) -> PuzzlesItem:
         puzzle_dates = self.db.get_puzzle_dates()
+        completed_puzzles = self.db.get_completed_puzzles(userid)
+        print(completed_puzzles)
         return [
-            PuzzlesItem(date=date, source=source, target=target, completed=False)
+            PuzzlesItem(date=date, source=source, target=target, completed=date in completed_puzzles)
             for date, source, target in puzzle_dates
         ]
 
