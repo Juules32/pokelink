@@ -83,6 +83,7 @@ class Business:
             generational_difference >= MIN_GENERATIONAL_DIFFERENCE and
             set(graph.nodes[source]["types"]).isdisjoint(set(graph.nodes[target]["types"]))
         )
+    
     def get_hint(self, graph: Graph, source: str, target: str) -> str:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
@@ -93,3 +94,11 @@ class Business:
             PuzzlesItem(date=date, source=source, target=target, completed=False)
             for date, source, target in puzzle_dates
         ]
+
+    def validate_solution(self, solution: list[str]) -> bool:
+        graph = self.get_graph()
+        for i in range(len(solution) - 1):
+            if not graph.has_edge(solution[i], solution[i + 1]):
+                print("Invalid solution detected")
+                return False
+        return True

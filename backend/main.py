@@ -39,7 +39,7 @@ def get_puzzle(date: str, userid: str) -> JSONResponse:
         puzzle=puzzle,
         solution=solution
     )
-    print(puzzle_response)
+
     return JSONResponse(content=puzzle_response.model_dump(), status_code=200)
 
 @app.get("/puzzles")
@@ -69,5 +69,8 @@ def generate_daily_data(request: Request) -> JSONResponse:
 
 @app.post("/solution/{date}")
 def post_solution(solution_request: SolutionRequest, date: str) -> JSONResponse:
+    if not bn.validate_solution(solution_request.solution):
+        return JSONResponse(content="Invalid Solution", status_code=400)
+
     bn.db.set_user_solution(userid=solution_request.userid, date=date, solution=solution_request.solution)
     return JSONResponse(content="Solution set successfully", status_code=200)
