@@ -57,11 +57,15 @@
 
         hint = undefined;
         guessedNames = [...guessedNames, guess];
+        setLocalGuesses()
         if (puzzle.target == guess) {
             console.log("You win!");
-            postSolution(puzzle.date, guessedNames)
+            postSolution(puzzle.date, guessedNames).catch((err) => {
+                localStorage.removeItem(`puzzle-${puzzle.date}`);
+                guessedNames = [puzzle.source]
+                alert(err)
+            });
         }
-        setLocalGuesses()
     }
 
     onMount(() => {
