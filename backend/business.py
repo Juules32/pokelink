@@ -64,8 +64,8 @@ class Business:
             shortest_path_length=nx.shortest_path_length(graph, source, target)
         )
 
-    def generate_10_puzzles(self, graph: Graph) -> list[Puzzle]:
-        return [self.generate_puzzle(graph, get_date_str(i), strict=True) for i in range(10)]
+    def generate_n_puzzles(self, graph: Graph, n: int) -> list[Puzzle]:
+        return [self.generate_puzzle(graph, get_date_str(-i), strict=True) for i in range(n)]
 
     def get_generational_difference(self, graph: Graph, source: str, target: str) -> int:
         source_region_number = region_number[graph.nodes[source]["region"]]
@@ -88,10 +88,9 @@ class Business:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
 
-    def get_puzzles(self, userid: str) -> PuzzlesItem:
-        puzzle_dates = self.db.get_puzzle_dates()
+    def get_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
+        puzzle_dates = self.db.get_puzzle_dates(page)
         completed_puzzles = self.db.get_completed_puzzles(userid)
-        print(completed_puzzles)
         return [
             PuzzlesItem(date=date, source=source, target=target, completed=date in completed_puzzles)
             for date, source, target in puzzle_dates

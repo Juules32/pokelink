@@ -43,8 +43,17 @@ def get_puzzle(date: str, userid: str) -> JSONResponse:
     return JSONResponse(content=puzzle_response.model_dump(), status_code=200)
 
 @app.get("/puzzles")
-def get_puzzles(userid: str) -> JSONResponse:
-    return bn.get_puzzles(userid)
+def get_puzzles(userid: str, page: int) -> JSONResponse:
+    puzzles = bn.get_puzzles(userid, page)
+
+    if not puzzles:
+        return JSONResponse(content="Page not available", status_code=404)
+    
+    return puzzles
+
+@app.get("/num_puzzles")
+def get_puzzles() -> JSONResponse:
+    return JSONResponse(content=bn.db.get_num_puzzles(), status_code=200)
 
 @app.get("/hint")
 def get_hint(source: str, target: str) -> JSONResponse:

@@ -95,16 +95,25 @@ class Database:
             vars=(puzzle.date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
         )
 
-    def get_puzzle_dates(self) -> list[tuple[str, str, str]]:
-        query = "SELECT date, source, target FROM pokelink_puzzle ORDER BY date DESC"
+    def get_puzzle_dates(self, page: int) -> list[tuple[str, str, str]]:
+        query = """
+            SELECT date, source, target
+            FROM pokelink_puzzle
+            ORDER BY date DESC
+            LIMIT 10 OFFSET %s
+        """
+
+        offset = page * 10 - 10
+
         fetched_data = self.commit_query(
             query=query,
+            vars=(offset,),
             fetch=Fetch.ALL
         )
         return [
             (str(date), source, target)
             for date, source, target in fetched_data
-        ]
+        ] if fetched_data else []
 
     def create_user_solution_table(self):
         self.drop_table(table_name="pokelink_user_solution")
@@ -159,3 +168,14 @@ class Database:
         )
 
         return [str(row[0]) for row in dates] if dates else []
+
+    def get_num_puzzles(self) -> int:
+        query = "SELECT COUNT(*) from pokelink_puzzle"
+
+        num_puzzles = self.commit_query(
+            query=query,
+            fetch=Fetch.ONE,
+            message="Got number of puzzles successfully"
+        )[0]
+
+        return num_puzzles
