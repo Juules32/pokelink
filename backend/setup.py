@@ -9,7 +9,7 @@ if __name__ == "__main__":
     db.create_puzzle_table()
     db.create_user_solution_table()
     bn = Business()
-    ten_puzzles = bn.generate_10_puzzles(bn.get_graph())
-    for puzzle in ten_puzzles:
+    puzzles = bn.generate_n_puzzles(bn.get_graph(), 55)
+    for puzzle in puzzles:
         db.set_puzzle(puzzle)
     print(db.get_puzzle(get_date_str()))

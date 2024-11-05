@@ -13,10 +13,10 @@ class HttpError extends Error {
 
 export async function fetchPuzzle(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-    params: Record<string, string>
+    date: string | undefined
 ): Promise<PuzzleResponse> {
     try {
-        const endpoint = params.date ? "puzzle/" + params.date : "puzzle";
+        const endpoint = date ? "puzzle/" + date : "puzzle";
         const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}?userid=${userid}`)
         const data = await response.json()
 
@@ -46,10 +46,11 @@ export async function fetchPuzzle(
 }
 
 export async function fetchPuzzles(
-    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
+    pageNum: number
 ): Promise<PuzzlesItem[]> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=${userid}`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=${userid}&page=${pageNum}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -64,6 +65,28 @@ export async function fetchPuzzles(
             error(err.status, err.message)
         }
         error(500, "Could not fetch puzzles")
+    }
+}
+
+export async function fetchNumPuzzles(
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+): Promise<number> {
+    try {
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/num_puzzles`)
+        const data = await response.json()
+
+        if (!response.ok) {
+            const error = new HttpError(response.status, data);
+            throw error;
+        }
+
+        return data
+    }
+    catch (err) {
+        if (err instanceof HttpError) {
+            error(err.status, err.message)
+        }
+        error(500, "Could not fetch number of puzzles")
     }
 }
 

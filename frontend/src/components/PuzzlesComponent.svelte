@@ -4,15 +4,19 @@
     import type { PuzzlesItem } from "$lib/interfaces";
     import ArrowComponent from "./ArrowComponent.svelte";
     import NodeComponent from "./NodeComponent.svelte";
+    import PuzzleLinksComponent from "./PuzzleLinksComponent.svelte";
 
     interface Props {
         puzzles: PuzzlesItem[];
+        numPuzzles: number;
+        pageNum: number;
     }
-    let { puzzles }: Props = $props();
+    let { puzzles, numPuzzles, pageNum }: Props = $props();
 
     let innerWidth: number | undefined = $state();
 
     const showSmallTable = $derived(innerWidth ? innerWidth < 750 : false);
+
 </script>
 
 <svelte:window bind:innerWidth />
@@ -24,7 +28,10 @@
         {:else}
             <h1 class="text-center text-5xl pb-4">Previous Puzzles</h1>
         {/if}
-            
+        
+        <div class="flex justify-center pb-2">
+            <PuzzleLinksComponent {pageNum} {numPuzzles} />
+        </div>
         <table class="bg-white border-2 border-black rounded-lg">
             <thead class="text-xl">
                 <tr>
@@ -58,6 +65,9 @@
                 {/each}
             </tbody>
         </table>
+        <div class="flex justify-center pt-2">
+            <PuzzleLinksComponent {pageNum} {numPuzzles} />
+        </div>
     </div>
 </div>
 

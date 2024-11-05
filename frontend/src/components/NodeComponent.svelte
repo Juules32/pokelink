@@ -7,9 +7,10 @@
         isSecret?: boolean;
     }
     let { pokemonName, isSecret = false }: Props = $props();
-    const pokemonNode = $graphData.nodes[pokemonName]
 
-    const circleDiameter = "128px"
+    const pokemonNode = $derived($graphData.nodes[pokemonName]);
+
+    const circleDiameter = "128px";
 
     // Dictionary with soft colors for each Pokémon type in RGB format
     const typeColors: { [key: string]: string } = {
