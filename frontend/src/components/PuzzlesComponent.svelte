@@ -47,10 +47,10 @@
                     {/if}
                 </tr>
             </thead>
-            <tbody class="divide-y-2 divide-dashed">
+            <tbody class="divide-y-2 divide-dashed divide-gray-300">
                 {#each puzzles as puzzle}
                     <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-                    <tr class="puzzle-item space-y-10" onmouseover={async () => {await preloadData(`${base}/puzzles/${puzzle.date}`)}} onclick={() => goto(`${base}/puzzles/${puzzle.date}`)}>
+                    <tr class="puzzle-item space-y-10 transition-colors hover:bg-gray-300" onmouseover={async () => {await preloadData(`${base}/puzzles/${puzzle.date}`)}} onclick={() => goto(`${base}/puzzles/${puzzle.date}`)}>
                         {#if showSmallTable}
                             <td>{puzzle.date}</td>
                             <td>{puzzle.completed ? "Completed" : "Not Completed"}</td>
