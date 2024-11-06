@@ -90,7 +90,7 @@ class Business:
         return (
             shortest_path_length >= MIN_SHORTEST_PATH_LENGTH and 
             generational_difference >= MIN_GENERATIONAL_DIFFERENCE and
-            types_in_common(set(graph.nodes[source]["types"]), set(graph.nodes[target]["types"]))
+            not types_in_common(set(graph.nodes[source]["types"]), set(graph.nodes[target]["types"]))
         )
     
     def get_hint(self, graph: Graph, source: str, target: str) -> str:
