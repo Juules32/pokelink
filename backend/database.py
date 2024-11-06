@@ -56,7 +56,7 @@ class Database:
         """
         self.commit_query(query=query, message="Created pokelink_puzzle table successfully")
 
-    def get_puzzle(self, date: Union[str, None] = None) -> Union[Puzzle, None]:
+    def get_puzzle(self, date: str) -> Union[Puzzle, None]:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;

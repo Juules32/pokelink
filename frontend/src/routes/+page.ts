@@ -4,6 +4,6 @@ import { fetchPuzzle } from '$lib/backend';
 
 export async function load({ fetch }) {
     return {
-        puzzleResponse: await fetchPuzzle(fetch, undefined)
+        puzzleSolution: await fetchPuzzle(fetch, undefined)
     }
 };

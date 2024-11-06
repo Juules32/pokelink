@@ -1,4 +1,4 @@
-import type { GraphData, PuzzleResponse, PuzzlesItem } from "$lib/interfaces";
+import type { GraphData, PuzzleSolution, PuzzlesItem } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 import { error } from "@sveltejs/kit";
 import { userid } from "./userid";
@@ -14,18 +14,18 @@ class HttpError extends Error {
 export async function fetchPuzzle(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
     date: string | undefined
-): Promise<PuzzleResponse> {
+): Promise<PuzzleSolution> {
     try {
         const endpoint = date ? "puzzle/" + date : "puzzle";
         const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}?userid=${userid}`)
         const data = await response.json()
 
         if (!response.ok) {
-            const error = new HttpError(response.status, data);
+            const error = new HttpError(response.status, data.detail);
             throw error;
         }
 
-        const result: PuzzleResponse = {
+        const result: PuzzleSolution = {
             puzzle: {
                 date: data.puzzle.date,
                 source: data.puzzle.source,
@@ -54,7 +54,7 @@ export async function fetchPuzzles(
         const data = await response.json()
 
         if (!response.ok) {
-            const error = new HttpError(response.status, data);
+            const error = new HttpError(response.status, data.detail);
             throw error;
         }
 
@@ -76,7 +76,7 @@ export async function fetchNumPuzzles(
         const data = await response.json()
 
         if (!response.ok) {
-            const error = new HttpError(response.status, data);
+            const error = new HttpError(response.status, data.detail);
             throw error;
         }
 
@@ -97,9 +97,18 @@ export async function fetchHint(source: string, target: string): Promise<string>
             `${PUBLIC_BACKEND_HOST}/hint?source=${source}&target=${target}`
         )
         const data = await response.json()
+
+        if (!response.ok) {
+            const error = new HttpError(response.status, data.detail);
+            throw error;
+        }
+
         return data
     }
-    catch {
+    catch (err) {
+        if (err instanceof HttpError) {
+            error(err.status, err.message)
+        }
         error(500, "Could not fetch hint")
     }
 }
@@ -108,9 +117,18 @@ export async function fetchGraphData(): Promise<GraphData> {
     try {
         const response = await fetch(`${PUBLIC_BACKEND_HOST}/graph_data`)
         const data = await response.json()
+
+        if (!response.ok) {
+            const error = new HttpError(response.status, data.detail);
+            throw error;
+        }
+
         return data
     }
-    catch {
+    catch (err) {
+        if (err instanceof HttpError) {
+            error(err.status, err.message)
+        }
         error(500, "Could not fetch graph data")
     }
 }
@@ -124,7 +142,7 @@ export async function postSolution(date: string, guessedNames: string[]) {
     const data = await response.json()
     
     if (!response.ok) {
-        const error = new HttpError(response.status, data);
+        const error = new HttpError(response.status, data.detail);
         throw error;
     }
 }

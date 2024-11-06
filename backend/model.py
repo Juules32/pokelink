@@ -24,20 +24,24 @@ Shortest Path = {self.shortest_path}
 Shortest Path Length = {self.shortest_path_length}
         """
 
+# The the nodes and edges of the networkx graph
 class GraphData(BaseModel):
     nodes: dict[str, PokemonNode]
     edges: dict[str, list[str]]
 
+# Represents one puzzle in a list of puzzles
 class PuzzlesItem(BaseModel):
     date: str
     source: str
     target: str
     completed: bool
 
+# Sent along with user request to set a solution
 class SolutionRequest(BaseModel):
     userid: str
     solution: list[str]
 
-class PuzzleResponse(BaseModel):
+# A puzzle with a user's solution attached
+class PuzzleSolution(BaseModel):
     puzzle: Puzzle
     solution: Union[list[str], None]

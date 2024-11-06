@@ -25,7 +25,7 @@ export interface PuzzlesItem {
 	completed: boolean;
 }
 
-export interface PuzzleResponse {
+export interface PuzzleSolution {
 	puzzle: Puzzle;
 	solution: string[] | null;
 }

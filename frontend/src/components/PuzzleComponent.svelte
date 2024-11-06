@@ -3,7 +3,7 @@
     import { edges, pokemonNodes } from "$lib/state";
     import GraphComponent from "./GraphComponent.svelte";
     import SearchComponent from "./SearchComponent.svelte";
-    import type { PuzzleResponse } from "$lib/interfaces";
+    import type { PuzzleSolution } from "$lib/interfaces";
     import NodeComponent from "./NodeComponent.svelte";
     import ArrowComponent from "./ArrowComponent.svelte";
     import { dev } from "$app/environment";
@@ -12,13 +12,13 @@
     import { page } from "$app/stores";
 
     interface Props {
-        puzzleResponse: PuzzleResponse;
+        puzzleSolution: PuzzleSolution;
     }
-    let { puzzleResponse }: Props = $props();
+    let { puzzleSolution }: Props = $props();
 
-    const puzzle = puzzleResponse.puzzle
+    const puzzle = puzzleSolution.puzzle
 
-    let guessedNames: string[] = $state(puzzleResponse.solution || getLocalGuesses());
+    let guessedNames: string[] = $state(puzzleSolution.solution || getLocalGuesses());
     let hint: string | undefined = $state();
     const latestGuessName = $derived(guessedNames.at(-1));
 
@@ -82,7 +82,7 @@
         }
     })
 
-    let won = $derived(puzzleResponse.solution || latestGuessName == puzzle.target);
+    let won = $derived(puzzleSolution.solution || latestGuessName == puzzle.target);
     let numGuesses = $derived(guessedNames.length - 1)
 </script>
 
@@ -103,7 +103,7 @@
     </button>
 {/if}
 
-{#if won && !puzzleResponse.solution}
+{#if won && !puzzleSolution.solution}
     <div
         style="position: absolute; left: 50%; top: 0%"
         use:confetti={{
