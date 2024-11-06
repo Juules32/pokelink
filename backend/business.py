@@ -100,7 +100,6 @@ class Business:
     def get_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
         puzzle_dates = self.db.get_puzzle_dates(page)
         if not puzzle_dates:
-            print("test")
             raise NotFoundException("No puzzles found 💀")
 
         completed_puzzles = self.db.get_completed_puzzles(userid)
