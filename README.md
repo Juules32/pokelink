@@ -18,6 +18,18 @@ to `.env`. Leave the other environment variables as they are.
 
 ```pip install```
 
+- Run this to generate pokemon JSON data used to generate graph data:
+
+```python pokemon_data_generation.py```
+
+- Run this to generate graph data:
+
+```python graph_data_generation.py```
+
+- Run this to set up your database tables etc.:
+
+```python setup.py```
+
 - Run this to start a local webserver:
 
 ```uvicorn main:app --reload --port 80```
@@ -40,13 +52,16 @@ to `.env`. Leave the other environment variables as they are.
 
 I deployed the app to vercel. Feel free to choose another option.
 
-- Create a vercel postgres database
+- Create a vercel postgres database.
 
-- Create a vercel blob storage
+- Set up the tables etc. by changing `CONNECTION_STRING` in `.env` to the new connection string temporarily
+and run the `setup.py` script in the `backend` folder.
+
+- Create a vercel blob storage.
 
 - For the frontend and backend respectively, add a new project on vercel. Set the root folder
 to backend/frontend.
 
 - On the backend project, set up environment variables for `CRON_SECRET` (can be whatever), `CONNECTION_STRING` (from the vercel database), `ENVIRONMENT` ("PRODUCTION") and `BLOB_HOST` (from the vercel blob storage).
 
-- On the frontend project, set up environment variable for `PUBLIC_BACKEND_HOST` ("https://pokelink-backend.vercel.app" or something similar)
+- On the frontend project, set up environment variable for `PUBLIC_BACKEND_HOST` ("https://pokelink-backend.vercel.app" or something similar).
