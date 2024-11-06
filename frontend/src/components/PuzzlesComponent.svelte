@@ -16,7 +16,6 @@
     let innerWidth: number | undefined = $state();
 
     const showSmallTable = $derived(innerWidth ? innerWidth < 750 : false);
-
 </script>
 
 <svelte:window bind:innerWidth />
@@ -28,10 +27,11 @@
         {:else}
             <h1 class="text-center text-5xl pb-4">Previous Puzzles</h1>
         {/if}
-        
-        <div class="flex justify-center pb-2">
-            <PuzzleLinksComponent {pageNum} {numPuzzles} />
-        </div>
+        {#if numPuzzles > 10}
+            <div class="flex justify-center pb-2">
+                <PuzzleLinksComponent {pageNum} {numPuzzles} />
+            </div>
+        {/if}
         <table class="bg-white border-2 border-black rounded-lg">
             <thead class="text-xl">
                 <tr>
@@ -50,7 +50,11 @@
             <tbody class="divide-y-2 divide-dashed divide-gray-300">
                 {#each puzzles as puzzle}
                     <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-                    <tr class="puzzle-item space-y-10 transition-colors hover:bg-gray-300" onmouseover={async () => {await preloadData(`${base}/puzzles/${puzzle.date}`)}} onclick={() => goto(`${base}/puzzles/${puzzle.date}`)}>
+                    <tr
+                        class="puzzle-item space-y-10 transition-colors hover:bg-gray-300"
+                        onmouseover={async () => await preloadData(`${base}/puzzles/${puzzle.date}`)}
+                        onclick={() => goto(`${base}/puzzles/${puzzle.date}`)}
+                    >
                         {#if showSmallTable}
                             <td>{puzzle.date}</td>
                             <td>{puzzle.completed ? "Completed" : "Not Completed"}</td>
@@ -59,15 +63,19 @@
                             <td> <NodeComponent pokemonName={puzzle.source} /> </td>
                             <td> <ArrowComponent /> </td>
                             <td> <NodeComponent pokemonName={puzzle.target} /> </td>
-                            <td class="text-center w-0">{puzzle.completed ? "Completed" : "Not Completed"}</td>
+                            <td
+                                class="text-center w-0">{puzzle.completed ? "Completed" : "Not Completed"}
+                            </td>
                         {/if}
                     </tr>
                 {/each}
             </tbody>
         </table>
-        <div class="flex justify-center pt-2">
-            <PuzzleLinksComponent {pageNum} {numPuzzles} />
-        </div>
+        {#if numPuzzles > 10}
+            <div class="flex justify-center pt-2">
+                <PuzzleLinksComponent {pageNum} {numPuzzles} />
+            </div>
+        {/if}
     </div>
 </div>
 

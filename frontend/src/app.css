@@ -3,15 +3,18 @@
 @tailwind utilities;
 
 @layer base {
+    
+    /* Defines the pixel font */
     @font-face {
-        font-family: "Undertale Font";
+        font-family: "Pixel Font";
         src:
-            url('/fonts/determinationmonoweb-webfont.woff') format('woff'),
-            url('/fonts/determinationmonoweb-webfont.woff2') format('woff2');
+            url('/fonts/pixel-font.woff') format('woff'),
+            url('/fonts/pixel-font.woff2') format('woff2');
     }
 
+    /* Sets the default font to pixel font */
     body {
-        font-family: "Undertale Font", sans-serif;
+        font-family: "Pixel Font", sans-serif;
     }
 }
 

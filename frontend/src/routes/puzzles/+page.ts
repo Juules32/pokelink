@@ -1,9 +1,6 @@
 import { fetchNumPuzzles, fetchPuzzles } from '$lib/backend';
 
-export const ssr = false
-
 export async function load({ fetch, url }) {
-    
     const pageQueryParameter = url.searchParams.get("page")
     const pageNum = pageQueryParameter ? parseInt(pageQueryParameter) : 1
 

@@ -34,7 +34,7 @@ class Database:
             print(f"Error: {e}")
             self.connection.rollback()
 
-    def drop_table(self, table_name: str):
+    def drop_table(self, table_name: str) -> None:
         query = f"""
             DROP TABLE IF EXISTS {table_name};
         """
@@ -43,7 +43,7 @@ class Database:
             message=f"Dropped {table_name} table successfully (if it existed)"
         )
 
-    def create_puzzle_table(self):
+    def create_puzzle_table(self) -> None:
         self.drop_table(table_name="pokelink_puzzle")
         query = """
             CREATE TABLE pokelink_puzzle (
@@ -54,18 +54,22 @@ class Database:
                 shortest_path_length INT NOT NULL
             );
         """
-        self.commit_query(query=query, message="Created pokelink_puzzle table successfully")
+        self.commit_query(
+            query=query,
+            message="Created pokelink_puzzle table successfully"
+        )
 
     def get_puzzle(self, date: str) -> Union[Puzzle, None]:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;
         """
+
         fetched_row = self.commit_query(
             query=query,
             vars=(date if date else get_date_str(),),
             fetch=Fetch.ONE,
-            message=f"Got puzzle data successfully"
+            message="Got puzzle data successfully"
         )
 
         if not fetched_row:
@@ -80,7 +84,7 @@ class Database:
             shortest_path_length=shortest_path_length
         )
     
-    def set_puzzle(self, puzzle: Puzzle):
+    def set_puzzle(self, puzzle: Puzzle) -> None:
         query2 = """
             INSERT INTO pokelink_puzzle (date, source, target, shortest_path, shortest_path_length)
             VALUES (%s, %s, %s, %s, %s)
@@ -92,7 +96,8 @@ class Database:
         """
         self.commit_query(
             query=query2, 
-            vars=(puzzle.date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length)
+            vars=(puzzle.date, puzzle.source, puzzle.target, puzzle.shortest_path, puzzle.shortest_path_length),
+            message=f"Set puzzle data from {puzzle.source} to {puzzle.target} successfully"
         )
 
     def get_puzzle_dates(self, page: int) -> list[tuple[str, str, str]]:
@@ -108,14 +113,16 @@ class Database:
         fetched_data = self.commit_query(
             query=query,
             vars=(offset,),
-            fetch=Fetch.ALL
+            fetch=Fetch.ALL,
+            message="Got puzzle dates successfully"
         )
+
         return [
             (str(date), source, target)
             for date, source, target in fetched_data
         ] if fetched_data else []
 
-    def create_user_solution_table(self):
+    def create_user_solution_table(self) -> None:
         self.drop_table(table_name="pokelink_user_solution")
         query = """
             CREATE TABLE pokelink_user_solution (
@@ -125,13 +132,18 @@ class Database:
                 PRIMARY KEY (userid, date)
             );
         """
-        self.commit_query(query=query, message="Created pokelink_user_solution table successfully")
 
-    def set_user_solution(self, userid: str, date: str, solution: list[str]):
+        self.commit_query(
+            query=query,
+            message="Created pokelink_user_solution table successfully"
+        )
+
+    def set_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
         query = """
             INSERT INTO pokelink_user_solution (userid, date, solution)
             VALUES (%s, %s, %s)
         """
+        
         self.commit_query(
             query=query,
             vars=(userid, date, solution),

@@ -4,7 +4,7 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				undertale: "'Undertale Font', sans-serif"
+				pixel: "'Pixel Font', sans-serif"
 			}
 		},
 	},

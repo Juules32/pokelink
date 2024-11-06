@@ -33,7 +33,12 @@
 		<hr />
 		{@render children?.()}
 		<hr />
-		<button class="bg-red-400 mt-2 border-2 border-black px-2 py-1 rounded-lg" onclick={() => dialog?.close()}>Close</button>
+		<button 
+			class="bg-red-400 mt-2 border-2 border-black px-2 py-1 rounded-lg" 
+			onclick={() => dialog?.close()}
+		>
+			Close
+		</button>
 	</div>
 </dialog>
 

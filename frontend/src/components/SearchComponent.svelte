@@ -3,7 +3,7 @@
     import { onMount, onDestroy } from "svelte";
     import { browser } from "$app/environment";
     import type { PokemonNode } from "$lib/interfaces";
-    import { pokemonNodes } from "$lib/state";
+    import { pokemonNodes } from "$lib/globals";
 
     interface Props {
         tryGuess: (name: string) => void;
@@ -81,7 +81,7 @@
         }
     }
 
-    let width = $state()
+    let width = $state();
 </script>
 
 <div class="z-30 w-full" bind:this={searchRef} bind:clientWidth={width}>

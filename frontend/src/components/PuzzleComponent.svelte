@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fetchHint, postSolution } from "$lib/backend";
-    import { edges, pokemonNodes } from "$lib/state";
+    import { graphData, pokemonNodes } from "$lib/globals";
     import GraphComponent from "./GraphComponent.svelte";
     import SearchComponent from "./SearchComponent.svelte";
     import type { PuzzleSolution } from "$lib/interfaces";
@@ -16,7 +16,7 @@
     }
     let { puzzleSolution }: Props = $props();
 
-    const puzzle = puzzleSolution.puzzle
+    const puzzle = puzzleSolution.puzzle;
 
     let guessedNames: string[] = $state(puzzleSolution.solution || getLocalGuesses());
     let hint: string | undefined = $state();
@@ -29,69 +29,70 @@
     }
 
     function getLocalGuesses(): string[] {
-        const localGuessesJson = localStorage.getItem(`puzzle-${puzzle.date}`)
+        const localGuessesJson = localStorage.getItem(`puzzle-${puzzle.date}`);
         if (localGuessesJson) {
-            console.log("Loaded guesses from local storage")
-            const parsedLocalGuesses = JSON.parse(localGuessesJson)
-            if (!parsedLocalGuesses.length || parsedLocalGuesses[0] != puzzle.source) {
-                localStorage.removeItem(`puzzle-${puzzle.date}`)
-                console.log("Invalid local guessed found, deleted local guesses")
-                return []
+            console.log("Loaded guesses from local storage");
+            const parsedLocalGuesses = JSON.parse(localGuessesJson);
+            if (
+                !parsedLocalGuesses.length ||
+                parsedLocalGuesses[0] != puzzle.source
+            ) {
+                localStorage.removeItem(`puzzle-${puzzle.date}`);
+                console.log("Invalid local guessed found, deleted local guesses");
+                return [];
             }
-            
-            return parsedLocalGuesses
-        }
-        else {
-            return []
+            return parsedLocalGuesses;
+        } else {
+            return [];
         }
     }
 
     function setLocalGuesses() {
-        localStorage.setItem(`puzzle-${puzzle.date}`, JSON.stringify(guessedNames))
+        localStorage.setItem(`puzzle-${puzzle.date}`, JSON.stringify(guessedNames));
     }
 
     function tryGuess(name: string) {
-        if (latestGuessName && $edges[latestGuessName].includes(name)) {
+        if (latestGuessName && $graphData.edges[latestGuessName].includes(name)) {
             addNode(name);
         }
     }
 
     function addNode(guess: string) {
         if (won) {
-            console.log("Can't guess when you have already completed this puzzle")
-            return
+            console.log("Can't guess when you have already completed the puzzle");
+            return;
         }
 
         hint = undefined;
         guessedNames = [...guessedNames, guess];
-        setLocalGuesses()
+        setLocalGuesses();
         if (puzzle.target == guess) {
             console.log("You win!");
             postSolution(puzzle.date, guessedNames).catch((err) => {
                 localStorage.removeItem(`puzzle-${puzzle.date}`);
-                guessedNames = [puzzle.source]
-                alert(err)
+                guessedNames = [puzzle.source];
+                alert(err);
             });
         }
     }
 
     onMount(() => {
         if (!guessedNames.length) {
-            console.log("Adding puzzle source to guesses")
+            console.log("Adding puzzle source to guesses");
             addNode(puzzle.source);
         }
-    })
+    });
 
     let won = $derived(puzzleSolution.solution || latestGuessName == puzzle.target);
-    let numGuesses = $derived(guessedNames.length - 1)
+    let numGuesses = $derived(guessedNames.length - 1);
 </script>
 
 {#if dev}
     <button
         class="w-[128px] absolute left-0 text-center"
-        onclick={() => addNode(
-            $pokemonNodes[Math.floor(Math.random() * $pokemonNodes.length)].name
-        )}
+        onclick={() => 
+            addNode($pokemonNodes[Math.floor(Math.random() * $pokemonNodes.length)].name)
+        }
     >
         Add Random Pokemon
     </button>
@@ -116,7 +117,9 @@
 {/if}
 
 <div class="h-fit flex flex-col pt-12 space-y-5 items-center">
-    <h1 class="sm:text-5xl text-3xl">{$page.params.date ? "Puzzle: " + $page.params.date : "Today's Puzzle"}</h1>
+    <h1 class="sm:text-5xl text-3xl">
+        {$page.params.date ? "Puzzle: " + $page.params.date : "Today's Puzzle"}
+    </h1>
     <div class="flex items-center">
         <NodeComponent pokemonName={puzzle.source} />
         <ArrowComponent />
@@ -124,7 +127,9 @@
     </div>
 
     {#if won}
-        <h2 class="sm:text-3xl text-xl">Your Solution: {numGuesses} {numGuesses > 1 ? "Guesses" : "Guess"}</h2>
+        <h2 class="sm:text-3xl text-xl">
+            Your Solution: {numGuesses} {numGuesses > 1 ? "Guesses" : "Guess"}
+        </h2>
     {:else}
         <div class="flex w-3/4 max-w-[500px] justify-center space-x-2">
             <SearchComponent {tryGuess} />
@@ -137,15 +142,13 @@
         </div>
     {/if}
 
-    <GraphComponent 
-        graphNames={guessedNames}
-        {hint}
-    />
+    <GraphComponent graphNames={guessedNames} {hint} />
 
     {#if won}
-        <h2 class="sm:text-3xl text-xl">Shortest path: {puzzle.shortestPathLength} {puzzle.shortestPathLength > 1 ? "Guesses" : "Guess"}</h2>
-        <GraphComponent
-            graphNames={puzzle.shortestPath}
-        />
+        <h2 class="sm:text-3xl text-xl">
+            Shortest path: {puzzle.shortestPathLength}
+            {puzzle.shortestPathLength > 1 ? "Guesses" : "Guess"}
+        </h2>
+        <GraphComponent graphNames={puzzle.shortestPath} />
     {/if}
 </div>
