@@ -18,7 +18,7 @@
             "tower",
             "tower2",
             "victory-road",
-            "warehouse",
+            "warehouse"
         ];
         return `${base}/backgrounds/${backgroundNames[Math.floor(Math.random() * backgroundNames.length)]}.png`;
     }

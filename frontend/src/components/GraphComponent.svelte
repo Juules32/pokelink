@@ -32,10 +32,7 @@
         {/each}
         {#if hint}
             <ArrowComponent />
-            <NodeComponent
-                pokemonName={hint}
-                isSecret={true}
-            />
+            <NodeComponent pokemonName={hint} isSecret={true} />
         {/if}
     </div>
 </div>

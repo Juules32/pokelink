@@ -1,8 +1,9 @@
 import type { GraphData, PuzzleSolution, PuzzlesItem } from "$lib/interfaces";
 import { PUBLIC_BACKEND_HOST } from '$env/static/public'
 import { error } from "@sveltejs/kit";
-import { userid } from "./userid";
+import { userid } from "$lib/globals";
 
+// Custom Error type that includes status code
 class HttpError extends Error {
     status: number;
     constructor(status: number, message: string) {
@@ -25,6 +26,7 @@ export async function fetchPuzzle(
             throw error;
         }
 
+        // Data is changed from snake case to camel case
         const result: PuzzleSolution = {
             puzzle: {
                 date: data.puzzle.date,
@@ -89,7 +91,6 @@ export async function fetchNumPuzzles(
         error(500, "Could not fetch number of puzzles")
     }
 }
-
 
 export async function fetchHint(source: string, target: string): Promise<string> {
     try {

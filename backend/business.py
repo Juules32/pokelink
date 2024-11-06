@@ -1,4 +1,4 @@
-import pickle
+import pickle, random, httpx
 from typing import Union
 from networkx import Graph
 from exceptions import InvalidSolutionException, NotFoundException
@@ -6,12 +6,10 @@ from date import get_date_str
 from env import BLOB_HOST, ENVIRONMENT
 from database import Database
 from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
-import random
 import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
 from graph_data_generation import get_graph_data, load_graph, types_in_common
-import httpx
 
 class Business:
     def __init__(self):
@@ -21,7 +19,8 @@ class Business:
             print("Loaded graph from local file")
         self.db = Database()
     
-    def download_graph(self) -> Graph:
+    def get_blob_graph(self) -> Graph:
+        # Requests the pickled file directly from the blob host
         response = httpx.get(f"{BLOB_HOST}/graph_data.pkl")
         if response.status_code == 200:
             print("Downloading pickled file")
@@ -36,7 +35,7 @@ class Business:
         if self.environment == "DEVELOPMENT":
             return self.graph
         else:
-            return self.download_graph()
+            return self.get_blob_graph()
     
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
@@ -45,7 +44,7 @@ class Business:
         puzzle = self.db.get_puzzle(date)
         if not puzzle:
             raise NotFoundException("Puzzle not found 😢")
-            
+        
         solution = self.db.get_user_solution(userid, date)
 
         return PuzzleSolution(

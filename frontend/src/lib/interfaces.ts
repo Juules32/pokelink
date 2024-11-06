@@ -1,3 +1,5 @@
+// The backend has corresponding pydantic models (but in snake case instead of pascal case)
+
 export interface PokemonNode {
 	name: string;
 	id: number;

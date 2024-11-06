@@ -20,6 +20,8 @@
         onclick={() => {
             searchGuess(pokemonNode.name);
         }}
-        class="rounded-md px-4 py-2 bg-red-400 border-2 border-black">Guess</button
+        class="rounded-md px-4 py-2 bg-red-400 border-2 border-black"
     >
+        Guess
+    </button>
 </li>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from "$app/paths";
-    import { graphData } from "$lib/state";
+    import { graphData } from "$lib/globals";
 
     interface Props {
         pokemonName: string;
@@ -92,7 +92,7 @@
 
 <style scoped>
     .pokemon-node:hover .tooltip {
-        transition-delay: 0.5s;
+        transition-delay: 0.3s;
         opacity: 1;
     }
 </style>
