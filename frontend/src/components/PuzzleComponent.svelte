@@ -38,7 +38,7 @@
                 parsedLocalGuesses[0] != puzzle.source
             ) {
                 localStorage.removeItem(`puzzle-${puzzle.date}`);
-                console.log("Invalid local guessed found, deleted local guesses");
+                console.log("Invalid local guesses found, deleted local guesses");
                 return [];
             }
             return parsedLocalGuesses;
