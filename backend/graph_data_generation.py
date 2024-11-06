@@ -87,7 +87,6 @@ def store_graph_data(graph_data: GraphData):
     with open("graph_data.json", "w") as graph_data_json:
         json.dump(jsonable_encoder(graph_data), graph_data_json, indent=4)
 
-
 if __name__ == "__main__":
     # Generate and pickle the graph to a file
     dump_graph(generate_graph())

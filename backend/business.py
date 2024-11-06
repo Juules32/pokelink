@@ -1,15 +1,16 @@
 import pickle
 from typing import Union
 from networkx import Graph
+from exceptions import InvalidSolutionException, NotFoundException
 from date import get_date_str
 from env import BLOB_HOST, ENVIRONMENT
 from database import Database
-from model import GraphData, Puzzle, PuzzlesItem
+from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
 import random
 import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
-from graph_data_generation import get_graph_data, load_graph
+from graph_data_generation import get_graph_data, load_graph, types_in_common
 import httpx
 
 class Business:
@@ -40,8 +41,17 @@ class Business:
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
     
-    def get_puzzle(self, date: Union[str, None] = None) -> Puzzle:
-        return Database().get_puzzle(date)
+    def get_puzzle_solution(self, date: str, userid: str) -> PuzzleSolution:
+        puzzle = self.db.get_puzzle(date)
+        if not puzzle:
+            raise NotFoundException("Puzzle not found 😢")
+            
+        solution = self.db.get_user_solution(userid, date)
+
+        return PuzzleSolution(
+            puzzle=puzzle,
+            solution=solution
+        )
     
     def generate_puzzle(self, graph: Graph, date: str, strict: bool) -> Puzzle:
         pokemon_names = list(graph.nodes.keys())
@@ -81,7 +91,7 @@ class Business:
         return (
             shortest_path_length >= MIN_SHORTEST_PATH_LENGTH and 
             generational_difference >= MIN_GENERATIONAL_DIFFERENCE and
-            set(graph.nodes[source]["types"]).isdisjoint(set(graph.nodes[target]["types"]))
+            types_in_common(set(graph.nodes[source]["types"]), set(graph.nodes[target]["types"]))
         )
     
     def get_hint(self, graph: Graph, source: str, target: str) -> str:
@@ -90,6 +100,10 @@ class Business:
 
     def get_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
         puzzle_dates = self.db.get_puzzle_dates(page)
+        if not puzzle_dates:
+            print("test")
+            raise NotFoundException("No puzzles found 💀")
+
         completed_puzzles = self.db.get_completed_puzzles(userid)
         return [
             PuzzlesItem(date=date, source=source, target=target, completed=date in completed_puzzles)
@@ -103,3 +117,12 @@ class Business:
                 print("Invalid solution detected")
                 return False
         return True
+
+    def get_num_puzzles(self) -> int:
+        return self.db.get_num_puzzles()
+
+    def set_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
+        if not self.validate_solution(solution):
+            raise InvalidSolutionException()
+
+        self.db.set_user_solution(userid, date, solution)
