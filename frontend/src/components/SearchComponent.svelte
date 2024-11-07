@@ -105,7 +105,7 @@
     {#if searchQuery}
         <ul
             style="width: {width}px;"
-            class="z-10 absolute divide-y divide-dashed h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
+            class="z-10 absolute divide-y divide-dashed divide-gray-300 h-96 overflow-y-auto border-2 border-t-0 border-black bg-white rounded-b-lg"
         >
             {#each filteredPokemonNodes as pokemonNode}
                 <SearchItemComponent {searchGuess} {pokemonNode} />
