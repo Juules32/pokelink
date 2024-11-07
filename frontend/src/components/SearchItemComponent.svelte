@@ -9,7 +9,7 @@
     let { pokemonNode, searchGuess }: Props = $props();
 </script>
 
-<li class="hover:bg-gray-200 flex items-center align-middle p-2">
+<li class="transition-colors hover:bg-gray-300 flex items-center align-middle p-2">
     <img
         src={getSpriteUrl(pokemonNode.id)}
         alt={pokemonNode.name}
