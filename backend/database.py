@@ -13,10 +13,11 @@ class Fetch(Enum):
 class Database:
     def __init__(self):
         self.connection_string = CONNECTION_STRING
-        self.connection = psycopg2.connect(self.connection_string)
+        self.connection = None
 
     def commit_query(self, query: str, vars: Any = None, fetch: Union[Fetch, None] = None, message: Union[str, None] = None) -> Any:
         try:
+            self.connection = psycopg2.connect(self.connection_string)
             with self.connection.cursor() as cur:
                 cur.execute(query=query, vars=vars)
                 result = None
@@ -33,6 +34,8 @@ class Database:
         except Exception as e:
             print(f"Error: {e}")
             self.connection.rollback()
+        finally:
+            self.connection.close()
 
     def drop_table(self, table_name: str) -> None:
         query = f"""
