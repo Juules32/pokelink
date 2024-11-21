@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class PokemonNode(BaseModel):
     name: str                               # The name of the pokémon
     id: int                                 # The id of the pokémon
+    pokedex: int                            # The pokédex number of the pokémon
     types: list[str]                        # The types of the pokémon
     region: str                             # The region of the pokémon
 

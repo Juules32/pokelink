@@ -1,4 +1,5 @@
 import asyncio
+from collections import defaultdict
 import httpx
 import json
 
@@ -108,7 +109,7 @@ def get_real_pokemon_name(pokemon_name: str) -> str:
     else:
         return pokemon_name.replace("-", " ")
 
-async def fetch_pokemon_data(client, result, pokemon_data):
+async def fetch_pokemon_data(client, result, pokemon_data, criteria_data):
     # Ignores specific pokemon
     if not is_name_legal(result["name"]):
         return
@@ -136,25 +137,82 @@ async def fetch_pokemon_data(client, result, pokemon_data):
     species_generation = species_data["generation"]["name"]
     pokemon_region = find_region(pokemon_name, species_generation)
 
-    real_pokemon_name = get_real_pokemon_name(pokemon_name)
+    # Pokédex number
+    pokedex_number = species_data["pokedex_numbers"][0]["entry_number"]
+
+    pokemon_name = get_real_pokemon_name(pokemon_name)
 
     # Store data
-    pokemon_data[real_pokemon_name] = {
+    pokemon_data[pokemon_name] = {
         "id": pokemon_id,
         "types": pokemon_types,
-        "region": pokemon_region
+        "region": pokemon_region,
+        "pokedex": pokedex_number
     }
+
+    def add(criterion, name):
+        criteria_data[criterion].append(name)
+
+    # Popular moves
+    popular_moves = ["stomp", "fly", "bite"]
+    move_names = [pokemon_response["move"]["name"] for pokemon_response in pokemon_response["moves"]]
+    for popular_move in popular_moves:
+        if popular_move in move_names:
+            add(f"knows-{popular_move}", pokemon_name)
+
+    # Types
+    if len(pokemon_types) == 1:
+        add("mono-type", pokemon_name)
+    if len(pokemon_types) == 2:
+        add("dual-type", pokemon_name)
+    for type in pokemon_types:
+        add(f"type-{type}", pokemon_name)
+    
+    # Special types of pokemon
+    if "-mega" in pokemon_name:
+        add("mega", pokemon_name)
+    if "-gmax" in pokemon_name:
+        add("gmax", pokemon_name)
+    
+    # Pokemon-species
+    # Special types of pokemon
+    if species_data["is_baby"]:
+        add("baby", pokemon_name)
+    if species_data["is_legendary"]:
+        add("legendary", pokemon_name)
+    if species_data["is_mythical"]:
+        add("mythical", pokemon_name)
+    
+    # Region
+    add(f'region-{pokemon_region}', pokemon_name)
+
+LIMIT = 100000
+OFFSET = 0
 
 async def save_data_to_json():
     pokemon_data = {}
+    criteria_data = defaultdict(lambda : [])
+
+    criteria_data["fossil"] = [
+        "omanyte", "omastar", "kabuto", "kabutops", "aerodactyl", "aerodactyl-mega", "lileep", "cradily", "anorith", "armaldo", "cranidos", "rampardos", "shieldon", "bastiodon", "tirtouga", "carracosta", "archen", "archeops", "genesect", "tyrunt", "tyrantrum", "amaura", "aurorus", "dracozolt", "arctozolt", "dracovish", "arctovish"
+    ]
+    criteria_data["starter"] = [
+        "bulbasaur", "charmander", "squirtle", "chikorita", "cyndaquil", "totodile", "treecko", "torchic", "mudkip", "turtwig", "chimchar", "piplup", "snivy", "tepig", "oshawott", "chespin", "fennekin", "froakie", "rowlet", "litten", "popplio", "grookey", "scorbunny", "sobble", "sprigatito", "fuecoco", "quaxly", "pikachu", "eevee"
+    ]
+    criteria_data["ultra-beast"] = [
+        "nihilego", "buzzwole", "pheromosa", "xurkitree", "celesteela", "kartana", "guzzlord", "necrozma", "poipole", "naganadel", "stakataka", "blacephalon"
+    ]
+    criteria_data["paradox"] = [
+        "great-tusk", "scream-tail", "brute-bonnet", "flutter-mane", "slither-wing", "sandy-shocks", "roaring-moon", "koraidon", "walking-wake", "raging-bolt", "gouging-fire", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns", "iron-valiant", "miraidon", "iron-leaves", "iron-crown", "iron-boulder"
+    ]
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
+        response = await client.get(f"https://pokeapi.co/api/v2/pokemon?limit={LIMIT}&offset={OFFSET}")
         response = response.json()["results"]
 
         # Create a list of tasks to fetch all pokemon data concurrently
         tasks = [
-            fetch_pokemon_data(client, result, pokemon_data)
+            fetch_pokemon_data(client, result, pokemon_data, criteria_data)
             for result in response
         ]
 
@@ -164,6 +222,9 @@ async def save_data_to_json():
     # Save the data to JSON files
     with open("pokemon_data.json", "w") as pokemon_data_json:
         json.dump(pokemon_data, pokemon_data_json, indent=4)
+    
+    with open("criteria_data.json", "w") as criteria_data_json:
+        json.dump(criteria_data, criteria_data_json, indent=4)
 
 # Running this script gathers pokemon data asynchronously and stores it in json format
 if __name__ == "__main__":

@@ -8,20 +8,12 @@ from fastapi.encoders import jsonable_encoder
 def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
     return not itypes.isdisjoint(jtypes)
 
-def generate_graph() -> Graph:
+def generate_graph(pokemon_nodes: list[PokemonNode]) -> Graph:
     # Init an empty graph
     graph = nx.Graph()
 
-    # Get data files
-    with open("pokemon_data.json", "r") as pokemon_data_json:
-        pokemon_data: dict = json.load(pokemon_data_json)
-
-        # Filter out pokemon from Hisui 💀
-        pokemon_data = {k: v for k, v in pokemon_data.items() if v["region"] != 'hisui'}
-
-    # Add nodes
-    for k, v in pokemon_data.items():
-        graph.add_node(k, id=v["id"], types=v["types"], region=v["region"])
+    for pn in pokemon_nodes:
+        graph.add_node(pn.name, id=pn.id, pokedex=pn.pokedex, types=pn.types, region=pn.region)
     
     # 'Bridges' between generations
     connected_regions: set[frozenset[str]] = {
@@ -35,23 +27,21 @@ def generate_graph() -> Graph:
         frozenset({"galar", "paldea"})
     }
 
-    # Add edges
-    pokemon_items = list(pokemon_data.items())
-    for i in range(len(pokemon_items)):
-        ik, iv = pokemon_items[i]
-        itypes = set(iv["types"])
-        iregion = iv["region"]
+    for i in range(len(pokemon_nodes)):
+        ik = pokemon_nodes[i]
+        itypes = set(ik.types)
+        iregion = ik.region
         
-        for j in range(i + 1, len(pokemon_items)):
-            jk, jv = pokemon_items[j]
-            jtypes = set(jv["types"])
-            jregion = jv["region"]
+        for j in range(i + 1, len(pokemon_nodes)):
+            jk = pokemon_nodes[j]
+            jtypes = set(jk.types)
+            jregion = jk.region
 
             # If the two pokemon are from the same or connected regions
             if iregion == jregion or {iregion, jregion} in connected_regions:
                 # If the two pokemon have types in common
                 if types_in_common(itypes, jtypes):
-                    graph.add_edge(ik, jk)
+                    graph.add_edge(ik.name, jk.name)
     return graph
 
 # Generate positional data for each node based on Fruchterman-Reingold force-directed algorithm
@@ -73,6 +63,7 @@ def get_graph_data(graph: Graph):
         nodes[name] = PokemonNode(
             name=name,
             id=values.get("id"),
+            pokedex=values.get("pokedex"),
             types=values.get("types"),
             region=values.get("region")
         )
@@ -88,8 +79,15 @@ def store_graph_data(graph_data: GraphData):
         json.dump(jsonable_encoder(graph_data), graph_data_json, indent=4)
 
 if __name__ == "__main__":
+    with open("pokemon_data.json", "r") as pokemon_data_json:
+        pokemon_data = json.load(pokemon_data_json)
+    pokemon_nodes: list[PokemonNode] = [
+        PokemonNode(name=k, id=v["id"], types=v["types"], region=v["region"], pokedex=v["pokedex"])
+        for k, v in pokemon_data.items()
+    ]
+
     # Generate and pickle the graph to a file
-    dump_graph(generate_graph())
+    dump_graph(generate_graph(pokemon_nodes))
 
     # The graph is unpickled
     graph = load_graph()
