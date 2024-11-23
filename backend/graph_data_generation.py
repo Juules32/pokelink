@@ -28,20 +28,20 @@ def generate_graph(pokemon_nodes: list[PokemonNode]) -> Graph:
     }
 
     for i in range(len(pokemon_nodes)):
-        ik = pokemon_nodes[i]
-        itypes = set(ik.types)
-        iregion = ik.region
+        inode = pokemon_nodes[i]
+        itypes = set(inode.types)
+        iregion = inode.region
         
         for j in range(i + 1, len(pokemon_nodes)):
-            jk = pokemon_nodes[j]
-            jtypes = set(jk.types)
-            jregion = jk.region
+            jnode = pokemon_nodes[j]
+            jtypes = set(jnode.types)
+            jregion = jnode.region
 
             # If the two pokemon are from the same or connected regions
             if iregion == jregion or {iregion, jregion} in connected_regions:
                 # If the two pokemon have types in common
                 if types_in_common(itypes, jtypes):
-                    graph.add_edge(ik.name, jk.name)
+                    graph.add_edge(inode.name, jnode.name)
     return graph
 
 # Generate positional data for each node based on Fruchterman-Reingold force-directed algorithm

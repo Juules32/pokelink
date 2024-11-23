@@ -18,20 +18,20 @@ app.add_middleware(
 
 bn = Business()
 
-@app.get("/graph_data")
-def get_graph_data() -> GraphData:
+@app.get("/pokelink/graph_data")
+def get_pokelink_graph_data() -> GraphData:
     try:
         graph = bn.get_graph()
         return bn.get_graph_data(graph)
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get graph data")
 
-@app.get("/puzzle")
-def get_puzzle(userid: str) -> PuzzleSolution:
-    return get_puzzle(get_date_str(), userid)
+@app.get("/pokelink/puzzle")
+def get_pokelink_puzzle(userid: str) -> PuzzleSolution:
+    return get_pokelink_puzzle(get_date_str(), userid)
 
-@app.get("/puzzle/{date}")
-def get_puzzle(date: str, userid: str) -> PuzzleSolution:
+@app.get("/pokelink/puzzle/{date}")
+def get_pokelink_puzzle(date: str, userid: str) -> PuzzleSolution:
     try:
         return bn.get_puzzle_solution(date, userid)
     except NotFoundException as e:
@@ -39,8 +39,8 @@ def get_puzzle(date: str, userid: str) -> PuzzleSolution:
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get puzzle")
 
-@app.get("/puzzles")
-def get_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
+@app.get("/pokelink/puzzles")
+def get_pokelink_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
     try:
         return bn.get_puzzles(userid, page)
     except NotFoundException as e:
@@ -48,23 +48,32 @@ def get_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get puzzles")
 
-@app.get("/num_puzzles")
-def get_puzzles() -> int:
+@app.get("/pokelink/num_puzzles")
+def get_pokelink_num_puzzles() -> int:
     try:
         return bn.get_num_puzzles()
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get number of puzzles")
 
-@app.get("/hint")
-def get_hint(source: str, target: str) -> str:
+@app.get("/pokelink/hint")
+def get_pokelink_hint(source: str, target: str) -> str:
     try:
         graph = bn.get_graph()
         return bn.get_hint(graph, source, target)
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get hint")
 
+@app.post("/pokelink/solution/{date}")
+def post_pokelink_solution(solution_request: SolutionRequest, date: str) -> None:
+    try:
+        bn.set_user_solution(userid=solution_request.userid, date=date, solution=solution_request.solution)
+    except InvalidSolutionException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except:
+        raise HTTPException(status_code=500, detail="Could not set solution")
+
 @app.get("/cron/generate/puzzle")
-def generate_daily_data(request: Request) -> None:
+def generate_daily_puzzle(request: Request) -> None:
     authorization_header = request.headers.get("authorization")
 
     if not authorization_header:
@@ -76,12 +85,3 @@ def generate_daily_data(request: Request) -> None:
     new_puzzle = bn.generate_puzzle(bn.get_graph(), get_date_str(1), strict=True)
     bn.db.set_puzzle(new_puzzle)
     print("Set tomorrow's puzzle successfully!")
-
-@app.post("/solution/{date}")
-def post_solution(solution_request: SolutionRequest, date: str) -> None:
-    try:
-        bn.set_user_solution(userid=solution_request.userid, date=date, solution=solution_request.solution)
-    except InvalidSolutionException as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except:
-        raise HTTPException(status_code=500, detail="Could not set solution")

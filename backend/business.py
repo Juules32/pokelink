@@ -1,3 +1,4 @@
+import copy
 import pickle, random, httpx
 from typing import Union
 from networkx import Graph
@@ -8,7 +9,7 @@ from database import Database
 from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
 import networkx as nx
 from networkx import Graph
-from pokemon_data_generation import region_number
+from pokemon_data_generation import load_criteria_data, region_number
 from graph_data_generation import get_graph_data, load_graph, types_in_common
 
 class Business:
@@ -16,12 +17,13 @@ class Business:
         self.environment: Union[str, None] = ENVIRONMENT
         if self.environment == "DEVELOPMENT":
             self.graph = load_graph()
-            print("Loaded graph from local file")
+            self.criteria_data = load_criteria_data()
+            print("Loaded graph and criteria data from local file")
         self.db = Database()
     
-    def get_blob_graph(self) -> Graph:
+    def get_blob_file(self, name: str) -> Graph:
         # Requests the pickled file directly from the blob host
-        response = httpx.get(f"{BLOB_HOST}/graph_data.pkl")
+        response = httpx.get(f"{BLOB_HOST}/{name}")
         if response.status_code == 200:
             print("Downloading pickled file")
             return pickle.loads(response.content)
@@ -35,7 +37,13 @@ class Business:
         if self.environment == "DEVELOPMENT":
             return self.graph
         else:
-            return self.get_blob_graph()
+            return self.get_blob_file("graph_data.pkl")
+    
+    def get_criteria_data(self) -> dict:
+        if self.environment == "DEVELOPMENT":
+            return self.criteria_data
+        else:
+            return self.get_blob_file("criteria_data.pkl")
     
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
@@ -124,3 +132,56 @@ class Business:
             raise InvalidSolutionException()
 
         self.db.set_user_solution(userid, date, solution)
+
+    def generate_pokedoku2_puzzle(self, criteria_data: dict) -> dict:
+        for key, value in criteria_data.items():
+            criteria_data[key] = set(value)
+
+        criteria = list(criteria_data.keys())
+
+        def generate_criteria(unused_criteria: list):
+            selected_criteria = []
+            for _ in range(3):
+                selected_criteria.append(unused_criteria.pop(random.randrange(len(unused_criteria))))
+            return selected_criteria
+
+        def get_results(criteria: list):
+            return [
+                criteria_data[criterion]
+                for criterion in criteria
+            ]
+
+        retries = 0
+    
+        while True:
+            unused_criteria = copy.deepcopy(criteria)
+            
+            column_criteria = generate_criteria(unused_criteria)
+            column_results = get_results(column_criteria)
+            
+            row_criteria = generate_criteria(unused_criteria)
+            row_results = get_results(row_criteria)
+            
+            valid_pokemon = [
+                # Finds the intersection between the two sets
+                list(column_result & row_result)
+                for row_result in row_results
+                for column_result in column_results
+            ]
+            
+            # Returns generated data if no cells contains no valid pokemon
+            if not any(len(sublist) == 0 for sublist in valid_pokemon):
+                return {
+                    "validPokemon": valid_pokemon,
+                    "columnCriteria": column_criteria,
+                    "rowCriteria": row_criteria
+                }
+            else:
+                retries += 1
+                print(f"Combination of criteria contained empty result. Retries: {retries}")
+
+if __name__ == "__main__":
+    print("pee")
+
+    bn = Business()
+    print(bn.generate_pokedoku2_puzzle(bn.get_criteria_data()))

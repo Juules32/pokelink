@@ -1,3 +1,4 @@
+import json
 import psycopg2
 from typing import Any, Union
 from enum import Enum
@@ -194,3 +195,40 @@ class Database:
         )[0]
 
         return num_puzzles
+
+    def create_puzzle_table(self):
+        self.drop_table(table_name="pokedoku2_puzzle")
+
+        query = """
+            CREATE TABLE pokedoku2_puzzle (
+                date DATE PRIMARY KEY,
+                data JSON NOT NULL
+            );
+        """
+        self.commit_query(query=query, message="Created pokedoku2 puzzle table successfully")
+
+    def set_puzzle(self, date: str, data: dict) -> None:
+        # Insert date and data, overwriting old data if it already exists
+        query = """
+            INSERT INTO pokedoku2_puzzle (date, data)
+            VALUES (%s, %s)
+            ON CONFLICT (date) DO UPDATE SET data = EXCLUDED.data;
+        """
+        data_string: str = json.dumps(data)
+        self.commit_query(
+            query=query, 
+            vars=(date, data_string), 
+            message=f"Inserted puzzle data for date: {date} successfully"
+        )
+
+    def get_puzzle(self, date: str) -> dict:
+        query = """
+            SELECT data FROM pokedoku2_puzzle WHERE date = %s
+        """
+        data: dict = self.commit_query(
+            query=query, 
+            vars=(date,), 
+            fetch=Fetch.ONE, 
+            message=f"Got data for date: {date} successfully"
+        )
+        return data

@@ -1,5 +1,6 @@
 import asyncio
 from collections import defaultdict
+import pickle
 import httpx
 import json
 
@@ -186,10 +187,18 @@ async def fetch_pokemon_data(client, result, pokemon_data, criteria_data):
     # Region
     add(f'region-{pokemon_region}', pokemon_name)
 
+def dump_criteria_data(criteria_data: dict):
+    with open("criteria_data.pkl", "wb") as criteria_file:
+        pickle.dump(dict(criteria_data.items()), criteria_file)
+
+def load_criteria_data() -> dict:
+    with open("criteria_data.pkl", "rb") as criteria_file:
+        return pickle.load(criteria_file)
+
 LIMIT = 100000
 OFFSET = 0
 
-async def save_data_to_json():
+async def generate_pokemon_and_criteria_data() -> tuple[dict, dict]:
     pokemon_data = {}
     criteria_data = defaultdict(lambda : [])
 
@@ -219,6 +228,13 @@ async def save_data_to_json():
         # Run all tasks concurrently
         await asyncio.gather(*tasks)
 
+    return (pokemon_data, criteria_data)
+
+
+# Running this script gathers pokemon data asynchronously and stores it in json format
+if __name__ == "__main__":
+    pokemon_data, criteria_data = asyncio.run(generate_pokemon_and_criteria_data())
+    
     # Save the data to JSON files
     with open("pokemon_data.json", "w") as pokemon_data_json:
         json.dump(pokemon_data, pokemon_data_json, indent=4)
@@ -226,6 +242,4 @@ async def save_data_to_json():
     with open("criteria_data.json", "w") as criteria_data_json:
         json.dump(criteria_data, criteria_data_json, indent=4)
 
-# Running this script gathers pokemon data asynchronously and stores it in json format
-if __name__ == "__main__":
-    asyncio.run(save_data_to_json())
+    dump_criteria_data(criteria_data)

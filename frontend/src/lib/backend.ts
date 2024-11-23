@@ -18,7 +18,7 @@ export async function fetchPuzzle(
 ): Promise<PuzzleSolution> {
     try {
         const endpoint = date ? "puzzle/" + date : "puzzle";
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}?userid=${userid}`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/pokelink/${endpoint}?userid=${userid}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -52,7 +52,7 @@ export async function fetchPuzzles(
     pageNum: number
 ): Promise<PuzzlesItem[]> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=${userid}&page=${pageNum}`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/pokelink/puzzles?userid=${userid}&page=${pageNum}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -74,7 +74,7 @@ export async function fetchNumPuzzles(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 ): Promise<number> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/num_puzzles`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/pokelink/num_puzzles`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -95,7 +95,7 @@ export async function fetchNumPuzzles(
 export async function fetchHint(source: string, target: string): Promise<string> {
     try {
         const response = await fetch(
-            `${PUBLIC_BACKEND_HOST}/hint?source=${source}&target=${target}`
+            `${PUBLIC_BACKEND_HOST}/pokelink/hint?source=${source}&target=${target}`
         )
         const data = await response.json()
 
@@ -116,7 +116,7 @@ export async function fetchHint(source: string, target: string): Promise<string>
 
 export async function fetchGraphData(): Promise<GraphData> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/graph_data`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/pokelink/graph_data`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -135,7 +135,7 @@ export async function fetchGraphData(): Promise<GraphData> {
 }
 
 export async function postSolution(date: string, guessedNames: string[]) {
-    const response = await fetch(`${PUBLIC_BACKEND_HOST}/solution/${date}`, {
+    const response = await fetch(`${PUBLIC_BACKEND_HOST}/pokelink/solution/${date}`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ userid: userid, solution: guessedNames })
