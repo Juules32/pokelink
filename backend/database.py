@@ -5,7 +5,7 @@ from enum import Enum
 
 from env import CONNECTION_STRING
 from date import get_date_str
-from model import Puzzle
+from model import PokelinkPuzzle
 
 class Fetch(Enum):
     ONE = 0
@@ -63,7 +63,7 @@ class Database:
             message="Created pokelink_puzzle table successfully"
         )
 
-    def get_pokelink_puzzle(self, date: str) -> Union[Puzzle, None]:
+    def get_pokelink_puzzle(self, date: str) -> Union[PokelinkPuzzle, None]:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;
@@ -80,7 +80,7 @@ class Database:
             return None
         
         source, target, shortest_path, shortest_path_length = fetched_row
-        return Puzzle(
+        return PokelinkPuzzle(
             date=date if date else get_date_str(),
             source=source, 
             target=target, 
@@ -88,7 +88,7 @@ class Database:
             shortest_path_length=shortest_path_length
         )
     
-    def set_pokelink_puzzle(self, puzzle: Puzzle) -> None:
+    def set_pokelink_puzzle(self, puzzle: PokelinkPuzzle) -> None:
         query2 = """
             INSERT INTO pokelink_puzzle (date, source, target, shortest_path, shortest_path_length)
             VALUES (%s, %s, %s, %s, %s)
@@ -218,7 +218,7 @@ class Database:
         self.commit_query(
             query=query, 
             vars=(puzzle["date"], data_string), 
-            message=f"Inserted puzzle data for date: {puzzle["date"]} successfully"
+            message=f"Inserted puzzle data for date: {puzzle['date']} successfully"
         )
 
     def get_pokedoku2_puzzle(self, date: str) -> dict:

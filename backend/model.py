@@ -10,7 +10,7 @@ class PokemonNode(BaseModel):
     region: str                             # The region of the pokémon
 
 # Stored in the database as daily puzzles
-class Puzzle(BaseModel):
+class PokelinkPuzzle(BaseModel):
     date: str
     source: str                             # The name of the starting pokémon
     target: str                             # The name of the finishing pokémon
@@ -19,6 +19,7 @@ class Puzzle(BaseModel):
 
     def __str__(self):
         return f"""
+Date = {self.date}
 Source = {self.source}
 Target = {self.target}
 Shortest Path = {self.shortest_path}
@@ -31,7 +32,7 @@ class GraphData(BaseModel):
     edges: dict[str, list[str]]
 
 # Represents one puzzle in a list of puzzles
-class PuzzlesItem(BaseModel):
+class PokelinkPuzzlesItem(BaseModel):
     date: str
     source: str
     target: str
@@ -43,6 +44,6 @@ class SolutionRequest(BaseModel):
     solution: list[str]
 
 # A puzzle with a user's solution attached
-class PuzzleSolution(BaseModel):
-    puzzle: Puzzle
+class PokelinkPuzzleSolution(BaseModel):
+    puzzle: PokelinkPuzzle
     solution: Union[list[str], None]

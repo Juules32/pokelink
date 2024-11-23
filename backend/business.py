@@ -6,7 +6,7 @@ from exceptions import InvalidSolutionException, NotFoundException
 from date import get_date_str
 from env import BLOB_HOST, ENVIRONMENT
 from database import Database
-from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
+from model import GraphData, PokelinkPuzzle, PokelinkPuzzleSolution, PokelinkPuzzlesItem
 import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import load_criteria_data, region_number
@@ -48,19 +48,19 @@ class Business:
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
     
-    def get_pokelink_puzzle_solution(self, date: str, userid: str) -> PuzzleSolution:
+    def get_pokelink_puzzle_solution(self, date: str, userid: str) -> PokelinkPuzzleSolution:
         puzzle = self.db.get_pokelink_puzzle(date)
         if not puzzle:
             raise NotFoundException("Puzzle not found 😢")
         
         solution = self.db.get_pokelink_user_solution(userid, date)
 
-        return PuzzleSolution(
+        return PokelinkPuzzleSolution(
             puzzle=puzzle,
             solution=solution
         )
     
-    def generate_pokelink_puzzle(self, graph: Graph, date: str, strict: bool) -> Puzzle:
+    def generate_pokelink_puzzle(self, graph: Graph, date: str, strict: bool) -> PokelinkPuzzle:
         pokemon_names = list(graph.nodes.keys())
         source=random.choice(pokemon_names)
         target=random.choice(pokemon_names)
@@ -68,12 +68,13 @@ class Business:
         print(f"Generating data for puzzle between {source} and {target}...")
 
         if not nx.has_path(graph, source, target):
-            raise Exception(f"Found Puzzle with no connection: {source} to {target}")
+            print(f"Found Puzzle with no connection: {source} to {target}. Retrying...")
+            return self.generate_pokelink_puzzle(graph, date, strict=strict)
         if strict and not self.is_pokelink_puzzle_valid(graph, source, target):
             print("Puzzle wan't valid! Retrying...")
-            return self.generate_pokelink_puzzle(graph, date, strict=True)
+            return self.generate_pokelink_puzzle(graph, date, strict=strict)
         
-        return Puzzle(
+        return PokelinkPuzzle(
             date=date,
             source=source,
             target=target,
@@ -81,7 +82,7 @@ class Business:
             shortest_path_length=nx.shortest_path_length(graph, source, target)
         )
 
-    def generate_pokelink_puzzles(self, graph: Graph, n: int) -> list[Puzzle]:
+    def generate_pokelink_puzzles(self, graph: Graph, n: int) -> list[PokelinkPuzzle]:
         return [self.generate_pokelink_puzzle(graph, get_date_str(-i), strict=True) for i in range(n)]
 
     def get_generational_difference(self, graph: Graph, source: str, target: str) -> int:
@@ -105,14 +106,14 @@ class Business:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
 
-    def get_pokelink_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
+    def get_pokelink_puzzles(self, userid: str, page: int) -> list[PokelinkPuzzlesItem]:
         puzzle_dates = self.db.get_pokelink_puzzle_dates(page)
         if not puzzle_dates:
             raise NotFoundException("No puzzles found 💀")
 
         completed_puzzles = self.db.get_pokelink_completed_puzzles(userid)
         return [
-            PuzzlesItem(date=date, source=source, target=target, completed=date in completed_puzzles)
+            PokelinkPuzzlesItem(date=date, source=source, target=target, completed=date in completed_puzzles)
             for date, source, target in puzzle_dates
         ]
 
@@ -180,6 +181,10 @@ class Business:
             else:
                 retries += 1
                 print(f"Combination of criteria contained empty result. Retries: {retries}")
+
+    def generate_pokedoku2_puzzles(self, criteria_data: dict, n: int) -> list[dict]:
+        return [self.generate_pokedoku2_puzzle(criteria_data, get_date_str(-i)) for i in range(n)]
+
 
 if __name__ == "__main__":
     bn = Business()

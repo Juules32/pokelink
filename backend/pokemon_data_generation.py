@@ -145,6 +145,7 @@ async def fetch_pokemon_data(client, result, pokemon_data, criteria_data):
 
     # Store data
     pokemon_data[pokemon_name] = {
+        "name": pokemon_name,
         "id": pokemon_id,
         "types": pokemon_types,
         "region": pokemon_region,

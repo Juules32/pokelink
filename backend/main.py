@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from exceptions import InvalidSolutionException, NotFoundException
-from model import GraphData, PuzzleSolution, PuzzlesItem, SolutionRequest
+from model import GraphData, PokelinkPuzzleSolution, PokelinkPuzzlesItem, SolutionRequest
 from env import CRON_SECRET
 from date import get_date_str
 from business import Business
@@ -27,11 +27,11 @@ def get_pokelink_graph_data() -> GraphData:
         raise HTTPException(status_code=500, detail="Could not get graph data")
 
 @app.get("/pokelink/puzzle")
-def get_pokelink_puzzle(userid: str) -> PuzzleSolution:
+def get_pokelink_puzzle(userid: str) -> PokelinkPuzzleSolution:
     return get_pokelink_puzzle(get_date_str(), userid)
 
 @app.get("/pokelink/puzzle/{date}")
-def get_pokelink_puzzle(date: str, userid: str) -> PuzzleSolution:
+def get_pokelink_puzzle(date: str, userid: str) -> PokelinkPuzzleSolution:
     try:
         return bn.get_pokelink_puzzle_solution(date, userid)
     except NotFoundException as e:
@@ -40,7 +40,7 @@ def get_pokelink_puzzle(date: str, userid: str) -> PuzzleSolution:
         raise HTTPException(status_code=500, detail="Could not get puzzle")
 
 @app.get("/pokelink/puzzles")
-def get_pokelink_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
+def get_pokelink_puzzles(userid: str, page: int) -> list[PokelinkPuzzlesItem]:
     try:
         return bn.get_pokelink_puzzles(userid, page)
     except NotFoundException as e:
