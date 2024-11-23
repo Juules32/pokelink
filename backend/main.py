@@ -33,7 +33,7 @@ def get_pokelink_puzzle(userid: str) -> PuzzleSolution:
 @app.get("/pokelink/puzzle/{date}")
 def get_pokelink_puzzle(date: str, userid: str) -> PuzzleSolution:
     try:
-        return bn.get_puzzle_solution(date, userid)
+        return bn.get_pokelink_puzzle_solution(date, userid)
     except NotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception:
@@ -42,7 +42,7 @@ def get_pokelink_puzzle(date: str, userid: str) -> PuzzleSolution:
 @app.get("/pokelink/puzzles")
 def get_pokelink_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
     try:
-        return bn.get_puzzles(userid, page)
+        return bn.get_pokelink_puzzles(userid, page)
     except NotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception:
@@ -51,7 +51,7 @@ def get_pokelink_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
 @app.get("/pokelink/num_puzzles")
 def get_pokelink_num_puzzles() -> int:
     try:
-        return bn.get_num_puzzles()
+        return bn.get_pokelink_num_puzzles()
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get number of puzzles")
 
@@ -59,14 +59,14 @@ def get_pokelink_num_puzzles() -> int:
 def get_pokelink_hint(source: str, target: str) -> str:
     try:
         graph = bn.get_graph()
-        return bn.get_hint(graph, source, target)
+        return bn.get_pokelink_hint(graph, source, target)
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get hint")
 
 @app.post("/pokelink/solution/{date}")
 def post_pokelink_solution(solution_request: SolutionRequest, date: str) -> None:
     try:
-        bn.set_user_solution(userid=solution_request.userid, date=date, solution=solution_request.solution)
+        bn.set_pokelink_user_solution(userid=solution_request.userid, date=date, solution=solution_request.solution)
     except InvalidSolutionException as e:
         raise HTTPException(status_code=400, detail=str(e))
     except:
@@ -82,6 +82,10 @@ def generate_daily_puzzle(request: Request) -> None:
     if authorization_header != f"Bearer {CRON_SECRET}":
         raise HTTPException(status_code=403, detail="Invalid authorization header")
 
-    new_puzzle = bn.generate_puzzle(bn.get_graph(), get_date_str(1), strict=True)
-    bn.db.set_puzzle(new_puzzle)
-    print("Set tomorrow's puzzle successfully!")
+    new_pokelink_puzzle = bn.generate_pokelink_puzzle(bn.get_graph(), get_date_str(1), strict=True)
+    bn.db.set_pokelink_puzzle(new_pokelink_puzzle)
+    print("Set tomorrow's pokelink puzzle successfully!")
+
+    new_pokedoku2_puzzle = bn.generate_pokedoku2_puzzle(bn.get_criteria_data(), get_date_str(1))
+    bn.db.set_pokedoku2_puzzle(new_pokedoku2_puzzle)
+    print("Set tomorrow's pokedoku2 puzzle successfully!")

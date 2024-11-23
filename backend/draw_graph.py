@@ -9,7 +9,7 @@ from graph_data_generation import generate_pos
 def visualize_path_length_distribution(graph: Graph, bn: Business):
     path_lengths = []
     for _ in range(100):
-        puzzle = bn.generate_puzzle(graph, get_date_str(), strict=True)
+        puzzle = bn.generate_pokelink_puzzle(graph, get_date_str(), strict=True)
         path_lengths.append(nx.shortest_path_length(graph, puzzle.source, puzzle.target))
 
     # Count occurrences of each path length

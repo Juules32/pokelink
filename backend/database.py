@@ -47,7 +47,7 @@ class Database:
             message=f"Dropped {table_name} table successfully (if it existed)"
         )
 
-    def create_puzzle_table(self) -> None:
+    def create_pokelink_puzzle_table(self) -> None:
         self.drop_table(table_name="pokelink_puzzle")
         query = """
             CREATE TABLE pokelink_puzzle (
@@ -63,7 +63,7 @@ class Database:
             message="Created pokelink_puzzle table successfully"
         )
 
-    def get_puzzle(self, date: str) -> Union[Puzzle, None]:
+    def get_pokelink_puzzle(self, date: str) -> Union[Puzzle, None]:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;
@@ -88,7 +88,7 @@ class Database:
             shortest_path_length=shortest_path_length
         )
     
-    def set_puzzle(self, puzzle: Puzzle) -> None:
+    def set_pokelink_puzzle(self, puzzle: Puzzle) -> None:
         query2 = """
             INSERT INTO pokelink_puzzle (date, source, target, shortest_path, shortest_path_length)
             VALUES (%s, %s, %s, %s, %s)
@@ -104,7 +104,7 @@ class Database:
             message=f"Set puzzle data from {puzzle.source} to {puzzle.target} successfully"
         )
 
-    def get_puzzle_dates(self, page: int) -> list[tuple[str, str, str]]:
+    def get_pokelink_puzzle_dates(self, page: int) -> list[tuple[str, str, str]]:
         query = """
             SELECT date, source, target
             FROM pokelink_puzzle
@@ -126,7 +126,7 @@ class Database:
             for date, source, target in fetched_data
         ] if fetched_data else []
 
-    def create_user_solution_table(self) -> None:
+    def create_pokelink_user_solution_table(self) -> None:
         self.drop_table(table_name="pokelink_user_solution")
         query = """
             CREATE TABLE pokelink_user_solution (
@@ -142,7 +142,7 @@ class Database:
             message="Created pokelink_user_solution table successfully"
         )
 
-    def set_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
+    def set_pokelink_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
         query = """
             INSERT INTO pokelink_user_solution (userid, date, solution)
             VALUES (%s, %s, %s)
@@ -153,7 +153,7 @@ class Database:
             vars=(userid, date, solution),
             message="Set user solution successfully")
     
-    def get_user_solution(self, userid: str, date: str) -> Union[list[str], None]:
+    def get_pokelink_user_solution(self, userid: str, date: str) -> Union[list[str], None]:
         query = """
             SELECT solution from pokelink_user_solution
             WHERE userid = %s
@@ -170,7 +170,7 @@ class Database:
         # Returns the solution if it exists, otherwise None
         return solution[0] if solution else None
 
-    def get_completed_puzzles(self, userid: str) -> list[str]:
+    def get_pokelink_completed_puzzles(self, userid: str) -> list[str]:
         query = """
             SELECT date from pokelink_user_solution
             WHERE userid = %s
@@ -185,7 +185,7 @@ class Database:
 
         return [str(row[0]) for row in dates] if dates else []
 
-    def get_num_puzzles(self) -> int:
+    def get_pokelink_num_puzzles(self) -> int:
         query = "SELECT COUNT(*) from pokelink_puzzle"
 
         num_puzzles = self.commit_query(
@@ -196,7 +196,7 @@ class Database:
 
         return num_puzzles
 
-    def create_puzzle_table(self):
+    def create_pokedoku2_puzzle_table(self):
         self.drop_table(table_name="pokedoku2_puzzle")
 
         query = """
@@ -207,21 +207,21 @@ class Database:
         """
         self.commit_query(query=query, message="Created pokedoku2 puzzle table successfully")
 
-    def set_puzzle(self, date: str, data: dict) -> None:
+    def set_pokedoku2_puzzle(self, puzzle: dict) -> None:
         # Insert date and data, overwriting old data if it already exists
         query = """
             INSERT INTO pokedoku2_puzzle (date, data)
             VALUES (%s, %s)
             ON CONFLICT (date) DO UPDATE SET data = EXCLUDED.data;
         """
-        data_string: str = json.dumps(data)
+        data_string: str = json.dumps(puzzle)
         self.commit_query(
             query=query, 
-            vars=(date, data_string), 
-            message=f"Inserted puzzle data for date: {date} successfully"
+            vars=(puzzle["date"], data_string), 
+            message=f"Inserted puzzle data for date: {puzzle["date"]} successfully"
         )
 
-    def get_puzzle(self, date: str) -> dict:
+    def get_pokedoku2_puzzle(self, date: str) -> dict:
         query = """
             SELECT data FROM pokedoku2_puzzle WHERE date = %s
         """
@@ -231,4 +231,5 @@ class Database:
             fetch=Fetch.ONE, 
             message=f"Got data for date: {date} successfully"
         )
-        return data
+
+        return data[0] if data else None

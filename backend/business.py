@@ -48,19 +48,19 @@ class Business:
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
     
-    def get_puzzle_solution(self, date: str, userid: str) -> PuzzleSolution:
-        puzzle = self.db.get_puzzle(date)
+    def get_pokelink_puzzle_solution(self, date: str, userid: str) -> PuzzleSolution:
+        puzzle = self.db.get_pokelink_puzzle(date)
         if not puzzle:
             raise NotFoundException("Puzzle not found 😢")
         
-        solution = self.db.get_user_solution(userid, date)
+        solution = self.db.get_pokelink_user_solution(userid, date)
 
         return PuzzleSolution(
             puzzle=puzzle,
             solution=solution
         )
     
-    def generate_puzzle(self, graph: Graph, date: str, strict: bool) -> Puzzle:
+    def generate_pokelink_puzzle(self, graph: Graph, date: str, strict: bool) -> Puzzle:
         pokemon_names = list(graph.nodes.keys())
         source=random.choice(pokemon_names)
         target=random.choice(pokemon_names)
@@ -69,9 +69,9 @@ class Business:
 
         if not nx.has_path(graph, source, target):
             raise Exception(f"Found Puzzle with no connection: {source} to {target}")
-        if strict and not self.is_valid(graph, source, target):
+        if strict and not self.is_pokelink_puzzle_valid(graph, source, target):
             print("Puzzle wan't valid! Retrying...")
-            return self.generate_puzzle(graph, date, strict=True)
+            return self.generate_pokelink_puzzle(graph, date, strict=True)
         
         return Puzzle(
             date=date,
@@ -81,15 +81,15 @@ class Business:
             shortest_path_length=nx.shortest_path_length(graph, source, target)
         )
 
-    def generate_n_puzzles(self, graph: Graph, n: int) -> list[Puzzle]:
-        return [self.generate_puzzle(graph, get_date_str(-i), strict=True) for i in range(n)]
+    def generate_pokelink_puzzles(self, graph: Graph, n: int) -> list[Puzzle]:
+        return [self.generate_pokelink_puzzle(graph, get_date_str(-i), strict=True) for i in range(n)]
 
     def get_generational_difference(self, graph: Graph, source: str, target: str) -> int:
         source_region_number = region_number[graph.nodes[source]["region"]]
         target_region_number = region_number[graph.nodes[target]["region"]]
         return abs(source_region_number - target_region_number)
 
-    def is_valid(self, graph: Graph, source: str, target: str) -> bool:
+    def is_pokelink_puzzle_valid(self, graph: Graph, source: str, target: str) -> bool:
         MIN_SHORTEST_PATH_LENGTH = 4
         MIN_GENERATIONAL_DIFFERENCE = 1
 
@@ -101,22 +101,22 @@ class Business:
             not types_in_common(set(graph.nodes[source]["types"]), set(graph.nodes[target]["types"]))
         )
     
-    def get_hint(self, graph: Graph, source: str, target: str) -> str:
+    def get_pokelink_hint(self, graph: Graph, source: str, target: str) -> str:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
 
-    def get_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
-        puzzle_dates = self.db.get_puzzle_dates(page)
+    def get_pokelink_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
+        puzzle_dates = self.db.get_pokelink_puzzle_dates(page)
         if not puzzle_dates:
             raise NotFoundException("No puzzles found 💀")
 
-        completed_puzzles = self.db.get_completed_puzzles(userid)
+        completed_puzzles = self.db.get_pokelink_completed_puzzles(userid)
         return [
             PuzzlesItem(date=date, source=source, target=target, completed=date in completed_puzzles)
             for date, source, target in puzzle_dates
         ]
 
-    def validate_solution(self, solution: list[str]) -> bool:
+    def validate_pokelink_solution(self, solution: list[str]) -> bool:
         graph = self.get_graph()
         for i in range(len(solution) - 1):
             if not graph.has_edge(solution[i], solution[i + 1]):
@@ -124,16 +124,16 @@ class Business:
                 return False
         return True
 
-    def get_num_puzzles(self) -> int:
-        return self.db.get_num_puzzles()
+    def get_pokelink_num_puzzles(self) -> int:
+        return self.db.get_pokelink_num_puzzles()
 
-    def set_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
-        if not self.validate_solution(solution):
+    def set_pokelink_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
+        if not self.validate_pokelink_solution(solution):
             raise InvalidSolutionException()
 
-        self.db.set_user_solution(userid, date, solution)
+        self.db.set_pokelink_user_solution(userid, date, solution)
 
-    def generate_pokedoku2_puzzle(self, criteria_data: dict) -> dict:
+    def generate_pokedoku2_puzzle(self, criteria_data: dict, date: str) -> dict:
         for key, value in criteria_data.items():
             criteria_data[key] = set(value)
 
@@ -172,16 +172,18 @@ class Business:
             # Returns generated data if no cells contains no valid pokemon
             if not any(len(sublist) == 0 for sublist in valid_pokemon):
                 return {
-                    "validPokemon": valid_pokemon,
-                    "columnCriteria": column_criteria,
-                    "rowCriteria": row_criteria
+                    "date": date,
+                    "column_criteria": column_criteria,
+                    "row_criteria": row_criteria,
+                    "valid_pokemon": valid_pokemon
                 }
             else:
                 retries += 1
                 print(f"Combination of criteria contained empty result. Retries: {retries}")
 
 if __name__ == "__main__":
-    print("pee")
-
     bn = Business()
-    print(bn.generate_pokedoku2_puzzle(bn.get_criteria_data()))
+    new_puzzle = bn.generate_pokedoku2_puzzle(bn.get_criteria_data(), get_date_str())
+    bn.db.set_pokedoku2_puzzle(new_puzzle)
+    print(bn.db.get_pokedoku2_puzzle(get_date_str()))
+    
