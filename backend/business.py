@@ -2,6 +2,7 @@ import copy
 import pickle, random, httpx
 from typing import Union
 from networkx import Graph
+from file_io import pickle_load
 from exceptions import InvalidSolutionException, NotFoundException
 from date import get_date_str
 from env import BLOB_HOST, ENVIRONMENT
@@ -9,15 +10,15 @@ from database import Database
 from model import GraphData, PokelinkPuzzle, PokelinkPuzzleSolution, PokelinkPuzzlesItem
 import networkx as nx
 from networkx import Graph
-from pokemon_data_generation import load_criteria_data, region_number
-from graph_data_generation import get_graph_data, load_graph, types_in_common
+from pokemon_data_generation import region_number
+from graph_data_generation import get_graph_data, types_in_common
 
 class Business:
     def __init__(self):
         self.environment: Union[str, None] = ENVIRONMENT
         if self.environment == "DEVELOPMENT":
-            self.graph = load_graph()
-            self.criteria_data = load_criteria_data()
+            self.graph = pickle_load("graph")
+            self.criteria_data: dict = pickle_load("criteria_data")
             print("Loaded graph and criteria data from local file")
         self.db = Database()
     
@@ -37,7 +38,7 @@ class Business:
         if self.environment == "DEVELOPMENT":
             return self.graph
         else:
-            return self.get_blob_file("graph_data.pkl")
+            return self.get_blob_file("graph.pkl")
     
     def get_criteria_data(self) -> dict:
         if self.environment == "DEVELOPMENT":
@@ -185,10 +186,19 @@ class Business:
     def generate_pokedoku2_puzzles(self, criteria_data: dict, n: int) -> list[dict]:
         return [self.generate_pokedoku2_puzzle(criteria_data, get_date_str(-i)) for i in range(n)]
 
-
+# Running this script sets up the database tables
+# And generates and sets 10 puzzles
 if __name__ == "__main__":
     bn = Business()
-    new_puzzle = bn.generate_pokedoku2_puzzle(bn.get_criteria_data(), get_date_str())
-    bn.db.set_pokedoku2_puzzle(new_puzzle)
-    print(bn.db.get_pokedoku2_puzzle(get_date_str()))
-    
+    bn.db.create_pokelink_puzzle_table()
+    bn.db.create_pokelink_user_solution_table()
+    bn.db.create_pokedoku2_puzzle_table()
+    pokelink_puzzles = bn.generate_pokelink_puzzles(bn.get_graph(), 5)
+    for puzzle in pokelink_puzzles:
+        bn.db.set_pokelink_puzzle(puzzle)
+    print("Last generated pokelink puzzle:", bn.db.get_pokelink_puzzle(get_date_str()))
+
+    pokedoku2_puzzles = bn.generate_pokedoku2_puzzles(bn.get_criteria_data(), 5)
+    for puzzle in pokedoku2_puzzles:
+        bn.db.set_pokedoku2_puzzle(puzzle)
+    print("Last generated pokedoku2 puzzle:", bn.db.get_pokedoku2_puzzle(get_date_str()))

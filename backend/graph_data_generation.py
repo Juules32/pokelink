@@ -1,9 +1,9 @@
 from typing import Mapping, Union
 import networkx as nx
-import json, pickle
 from networkx import Graph
 from model import GraphData, PokemonNode
 from fastapi.encoders import jsonable_encoder
+from file_io import pickle_load, pickle_dump, json_load, json_dump
 
 def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
     return not itypes.isdisjoint(jtypes)
@@ -48,14 +48,6 @@ def generate_graph(pokemon_nodes: list[PokemonNode]) -> Graph:
 def generate_pos(graph: Graph, iterations: int = 50, k: Union[int, None] = None) -> Mapping:
     return nx.spring_layout(graph, iterations=iterations, k=k)
 
-def dump_graph(graph: Graph):
-    with open("graph_data.pkl", "wb") as graph_file:
-        pickle.dump(graph, graph_file)
-
-def load_graph() -> Graph:
-    with open("graph_data.pkl", "rb") as graph_file:
-        return pickle.load(graph_file)
-
 def get_graph_data(graph: Graph):
     nodes: dict[str, PokemonNode] = {}
     edges: dict[str, list[str]] = {}
@@ -74,26 +66,21 @@ def get_graph_data(graph: Graph):
         edges=edges
     )
 
-def store_graph_data(graph_data: GraphData):
-    with open("graph_data.json", "w") as graph_data_json:
-        json.dump(jsonable_encoder(graph_data), graph_data_json, indent=4)
-
 if __name__ == "__main__":
-    with open("pokemon_data.json", "r") as pokemon_data_json:
-        pokemon_data = json.load(pokemon_data_json)
+    pokemon_data = json_load("pokemon_data")
     pokemon_nodes: list[PokemonNode] = [
         PokemonNode(name=k, id=v["id"], types=v["types"], region=v["region"], pokedex=v["pokedex"])
         for k, v in pokemon_data.items()
     ]
 
     # Generate and pickle the graph to a file
-    dump_graph(generate_graph(pokemon_nodes))
+    pickle_dump(generate_graph(pokemon_nodes), "graph")
 
     # The graph is unpickled
-    graph = load_graph()
+    graph = pickle_load("graph")
 
     # The graph data is formatted from the graph
     graph_data = get_graph_data(graph)
 
     # The graph data is saved to a json file
-    store_graph_data(graph_data)
+    json_dump(jsonable_encoder(graph_data), "graph_data")

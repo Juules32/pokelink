@@ -5,10 +5,8 @@ TODO.*
 .vscode
 .VSCodeCounter
 .env
-graph_data.json
-pokemon_data.json
-criteria_data.json
-*.pkl
+backend/data/*
+!backend/data/.gitkeep
 .svelte-kit
 node_modules
 build
