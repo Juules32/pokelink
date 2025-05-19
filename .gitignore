@@ -11,3 +11,4 @@ pokemon_data.json
 .svelte-kit
 node_modules
 build
+.venv

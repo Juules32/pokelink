@@ -10,6 +10,7 @@ import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
 from graph_data_generation import get_graph_data, load_graph, types_in_common
+from urllib.parse import urljoin
 
 class Business:
     def __init__(self):
@@ -21,7 +22,7 @@ class Business:
     
     def get_blob_graph(self) -> Graph:
         # Requests the pickled file directly from the blob host
-        response = httpx.get(f"{BLOB_HOST}/graph_data.pkl")
+        response = httpx.get(urljoin(BLOB_HOST, "graph_data.pkl"))
         if response.status_code == 200:
             print("Downloading pickled file")
             return pickle.loads(response.content)
