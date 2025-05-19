@@ -5,6 +5,8 @@ TODO.*
 .vscode
 .VSCodeCounter
 .env
+.env.development
+.env.production
 graph_data.json
 pokemon_data.json
 *.pkl

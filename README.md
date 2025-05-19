@@ -1,67 +1,66 @@
 # pokelink
 Welcome to the repo for PokéLink, the daily pokemon-themed puzzle game!
 
-Visit the page [here](https://pokelink.vercel.app)!
+Visit the page [here](https://pokelink.juules32.com)!
 
-## Local Setup
+# Local Setup
 
-### Backend
+## Backend
 
-- As a prerequisite, you need to have a postgres database running.
-
-- Copy the connection string and paste it into a copy of `.env.example`, which you should rename 
-to `.env`. Leave the other environment variables as they are.
-
-- Go into the `backend` folder.
-
-- Run this to install dependencies:
-
-```pip install```
-
-- Run this to generate pokemon JSON data used to generate graph data:
-
-```python pokemon_data_generation.py```
-
-- Run this to generate graph data:
-
-```python graph_data_generation.py```
-
-- Run this to set up your database tables etc.:
-
-```python setup.py```
-
-- Run this to start a local webserver:
-
-```uvicorn main:app --reload --port 80```
+- Have a postgres database running.
+- Navigate to `/backend`
+- Copy `.env.example` to `.env.development` and fill in the values
+- Run the following copmmands:
+```
+pip install -r requirements.txt                 # Install dependencies
+python pokemon_data_generation.py               # Generate pokemon JSON data from pokeAPI
+python graph_data_generation.py                 # Generate graph from pokemon data
+python setup.py                                 # Generate tables and template puzzles on the DB
+uvicorn main:app --reload --port 80             # Run the webserver
+```
 
 - Visit [localhost/docs](http://localhost/docs) to see if the backend is running.
 
-### Frontend
+## Frontend
 
-- Go into the `frontend` folder.
-
-- Run this to install dependencies:
-
-```npm i```
-
-- Run the following to start a webserver set to run by default on port `5173`.
+- Navigate to `/frontend`
+- Copy `.env.example` to `.env.development` and fill in the values
+- Run the following copmmands:
+```
+npm i                                           # Install dependencies
+npm run dev                                     # Run the webserver
+```
 
 - Visit [localhost:5173](http://localhost:5173) to see if the frontend is running.
 
-## Production Setup
+# Production Setup on Ubuntu Server
 
-I deployed the app to vercel. Feel free to choose another option.
+## Backend
 
-- Create a vercel postgres database.
+- Have a postgres database running
+- Have a local file server (blob) running as a service by using nginx
+- Navigate to `/backend`:
+- Copy `.env.example` to `.env.production` and fill in the values
+- Run the following copmmands:
+```
+sudo apt install python3-venv python3-full      # Install venv
+python3 -m venv .venv                           # Make a venv folder
+source .venv/bin/activate                       # Go into the venv                
+pip install -r requirements.txt                 # Install requirements
+python pokemon_data_generation.py               # Generate pokemon data in json
+python graph_data_generation.py                 # Generate graph and store as .json and .pkl
+python setup.py                                 # Requires a working connection string to the postgres database
+uvicorn main:app --port <port> --env-file .env.production # Start the webserver
+```
+- Copy the pickled graph data to the file server directory (for example `/srv/pokelink-backend-blob`)
 
-- Set up the tables etc. by changing `CONNECTION_STRING` in `.env` to the new connection string temporarily
-and run the `setup.py` script in the `backend` folder.
+## Frontend
 
-- Create a vercel blob storage.
-
-- For the frontend and backend respectively, add a new project on vercel. Set the root folder
-to backend/frontend.
-
-- On the backend project, set up environment variables for `CRON_SECRET` (can be whatever), `CONNECTION_STRING` (from the vercel database), `ENVIRONMENT` ("PRODUCTION") and `BLOB_HOST` (from the vercel blob storage).
-
-- On the frontend project, set up environment variable for `PUBLIC_BACKEND_HOST` ("https://pokelink-backend.vercel.app" or something similar).
+- Navigate to `/frontend`
+- Copy `.env.example` to `.env.production` and fill in the values
+- Run the following copmmands:
+```
+npm i                                           # Install dependencies
+npm run build                                   # Build the production files
+PORT=<port> node build                          # Host the production files
+```
