@@ -1,4 +1,4 @@
-# pokelink
+# PokéLink 🐲
 Welcome to the repo for PokéLink, the daily pokemon-themed puzzle game!
 
 Visit the page [here](https://pokelink.juules32.com)!
