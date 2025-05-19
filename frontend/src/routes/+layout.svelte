@@ -36,6 +36,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>PokéLink</title>
+</svelte:head>
+
 {#if loaded}
     <BackgroundComponent />
     <HeaderComponent />
