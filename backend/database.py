@@ -33,9 +33,11 @@ class Database:
                 return result
         except Exception as e:
             print(f"Error: {e}")
-            self.connection.rollback()
+            if self.connection:
+                self.connection.rollback()
         finally:
-            self.connection.close()
+            if self.connection:
+                self.connection.close()
 
     def drop_table(self, table_name: str) -> None:
         query = f"""

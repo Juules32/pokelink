@@ -27,7 +27,7 @@ def get_graph_data() -> GraphData:
         raise HTTPException(status_code=500, detail="Could not get graph data")
 
 @app.get("/puzzle")
-def get_puzzle(userid: str) -> PuzzleSolution:
+def get_today_puzzle(userid: str) -> PuzzleSolution:
     return get_puzzle(get_date_str(), userid)
 
 @app.get("/puzzle/{date}")
@@ -49,7 +49,7 @@ def get_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
         raise HTTPException(status_code=500, detail="Could not get puzzles")
 
 @app.get("/num_puzzles")
-def get_puzzles() -> int:
+def get_num_puzzles() -> int:
     try:
         return bn.get_num_puzzles()
     except Exception:

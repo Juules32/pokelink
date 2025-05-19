@@ -21,6 +21,9 @@ class Business:
         self.db = Database()
     
     def get_blob_graph(self) -> Graph:
+        if not BLOB_HOST:
+            raise Exception
+
         # Requests the pickled file directly from the blob host
         response = httpx.get(urljoin(BLOB_HOST, "graph_data.pkl"))
         if response.status_code == 200:
@@ -28,7 +31,7 @@ class Business:
             return pickle.loads(response.content)
         else:
             print("Failed to download pickled file")
-            raise None
+            raise NotFoundException("Graph data not found")
     
     # Returns loaded file for local development
     # In production (vercel), instead download the graph from the blob storage
@@ -66,12 +69,17 @@ class Business:
             print("Puzzle wan't valid! Retrying...")
             return self.generate_puzzle(graph, date, strict=True)
         
+        shortest_path = nx.shortest_path(graph, source, target)
+        shortest_path_length = nx.shortest_path_length(graph, source, target)
+
+        assert isinstance(shortest_path, list), "Expected shortest_path to return a list"
+
         return Puzzle(
             date=date,
             source=source,
             target=target,
-            shortest_path=nx.shortest_path(graph, source, target),
-            shortest_path_length=nx.shortest_path_length(graph, source, target)
+            shortest_path=shortest_path,
+            shortest_path_length=shortest_path_length
         )
 
     def generate_n_puzzles(self, graph: Graph, n: int) -> list[Puzzle]:

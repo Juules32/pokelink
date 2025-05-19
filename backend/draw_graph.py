@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # type: ignore
 import networkx as nx
 from typing import Counter
 from networkx import Graph
