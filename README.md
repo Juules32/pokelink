@@ -64,3 +64,97 @@ npm i                                           # Install dependencies
 npm run build                                   # Build the production files
 PORT=<port> node build                          # Host the production files
 ```
+
+## Creating of Services
+
+### Backend
+
+- Create a service file:
+```sudo nano /etc/systemd/system/pokelink-backend.service```
+
+- Enter:
+```
+[Unit]
+Description=Pokelink Backend (Uvicorn) Service
+After=network.target
+
+[Service]
+User=<user>
+WorkingDirectory=<repo path>/backend
+ExecStart=<repo path>/backend/.venv/bin/uvicorn main:app --port <port> --env-file .env.production
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Run the following commands:
+```
+sudo systemctl start pokelink-backend
+sudo systemctl enable pokelink-backend
+sudo systemctl status pokelink-backend
+```
+
+### Frontend
+
+- Create a service file:
+```sudo nano /etc/systemd/system/pokelink-frontend.service```
+
+- Enter:
+```
+Description=Pokelink Frontend Service
+After=network.target
+
+[Service]
+User=<user>
+WorkingDirectory=<repo path>/frontend
+ExecStart=/usr/bin/env PORT=<port> node build
+Restart=on-failure
+EnvironmentFile=<repo path>/.env.production
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Run the following commands:
+```
+sudo systemctl start pokelink-frontend
+sudo systemctl enable pokelink-frontend
+sudo systemctl status pokelink-frontend
+```
+
+### Blob
+
+- Install nginx and enable it as a service
+- Run:
+```sudo nano /etc/nginx/sites-available/pokelink-production-blob```
+
+- Enter:
+```
+server {
+    listen 127.0.0.1:<port>;
+
+    root <blob path>;
+    autoindex on;
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    access_log /var/log/nginx/pokelink_production_blob_access.log;
+    error_log /var/log/nginx/pokelink_production_blob_error.log;
+}
+```
+
+- Run the following commands:
+```
+sudo ln -s /etc/nginx/sites-available/pokelink-production-blob /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl enable nginx
+sudo systemctl reload nginx
+sudo systemctl status nginx
+```
+
+### Postgres DB
+[Documentation here](https://documentation.ubuntu.com/server/how-to/databases/install-postgresql/index.html)
