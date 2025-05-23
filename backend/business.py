@@ -14,10 +14,10 @@ from urllib.parse import urljoin
 
 class Business:
     def __init__(self):
-        self.graph = load_graph()
+        self.graph = self.get_blob_graph()
         print("Loaded graph data")
         self.db = Database()
-    
+
     def get_blob_graph(self) -> Graph:
         if not BLOB_HOST:
             raise Exception

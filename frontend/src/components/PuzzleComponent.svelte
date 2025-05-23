@@ -116,7 +116,7 @@
     ></div>
 {/if}
 
-<div class="h-fit flex flex-col pt-12 space-y-5 items-center">
+<div class="h-fit flex flex-col py-12 space-y-5 items-center">
     <h1 class="sm:text-5xl text-3xl">
         {$page.params.date ? "Puzzle: " + $page.params.date : "Today's Puzzle"}
     </h1>
