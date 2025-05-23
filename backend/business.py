@@ -3,7 +3,7 @@ from typing import Union
 from networkx import Graph
 from exceptions import InvalidSolutionException, NotFoundException
 from date import get_date_str
-from env import BLOB_HOST, ENVIRONMENT
+from env import BLOB_HOST
 from database import Database
 from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
 import networkx as nx
@@ -14,10 +14,8 @@ from urllib.parse import urljoin
 
 class Business:
     def __init__(self):
-        self.environment: Union[str, None] = ENVIRONMENT
-        if self.environment == "DEVELOPMENT":
-            self.graph = load_graph()
-            print("Loaded graph from local file")
+        self.graph = load_graph()
+        print("Loaded graph data")
         self.db = Database()
     
     def get_blob_graph(self) -> Graph:
@@ -33,13 +31,8 @@ class Business:
             print("Failed to download pickled file")
             raise NotFoundException("Graph data not found")
     
-    # Returns loaded file for local development
-    # In production (vercel), instead download the graph from the blob storage
     def get_graph(self) -> Graph:
-        if self.environment == "DEVELOPMENT":
-            return self.graph
-        else:
-            return self.get_blob_graph()
+        return self.graph
     
     def get_graph_data(self, graph: Graph) -> GraphData:
         return get_graph_data(graph)
