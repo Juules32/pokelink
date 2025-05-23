@@ -1,9 +1,9 @@
+from datetime import date, datetime
 import psycopg2
 from typing import Any, Union
 from enum import Enum
 
 from env import CONNECTION_STRING
-from date import get_date_str
 from model import Puzzle
 
 class Fetch(Enum):
@@ -72,7 +72,7 @@ class Database:
 
         fetched_row = self.commit_query(
             query=query,
-            vars=(date if date else get_date_str(),),
+            vars=(date,),
             fetch=Fetch.ONE,
             message="Got puzzle data successfully"
         )
@@ -82,7 +82,7 @@ class Database:
         
         source, target, shortest_path, shortest_path_length = fetched_row
         return Puzzle(
-            date=date if date else get_date_str(),
+            date=date,
             source=source, 
             target=target, 
             shortest_path=shortest_path, 
@@ -123,9 +123,26 @@ class Database:
         )
 
         return [
-            (str(date), source, target)
+            (date.strftime('%Y-%m-%d'), source, target)
             for date, source, target in fetched_data
         ] if fetched_data else []
+
+    def get_closest_date(self, date: datetime) -> str:
+        query = """
+            SELECT date
+            FROM pokelink_puzzle
+            ORDER BY ABS(DATE_PART('day', date - %s))
+            LIMIT 1;
+        """
+
+        fetched_row = self.commit_query(
+            query=query,
+            vars=(date,),
+            fetch=Fetch.ONE,
+            message="Got closest date successfully"
+        )
+
+        return str(fetched_row[0])
 
     def create_user_solution_table(self) -> None:
         self.drop_table(table_name="pokelink_user_solution")
@@ -186,6 +203,19 @@ class Database:
 
         return [str(row[0]) for row in dates] if dates else []
 
+    def delete_puzzle_by_date(self, date: date) -> None:
+        query = """
+            DELETE FROM pokelink_puzzle
+            WHERE date = %s;
+        """
+
+        self.commit_query(
+            query=query,
+            vars=(date,),
+            fetch=None,
+            message=f"Deleted puzzles for date {date}"
+        )
+
     def get_num_puzzles(self) -> int:
         query = "SELECT COUNT(*) from pokelink_puzzle"
 
@@ -196,3 +226,14 @@ class Database:
         )[0]
 
         return num_puzzles
+
+    def get_all_puzzle_dates(self) -> set[datetime]:
+        query = "SELECT date FROM pokelink_puzzle;"
+
+        rows = self.commit_query(
+            query=query,
+            vars=None,
+            fetch=Fetch.ALL,
+            message="Fetched all puzzle dates"
+        )
+        return {row[0] for row in rows}  # row[0] = date string

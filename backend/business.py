@@ -1,20 +1,21 @@
+from datetime import datetime
 import pickle, random, httpx
-from typing import Union
 from networkx import Graph
 from exceptions import InvalidSolutionException, NotFoundException
 from date import get_date_str
 from env import BLOB_HOST
 from database import Database
-from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
+from model import Puzzle, PuzzleSolution, PuzzlesItem
 import networkx as nx
 from networkx import Graph
 from pokemon_data_generation import region_number
-from graph_data_generation import get_graph_data, load_graph, types_in_common
+from graph_data_generation import get_graph_data, types_in_common
 from urllib.parse import urljoin
 
 class Business:
     def __init__(self):
         self.graph = self.get_blob_graph()
+        self.graph_data = get_graph_data(self.graph)
         print("Loaded graph data")
         self.db = Database()
 
@@ -34,8 +35,9 @@ class Business:
     def get_graph(self) -> Graph:
         return self.graph
     
-    def get_graph_data(self, graph: Graph) -> GraphData:
-        return get_graph_data(graph)
+    def get_home_solution(self, date: datetime, userid: str) -> PuzzleSolution:
+        closest_date = self.db.get_closest_date(date)
+        return self.get_puzzle_solution(closest_date, userid)
     
     def get_puzzle_solution(self, date: str, userid: str) -> PuzzleSolution:
         puzzle = self.db.get_puzzle(date)
