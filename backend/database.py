@@ -142,8 +142,6 @@ class Database:
             message="Got closest date successfully"
         )
 
-        print(fetched_row)
-
         return fetched_row[0] if fetched_row else None
 
     def create_user_solution_table(self) -> None:

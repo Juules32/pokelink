@@ -29,7 +29,7 @@ def get_graph_data() -> GraphData:
 def get_home_puzzle(userid: str) -> PuzzleSolution:
     closest_date = bn.db.get_closest_date(get_date())
     if not closest_date:
-        raise NotFoundException("No home puzzle date found")
+        raise HTTPException(status_code=404, detail=str("No home puzzle date found 🍃"))
     return get_puzzle(format_date(closest_date), userid)
 
 @app.get("/puzzle/{date_str}")
@@ -65,9 +65,18 @@ def get_hint(source: str, target: str) -> str:
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get hint")
 
+@app.post("/solution/{date_str}")
+def post_solution(solution_request: SolutionRequest, date_str: str) -> None:
+    try:
+        bn.set_user_solution(solution_request.userid, to_date(date_str), solution_request.solution)
+    except InvalidSolutionException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except:
+        raise HTTPException(status_code=500, detail="Could not set solution")
+
 # Removes old puzzles and generates new ones (that don't already exist)
 @app.get("/cron/update/puzzles")
-def generate_update_puzzles(request: Request) -> None:
+def get_cron_update_puzzles(request: Request) -> None:
     authorization_header = request.headers.get("authorization")
 
     if not authorization_header:
@@ -94,12 +103,3 @@ def generate_update_puzzles(request: Request) -> None:
     cutoff_date = get_date(-99)
     for old_date in [date for date in existing_dates if date <= cutoff_date]:
         bn.db.delete_puzzle_by_date(old_date)    
-
-@app.post("/solution/{date_str}")
-def post_solution(solution_request: SolutionRequest, date_str: str) -> None:
-    try:
-        bn.set_user_solution(solution_request.userid, to_date(date_str), solution_request.solution)
-    except InvalidSolutionException as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except:
-        raise HTTPException(status_code=500, detail="Could not set solution")
