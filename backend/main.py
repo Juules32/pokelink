@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from exceptions import InvalidSolutionException, NotFoundException
 from model import GraphData, PuzzleSolution, PuzzlesItem, SolutionRequest
 from env import CRON_SECRET
-from date import get_datetime
+from util import format_date, get_date, to_date
 from business import Business
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -27,12 +27,15 @@ def get_graph_data() -> GraphData:
 
 @app.get("/puzzle")
 def get_home_puzzle(userid: str) -> PuzzleSolution:
-    return bn.get_home_solution(get_datetime(), userid)
+    closest_date = bn.db.get_closest_date(get_date())
+    if not closest_date:
+        raise NotFoundException("No home puzzle date found")
+    return get_puzzle(format_date(closest_date), userid)
 
-@app.get("/puzzle/{date}")
-def get_puzzle(date: str, userid: str) -> PuzzleSolution:
+@app.get("/puzzle/{date_str}")
+def get_puzzle(date_str: str, userid: str) -> PuzzleSolution:
     try:
-        return bn.get_puzzle_solution(date, userid)
+        return bn.get_puzzle_solution(to_date(date_str), userid)
     except NotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception:
@@ -73,8 +76,8 @@ def generate_update_puzzles(request: Request) -> None:
         raise HTTPException(status_code=403, detail="Invalid authorization header")
 
     all_dates = {
-        get_datetime(i).date()
-        for i in range(1, -100, -1)
+        get_date(i)
+        for i in range(1, -99, -1)
     }
 
     existing_dates = bn.db.get_all_puzzle_dates()
@@ -82,20 +85,20 @@ def generate_update_puzzles(request: Request) -> None:
 
     # Generates new puzzles for all dates that don't already have puzzles
     # (within the last 100 days)
-    for date_str in map(str, sorted(missing_dates)):
-        new_puzzle = bn.generate_puzzle(bn.get_graph(), date_str, strict=True)
+    for date in sorted(missing_dates):
+        new_puzzle = bn.generate_puzzle(bn.get_graph(), date, strict=True)
         bn.db.set_puzzle(new_puzzle)
-        print(f"Set puzzle for date {date_str} successfully!")
+        print(f"Set puzzle for date {date} successfully!")
     
-    # Removes puzzles older than 100 days
-    cutoff_date = get_datetime(-100).date()
+    # Removes puzzles older than 99 days
+    cutoff_date = get_date(-99)
     for old_date in [date for date in existing_dates if date <= cutoff_date]:
         bn.db.delete_puzzle_by_date(old_date)    
 
-@app.post("/solution/{date}")
-def post_solution(solution_request: SolutionRequest, date: str) -> None:
+@app.post("/solution/{date_str}")
+def post_solution(solution_request: SolutionRequest, date_str: str) -> None:
     try:
-        bn.set_user_solution(userid=solution_request.userid, date=date, solution=solution_request.solution)
+        bn.set_user_solution(solution_request.userid, to_date(date_str), solution_request.solution)
     except InvalidSolutionException as e:
         raise HTTPException(status_code=400, detail=str(e))
     except:

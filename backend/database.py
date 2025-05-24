@@ -1,8 +1,8 @@
-from datetime import date, datetime
+from datetime import date
 import psycopg2
 from typing import Any, Optional
 from enum import Enum
-
+from util import format_date
 from env import CONNECTION_STRING
 from model import Puzzle
 
@@ -64,7 +64,7 @@ class Database:
             message="Created pokelink_puzzle table successfully"
         )
 
-    def get_puzzle(self, date: str) -> Optional[Puzzle]:
+    def get_puzzle(self, date: date) -> Optional[Puzzle]:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;
@@ -82,7 +82,7 @@ class Database:
         
         source, target, shortest_path, shortest_path_length = fetched_row
         return Puzzle(
-            date=date,
+            date=format_date(date),
             source=source, 
             target=target, 
             shortest_path=shortest_path, 
@@ -127,11 +127,11 @@ class Database:
             for date, source, target in fetched_data
         ] if fetched_data else []
 
-    def get_closest_date(self, date: datetime) -> str:
+    def get_closest_date(self, date: date) -> Optional[date]:
         query = """
             SELECT date
             FROM pokelink_puzzle
-            ORDER BY ABS(DATE_PART('day', date - %s))
+            ORDER BY ABS(date - %s)
             LIMIT 1;
         """
 
@@ -142,7 +142,9 @@ class Database:
             message="Got closest date successfully"
         )
 
-        return str(fetched_row[0])
+        print(fetched_row)
+
+        return fetched_row[0] if fetched_row else None
 
     def create_user_solution_table(self) -> None:
         self.drop_table(table_name="pokelink_user_solution")
@@ -160,7 +162,7 @@ class Database:
             message="Created pokelink_user_solution table successfully"
         )
 
-    def set_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
+    def set_user_solution(self, userid: str, date: date, solution: list[str]) -> None:
         query = """
             INSERT INTO pokelink_user_solution (userid, date, solution)
             VALUES (%s, %s, %s)
@@ -171,7 +173,7 @@ class Database:
             vars=(userid, date, solution),
             message="Set user solution successfully")
     
-    def get_user_solution(self, userid: str, date: str) -> Optional[list[str]]:
+    def get_user_solution(self, userid: str, date: date) -> Optional[list[str]]:
         query = """
             SELECT solution from pokelink_user_solution
             WHERE userid = %s
@@ -227,7 +229,7 @@ class Database:
 
         return num_puzzles
 
-    def get_all_puzzle_dates(self) -> set[datetime]:
+    def get_all_puzzle_dates(self) -> set[date]:
         query = "SELECT date FROM pokelink_puzzle;"
 
         rows = self.commit_query(
@@ -236,4 +238,5 @@ class Database:
             fetch=Fetch.ALL,
             message="Fetched all puzzle dates"
         )
-        return {row[0] for row in rows}  # row[0] = date string
+
+        return {row[0] for row in rows}

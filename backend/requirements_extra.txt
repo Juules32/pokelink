@@ -1,0 +1,2 @@
+matplotlib        # For visuals
+scipy             # For visuals

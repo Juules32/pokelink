@@ -2,18 +2,16 @@ from typing import Mapping, Optional
 import networkx as nx
 import json, pickle
 from networkx import Graph
+from util import types_in_common
 from model import GraphData, PokemonNode
 from fastapi.encoders import jsonable_encoder
-
-def types_in_common(itypes: set[str], jtypes: set[str]) -> bool:
-    return not itypes.isdisjoint(jtypes)
 
 def generate_graph() -> Graph:
     # Init an empty graph
     graph = nx.Graph()
 
     # Get data files
-    with open("pokemon_data.json", "r") as pokemon_data_json:
+    with open("data/pokemon_data.json", "r") as pokemon_data_json:
         pokemon_data: dict = json.load(pokemon_data_json)
 
         # Filter out pokemon from Hisui 💀
@@ -59,14 +57,14 @@ def generate_pos(graph: Graph, iterations: int = 50, k: Optional[int] = None) ->
     return nx.spring_layout(graph, iterations=iterations, k=k)
 
 def dump_graph(graph: Graph):
-    with open("graph_data.pkl", "wb") as graph_file:
+    with open("data/graph.pkl", "wb") as graph_file:
         pickle.dump(graph, graph_file)
 
 def load_graph() -> Graph:
-    with open("graph_data.pkl", "rb") as graph_file:
+    with open("data/graph.pkl", "rb") as graph_file:
         return pickle.load(graph_file)
 
-def get_graph_data(graph: Graph):
+def generate_graph_data(graph: Graph) -> GraphData:
     nodes: dict[str, PokemonNode] = {}
     edges: dict[str, list[str]] = {}
     for name, values in graph.nodes.items():
@@ -83,8 +81,8 @@ def get_graph_data(graph: Graph):
         edges=edges
     )
 
-def store_graph_data(graph_data: GraphData):
-    with open("graph_data.json", "w") as graph_data_json:
+def store_graph_data(graph_data: GraphData) -> None:
+    with open("data/graph_data.json", "w") as graph_data_json:
         json.dump(jsonable_encoder(graph_data), graph_data_json, indent=4)
 
 if __name__ == "__main__":
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     graph = load_graph()
 
     # The graph data is formatted from the graph
-    graph_data = get_graph_data(graph)
+    graph_data = generate_graph_data(graph)
 
     # The graph data is saved to a json file
     store_graph_data(graph_data)

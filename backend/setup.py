@@ -1,5 +1,5 @@
 from business import Business
-from date import get_date_str
+from util import get_date
 
 # Running this script sets up the database tables
 # And generates and sets 10 puzzles
@@ -10,4 +10,4 @@ if __name__ == "__main__":
     puzzles = bn.generate_n_puzzles(bn.get_graph(), 5)
     for puzzle in puzzles:
         bn.db.set_puzzle(puzzle)
-    print("Last generated puzzle:", bn.db.get_puzzle(get_date_str()))
+    print("Last generated puzzle:", bn.db.get_puzzle(get_date()))

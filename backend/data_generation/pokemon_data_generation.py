@@ -162,7 +162,7 @@ async def save_data_to_json():
         await asyncio.gather(*tasks)
 
     # Save the data to JSON files
-    with open("pokemon_data.json", "w") as pokemon_data_json:
+    with open("data/pokemon_data.json", "w") as pokemon_data_json:
         json.dump(pokemon_data, pokemon_data_json, indent=4)
 
 # Running this script gathers pokemon data asynchronously and stores it in json format

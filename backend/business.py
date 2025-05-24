@@ -1,21 +1,21 @@
-from datetime import datetime
+from datetime import date
 import pickle, random, httpx
 from networkx import Graph
 from exceptions import InvalidSolutionException, NotFoundException
-from date import get_date_str
+from util import format_date, get_date
 from env import BLOB_HOST
 from database import Database
-from model import Puzzle, PuzzleSolution, PuzzlesItem
+from model import GraphData, Puzzle, PuzzleSolution, PuzzlesItem
 import networkx as nx
 from networkx import Graph
-from pokemon_data_generation import region_number
-from graph_data_generation import get_graph_data, types_in_common
+from data_generation.pokemon_data_generation import region_number
+from util import types_in_common
 from urllib.parse import urljoin
 
 class Business:
     def __init__(self):
         self.graph = self.get_blob_graph()
-        self.graph_data = get_graph_data(self.graph)
+        self.graph_data = self.get_blob_graph_data()
         self.db = Database()
 
     def get_blob_graph(self) -> Graph:
@@ -23,22 +23,31 @@ class Business:
             raise Exception
 
         # Requests the pickled file directly from the blob host
-        response = httpx.get(urljoin(BLOB_HOST, "graph_data.pkl"))
+        response = httpx.get(urljoin(BLOB_HOST, "graph.pkl"))
         if response.status_code == 200:
             print("Downloading pickled file")
             return pickle.loads(response.content)
         else:
             print("Failed to download pickled file")
-            raise NotFoundException("Graph data not found")
+            raise NotFoundException("Graph not found")
     
+    def get_blob_graph_data(self) -> GraphData:
+        if not BLOB_HOST:
+            raise Exception
+
+        # Requests the pickled file directly from the blob host
+        response = httpx.get(urljoin(BLOB_HOST, "graph_data.json"))
+        if response.status_code == 200:
+            print("Parsing graph data json")
+            return GraphData(**response.json())
+        else:
+            print("Failed to download graph data json")
+            raise NotFoundException("Graph data not found")
+
     def get_graph(self) -> Graph:
         return self.graph
     
-    def get_home_solution(self, date: datetime, userid: str) -> PuzzleSolution:
-        closest_date = self.db.get_closest_date(date)
-        return self.get_puzzle_solution(closest_date, userid)
-    
-    def get_puzzle_solution(self, date: str, userid: str) -> PuzzleSolution:
+    def get_puzzle_solution(self, date: date, userid: str) -> PuzzleSolution:
         puzzle = self.db.get_puzzle(date)
         if not puzzle:
             raise NotFoundException("Puzzle not found 😢")
@@ -50,7 +59,7 @@ class Business:
             solution=solution
         )
     
-    def generate_puzzle(self, graph: Graph, date: str, strict: bool) -> Puzzle:
+    def generate_puzzle(self, graph: Graph, date: date, strict: bool) -> Puzzle:
         pokemon_names = list(graph.nodes.keys())
         source=random.choice(pokemon_names)
         target=random.choice(pokemon_names)
@@ -69,7 +78,7 @@ class Business:
         assert isinstance(shortest_path, list), "Expected shortest_path to return a list"
 
         return Puzzle(
-            date=date,
+            date=format_date(date),
             source=source,
             target=target,
             shortest_path=shortest_path,
@@ -77,7 +86,7 @@ class Business:
         )
 
     def generate_n_puzzles(self, graph: Graph, n: int) -> list[Puzzle]:
-        return [self.generate_puzzle(graph, get_date_str(-i), strict=True) for i in range(n)]
+        return [self.generate_puzzle(graph, get_date(-i), strict=True) for i in range(n)]
 
     def get_generational_difference(self, graph: Graph, source: str, target: str) -> int:
         source_region_number = region_number[graph.nodes[source]["region"]]
@@ -122,7 +131,7 @@ class Business:
     def get_num_puzzles(self) -> int:
         return self.db.get_num_puzzles()
 
-    def set_user_solution(self, userid: str, date: str, solution: list[str]) -> None:
+    def set_user_solution(self, userid: str, date: date, solution: list[str]) -> None:
         if not self.validate_solution(solution):
             raise InvalidSolutionException()
 
