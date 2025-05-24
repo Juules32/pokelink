@@ -16,7 +16,6 @@ class Business:
     def __init__(self):
         self.graph = self.get_blob_graph()
         self.graph_data = get_graph_data(self.graph)
-        print("Loaded graph data")
         self.db = Database()
 
     def get_blob_graph(self) -> Graph:

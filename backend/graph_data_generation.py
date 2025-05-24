@@ -1,4 +1,4 @@
-from typing import Mapping, Union
+from typing import Mapping, Optional
 import networkx as nx
 import json, pickle
 from networkx import Graph
@@ -55,7 +55,7 @@ def generate_graph() -> Graph:
     return graph
 
 # Generate positional data for each node based on Fruchterman-Reingold force-directed algorithm
-def generate_pos(graph: Graph, iterations: int = 50, k: Union[int, None] = None) -> Mapping:
+def generate_pos(graph: Graph, iterations: int = 50, k: Optional[int] = None) -> Mapping:
     return nx.spring_layout(graph, iterations=iterations, k=k)
 
 def dump_graph(graph: Graph):

@@ -1,6 +1,6 @@
 from datetime import date, datetime
 import psycopg2
-from typing import Any, Union
+from typing import Any, Optional
 from enum import Enum
 
 from env import CONNECTION_STRING
@@ -15,7 +15,7 @@ class Database:
         self.connection_string = CONNECTION_STRING
         self.connection = None
 
-    def commit_query(self, query: str, vars: Any = None, fetch: Union[Fetch, None] = None, message: Union[str, None] = None) -> Any:
+    def commit_query(self, query: str, vars: Any = None, fetch: Optional[Fetch] = None, message: Optional[str] = None) -> Any:
         try:
             self.connection = psycopg2.connect(self.connection_string)
             with self.connection.cursor() as cur:
@@ -64,7 +64,7 @@ class Database:
             message="Created pokelink_puzzle table successfully"
         )
 
-    def get_puzzle(self, date: str) -> Union[Puzzle, None]:
+    def get_puzzle(self, date: str) -> Optional[Puzzle]:
         query = """
             SELECT source, target, shortest_path, shortest_path_length FROM pokelink_puzzle
             WHERE date = %s;
@@ -171,7 +171,7 @@ class Database:
             vars=(userid, date, solution),
             message="Set user solution successfully")
     
-    def get_user_solution(self, userid: str, date: str) -> Union[list[str], None]:
+    def get_user_solution(self, userid: str, date: str) -> Optional[list[str]]:
         query = """
             SELECT solution from pokelink_user_solution
             WHERE userid = %s
