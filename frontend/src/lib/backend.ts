@@ -14,11 +14,11 @@ class HttpError extends Error {
 
 export async function fetchPuzzle(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-    date: string | undefined
+    date: string,
+    userdate: string
 ): Promise<PuzzleSolution> {
     try {
-        const endpoint = date ? "puzzle/" + date : "puzzle";
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/${endpoint}?userid=${userid}`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles/${date}?userdate=${userdate}&userid=${userid}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -49,10 +49,11 @@ export async function fetchPuzzle(
 
 export async function fetchPuzzles(
     fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
+    userdate: string,
     pageNum: number
 ): Promise<PuzzlesItem[]> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userid=${userid}&page=${pageNum}`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/puzzles?userdate=${userdate}&userid=${userid}&page=${pageNum}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -71,10 +72,11 @@ export async function fetchPuzzles(
 }
 
 export async function fetchNumPuzzles(
-    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
+    userdate: string
 ): Promise<number> {
     try {
-        const response = await fetch(`${PUBLIC_BACKEND_HOST}/num_puzzles`)
+        const response = await fetch(`${PUBLIC_BACKEND_HOST}/num_puzzles?userdate=${userdate}`)
         const data = await response.json()
 
         if (!response.ok) {

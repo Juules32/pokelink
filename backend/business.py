@@ -109,8 +109,8 @@ class Business:
         shortest_path = nx.shortest_path(graph, source, target)
         return shortest_path[1] if len(shortest_path) >= 2 else shortest_path[0]
 
-    def get_puzzles(self, userid: str, page: int) -> list[PuzzlesItem]:
-        puzzle_dates = self.db.get_puzzle_dates(page)
+    def get_puzzles(self, date: date, userid: str, page: int) -> list[PuzzlesItem]:
+        puzzle_dates = self.db.get_puzzle_dates(date, page)
         if not puzzle_dates:
             raise NotFoundException("No puzzles found 💀")
 
@@ -128,8 +128,8 @@ class Business:
                 return False
         return True
 
-    def get_num_puzzles(self) -> int:
-        return self.db.get_num_puzzles()
+    def get_num_puzzles(self, date: date) -> int:
+        return self.db.get_num_puzzles(date)
 
     def set_user_solution(self, userid: str, date: date, solution: list[str]) -> None:
         if not self.validate_solution(solution):

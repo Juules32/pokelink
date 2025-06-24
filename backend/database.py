@@ -105,10 +105,11 @@ class Database:
             message=f"Set puzzle data from {puzzle.source} to {puzzle.target} successfully"
         )
 
-    def get_puzzle_dates(self, page: int) -> list[tuple[str, str, str]]:
+    def get_puzzle_dates(self, date: date, page: int) -> list[tuple[str, str, str]]:
         query = """
             SELECT date, source, target
             FROM pokelink_puzzle
+            WHERE date <= %s
             ORDER BY date DESC
             LIMIT 10 OFFSET %s
         """
@@ -117,7 +118,7 @@ class Database:
 
         fetched_data = self.commit_query(
             query=query,
-            vars=(offset,),
+            vars=(date, offset),
             fetch=Fetch.ALL,
             message="Got puzzle dates successfully"
         )
@@ -216,11 +217,15 @@ class Database:
             message=f"Deleted puzzles for date {date}"
         )
 
-    def get_num_puzzles(self) -> int:
-        query = "SELECT COUNT(*) from pokelink_puzzle"
+    def get_num_puzzles(self, date: date) -> int:
+        query = """
+            SELECT LEAST(COUNT(*), 100) from pokelink_puzzle
+            WHERE date <= %s
+        """
 
         num_puzzles = self.commit_query(
             query=query,
+            vars=(date,),
             fetch=Fetch.ONE,
             message="Got number of puzzles successfully"
         )[0]

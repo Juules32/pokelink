@@ -25,15 +25,11 @@ def get_graph_data() -> GraphData:
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get graph data")
 
-@app.get("/puzzle")
-def get_home_puzzle(userid: str) -> PuzzleSolution:
-    closest_date = bn.db.get_closest_date(get_date())
-    if not closest_date:
-        raise HTTPException(status_code=404, detail=str("No home puzzle date found 🍃"))
-    return get_puzzle(format_date(closest_date), userid)
+@app.get("/puzzles/{date_str}")
+def get_puzzle(date_str: str, userdate: str, userid: str) -> PuzzleSolution:
+    if to_date(date_str) > to_date(userdate):
+        raise HTTPException(status_code=403, detail="Could not get future puzzle ⏳")
 
-@app.get("/puzzle/{date_str}")
-def get_puzzle(date_str: str, userid: str) -> PuzzleSolution:
     try:
         return bn.get_puzzle_solution(to_date(date_str), userid)
     except NotFoundException as e:
@@ -42,18 +38,18 @@ def get_puzzle(date_str: str, userid: str) -> PuzzleSolution:
         raise HTTPException(status_code=500, detail="Could not get puzzle")
 
 @app.get("/puzzles")
-def get_puzzles(userid: str, page: int) -> list[PuzzlesItem]:
+def get_puzzles(userdate: str, userid: str, page: int) -> list[PuzzlesItem]:
     try:
-        return bn.get_puzzles(userid, page)
+        return bn.get_puzzles(to_date(userdate), userid, page)
     except NotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get puzzles")
 
 @app.get("/num_puzzles")
-def get_num_puzzles() -> int:
+def get_num_puzzles(userdate: str) -> int:
     try:
-        return bn.get_num_puzzles()
+        return bn.get_num_puzzles(to_date(userdate))
     except Exception:
         raise HTTPException(status_code=500, detail="Could not get number of puzzles")
 
@@ -84,22 +80,22 @@ def get_cron_update_puzzles(request: Request) -> None:
     if authorization_header != f"Bearer {CRON_SECRET}":
         raise HTTPException(status_code=403, detail="Invalid authorization header")
 
+    # All dates between (and including) 105 days ago and 5 days into the future
     all_dates = {
         get_date(i)
-        for i in range(1, -99, -1)
+        for i in range(5, -105, -1)
     }
 
     existing_dates = bn.db.get_all_puzzle_dates()
     missing_dates = all_dates - existing_dates
 
     # Generates new puzzles for all dates that don't already have puzzles
-    # (within the last 100 days)
     for date in sorted(missing_dates):
         new_puzzle = bn.generate_puzzle(bn.get_graph(), date, strict=True)
         bn.db.set_puzzle(new_puzzle)
         print(f"Set puzzle for date {date} successfully!")
     
-    # Removes puzzles older than 99 days
-    cutoff_date = get_date(-99)
+    # Removes puzzles older than 105 days
+    cutoff_date = get_date(-105)
     for old_date in [date for date in existing_dates if date <= cutoff_date]:
         bn.db.delete_puzzle_by_date(old_date)    

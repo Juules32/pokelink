@@ -1,5 +1,4 @@
 from business import Business
-from util import get_date
 
 # Running this script sets up the database tables
 # And generates and sets 10 puzzles

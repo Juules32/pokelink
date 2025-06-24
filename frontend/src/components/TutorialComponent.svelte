@@ -19,7 +19,7 @@ import ModalComponent from "./ModalComponent.svelte";
     <!-- Children -->
     <div class="leading-5 py-2 space-y-4">
         <p>
-            The goal of this daily puzzle game is to go from one pokémon to another
+            The goal of this daily puzzle game is to get from one pokémon to another
             in the shortest amount of steps.
         </p>
         <p>The rules for going from one pokémon to another are as follows:</p>
